@@ -1,3 +1,4 @@
+"r4 - v0.0.1 - by Chris Curl"
 N"System info: "xIR." registers, "xIF." functions, "xIU." bytes user memory."
                                                  
 N"Reference: https://github.com/CCurl/r4/blob/main/reference.txt"N
@@ -12,5 +13,4 @@ N"  011     Binary / Hex functions"
 N"  222     Genetic evolution"                                 
 N"  777     Count of primes"                                   
 N"  888     Mandelbrot set"                                    
-N"  999     This file"                                         
-                                                               
+N"  999     This file"
