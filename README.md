@@ -4,11 +4,11 @@ r4 is an simple, minimal, and interactive environment where the source code IS t
 
 # What is r4?
 
-r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, and any amount of user ram.
+r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, and any amount of user ram.
 
 A register (a built-in variable) is identified by up to 3 upper-case characters, so there is a maximum of (26x26x26) = 17576 registers available. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
 
-Similarly, a function is also identified by up to 3 upper-case characters, so there is a maximum of (26x26x26) = 17576 functions available. A function is defined in a Forth-like style, using ":;", and you call it using 'c'. For example:
+Similarly, a function is also identified by up to 3 upper-case characters, so there is a maximum of (26x26x26) = 17576 functions available. A function is defined in a Forth-like style, using ':', and you call it using 'c'. For example:
 
 - 0(CPY (N F T--): copy N bytes from F to T)
 - :CPY s2 s1 1[r1 C@ r2 C! i1 i2];
@@ -29,7 +29,7 @@ Examples for r4 are here: https://github.com/CCurl/Projects/blob/main/r4/example
 
 # Why did I create r4?
 
-There are multiple reasons:
+There are multiple goals for r4:
 
 1. Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build and deploy r4, but at least after that, you are free of them.
 
@@ -37,7 +37,7 @@ There are multiple reasons:
 
 3. A desire for a simple, minimal, and interactive programming environment that was easy to modify and enhance.
 
-4. An environment that could be easily configured for and deployed to many different types of development boards via the Arduino IDE.
+4. An environment that could be deployed to many different types of development boards via the Arduino IDE.
 
 5. To be able to use the same environment on my personal computer as well as development boards.
 
@@ -46,7 +46,7 @@ There are multiple reasons:
 # The implementation of r4
 
 - The entire system is implemented in a few files, primarily: config.h, r4.h, r4.cpp, pc-main.cpp, and r4.ino.
-- - There are a few additional files to support optional functionality (e.g.-WiFi and File access).
+  - There are a few additional files to support optional functionality (e.g.-WiFi and File access).
 - The same code runs on Windows, Linux, and multiple development boards (via the Arduino IDE).
 - See the file "config.h" for system configuration settings.
 
