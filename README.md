@@ -23,9 +23,9 @@ The number of registers, functions, and user memory can be scaled as necessary t
 
     1000 sS 13 xPO 1{\ 0 1[rI 13 xPWD rS xW] K? 0=} K@ \
 
-The reference for r4 is here:   https://github.com/CCurl/Projects/blob/main/r4/reference.txt
+The reference for r4 is here:   https://github.com/CCurl/r4/blob/main/reference.txt
 
-Examples for r4 are here: https://github.com/CCurl/Projects/blob/main/r4/examples.txt
+Examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
 
 # Why did I create r4?
 
