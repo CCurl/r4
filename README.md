@@ -1,4 +1,4 @@
-# r4 - A minimal stack machine VM/CPU with human-readable machine language
+# r4 - A stack-based VM/CPU with human-readable machine language
 
 r4 is an simple, minimal, and interactive environment where the source code IS the machine code. There is no compilation in r4.
 
