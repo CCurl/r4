@@ -98,6 +98,7 @@ void loop() {
 
 int main(int argc, char** argv) {
     vmInit();
+    loadCode(":C xIAU xIH D[rI C@#,59=(rI I C@ 58=(N))];");
     loadCode("0 bL");
     while (!isBye) { loop(); }
     return 0;
