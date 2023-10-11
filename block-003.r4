@@ -1,0 +1,10 @@
+xSR
+ 1 bL
+10 bL
+ 2 bL
+
+
+cRCA cDCA
+:DCA 1 rNCR[rI cSCR cDCR];
+
+:FUN cCLS 1{\cRCA cPCA K?_}K@ \ 1 rWY cGXY;

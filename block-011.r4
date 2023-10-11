@@ -1,0 +1,29 @@
+0(HEX output)
+:HD hF b& #9>(7+)'0+,;
+:HB h10 S$ cHD cHD;
+:HW h100 S$ cHB cHB;
+:HX h10000 S$ cHW cHW;
+
+0(Binary output)
+:BD hFF b& h80 1 8[$%S$.$1R]\\;)
+:BW h100 S$ cBD cBD;
+:BL h10000 S$ cBW cBW;
+
+:-(a--n): Read Word-;
+:RWD @ hFFFF b&;
+:-(n a--): Write Word-;
+:WWD %8R %I C! C!;
+
+0(rV `block-999.r4` `rt` \ cCAT)
+:CAT 0(n m--) fO #s1 fR{\, r1 fR}\ r1 fC;
+                            
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               

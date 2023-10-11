@@ -1,0 +1,772 @@
+777xBL
+fC
+fBB
+123F<100F<F/F.
+:MIL 1000#**;
+1 fMIL
+500*
+xT$1[]xT$-." ms"
+100F<11F<F/F.
+fC
+fF
+17 xIC4*xIAF+
+\
+xIC*xIAF+@
+##ee
+xIC3*+
+\
+20 xIC*xIAF+@e
+2 xIC*xIAF+@e
+xIH.
+'/
+'\
+/-
+100sT
+rT.
+"/"rTxW
+"/"rTxW"-"rTxW
+"/"rTxW8,"-"rTxW
+"/"rTxW8,"-"rTxW8,"\"rTxW
+"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"
+500sT
+"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"
+1 10["/"rTxW13,"-"rTxW13,"\"rTxW13,"-"]
+1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"]
+1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW]
+fHLP
+.
+999xBL
+10xBL
+fC
+fCSI"?25l"
+fCSI"?25h"
+1xBL
+10xBL
+fC
+fCOF 1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW] fCON
+200sT
+fCOF 1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW] fCON
+100sT fCOF 1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW] fCON
+50sT fCOF 1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW] fCON
+10sT fCOF 1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW] fCON
+25sT fCOF 1 10[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW] fCON
+25sT fCOF 1 20[13,"/"rTxW13,"-"rTxW13,"\"rTxW13,"-"rTxW] fCON
+25sT fCOF 1 20[13,rI.B] fCON
+100sT fCOF 1 20[13,rI.B] fCON
+
+100sT fCOF 1 20[13,rI.BrTxW] fCON
+500sT fCOF 1 20[13,rI.BrTxW] fCON
+250sT fCOF 1 20[13,rI.BrTxW] fCON
+100sT fCOF 1 20[13,rI.BrTxW] fCON
+1000sT fCOF 1 20[13,rI.BrTxW] fCON
+100sT fCOF 1 2000[13,rI.BrTxW] fCON
+100sT fCOF 1 200[13,rI.BrTxW] fCON
+xQ
+888xBL
+777xBL
+eC
+eBB
+262144#+eCPB
+262144#+#+eCPB
+262144#+#+#+eCPB
+262144#+#+#+#+eCPB
+eHLP
+.
+999xBL
+1xBL
+eHLP
+eC
+1 10[" "] 1 1["/"] 1 1["\"]
+1 10[1 10[" "] 1 1["/"] 1 1["\"]E]
+1 10[1 rI 10-[" "] 1 rI["/"] 1 rI["\"]E]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]1 21[34,]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]" "1 21[34,]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 21[34,]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 8[34,]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 8[34,]"|||"
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 98[34,]"|||"1 9[34,]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]1 10[B]"|||"
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 10[B]"|||"
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34]"###"1 9[34,]E1 11[B]"###"
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"###"1 9[34,]E1 11[B]"###"
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"
+:XM 1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||";
+eXM
+eC
+1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"
+1 20[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"
+1 20[1 rI 20-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"
+1 20[1 rI 20-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 19[34,]"|||"1 19[34,]E1 11[B]"|||"
+1 20[1 rI 20-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 19[34,]"|||"1 19[34,]E1 22[B]"|||"
+1 20[1 rI 20-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 19[34,]"|||"1 19[34,]E1 21[B]"|||"
+1 20[1 rI 20-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 19[34,]"|||"1 19[34,]E1 21[B]"|||"
+eC
+10xBL
+eC
+eCLL
+32 40 eSTC1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"eCLC
+32 40 eSTC 1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"eCLC
+10xBL
+eCLU
+eCLL
+93 100 eSTC eCLS
+eC
+eCLC
+eCLS
+32 40 eSTC 1 10[1 rI 10-[" "] 1 rI["/"] "|" 1 rI["\"]E]"  "1 9[34,]"|||"1 9[34,]E1 11[B]"|||"eCLC
+100xr
+.
+100xr.
+100xr sX 50 xr sY 7xr sC
+eCLLL
+eCLL
+100xr sX 50 xr sY 7xr 1+ sC
+100xr sX 50 xr sY 7xr 31+ sC
+rX rY eC
+\\
+100xr sX 50 xr sY 7xr sC
+rX rY eGXY rC 30 eSTC "*" 1000 xW eCLC
+eCLC
+eC
+eCLS
+eC
+eCLL
+37 40 eSTC
+xQ
+10 xBL
+eCLL
+77 4 eGXY"*" 1000xW8,
+77 4 eGXY"*" 1000xW8,
+77 4 eGXY"*" 1000xW8," "
+100xr 4 eGXY"*" 1000xW8," "
+100xr 40xr eGXY"*" 1000xW8," "
+100xr 40xr eGXY"*" 1000xW8," "
+100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 1000xW8," "
+100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 1000xW8," " eCLC
+100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 1000xW8," " eCLC
+1 100 [100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 100xW8," " eCLC]
+eCOF eCLS 1 100 [100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 100xW8," " eCLC]eCON
+eC
+1xBL
+10xBL
+eCOF eCLS 1 100 [100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 100xW8," " eCLC]eCON
+eCOF eCLS 1 10 [100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 250xW8," " eCLC]eCON
+eCOF eCLS 1 10 [100xr 40xr 7 xr 31+ 40 eSTC eGXY"*" 500xW8," " eCLC]eCON
+eCOF eCLS 1 10 [100xr 40xr 7 xr 30+ 40 eSTC eGXY"*" 500xW eCLC]eCON
+eCOF eCLS 1 1000 [100xr 40xr 7 xr 30+ 40 eSTC eGXY"*" 50xW eCLC]eCON
+eCOF eCLS 1 10000 [100xr 40xr 7 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+eCOF eCLS 1 1000 [100xr 40xr 7 xr 30+ 40 eSTC eGXY"*" 10xW eCLC]eCON
+eCOF eCLS 1 10000 [100xr 40xr 7 xr 30+ 40 eSTC eGXY"*" 10xW eCLC]eCON
+eCOF eCLS 1 1000000 [100xr 40xr 7 xr 30+ 40 eSTC eGXY"*" 10xW eCLC]eCON
+eCOF eCLS 1 10000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" 10xW eCLC]eCON
+\\\\\\\\\\\\\\\\\\\\\
+10xBL
+eCOF eCLS 1 10000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" 10xW eCLC]eCON
+eCOF 1 10000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" 10xW eCLC]eCON
+eCOF 1 10000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" 1xW eCLC]eCON
+eCLS eCOF 1 10000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+eCLS eCOF 1 100000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+eCLS eCOF 1 100000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+eCLS eCOF 1 100000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+eCLS eCOF 1 1000000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+eCLS eCOF 1 1000000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+eCLS eCOF 1 10000000 [100xr 40xr 8 xr 30+ 40 eSTC eGXY"*" eCLC]eCON
+10 xBL
+eCLS eCOF 1 100000 [30+ 40 eSTC 100xr 40xr 8xr eGXY "*"]eCLC eCON
+eCLS eCOF 1 100000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*"]eCLC eCON
+eCLS
+\
+xQ
+10 xBL
+eCLS eCOF 1 100000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*"]eCLC eCON
+eCLS eCOF 1 100000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*"]eCLC eCON
+eCLS eCOF 1 1000000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*"]eCLC eCON
+eCLS
+10xBL
+eC
+eDMO
+xQ
+10xBL
+eDMO
+eCLS eCOF 1 100000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*" 0xW]eCLC eCON
+eCLS eCOF 1 10000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*" 1xW]eCLC eCON
+eCLS eCOF 1 1000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*" 2xW]eCLC eCON
+eCLS eCOF 1 1000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*" 10xW]eCLC eCON
+eCLS eCOF 1 1000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*" 0xW]eCLC eCON
+eC
+eDMO
+eC
+eCLS eCOF 1 10000000 [8xr 30+ 40 eSTC 100xr 40xr eGXY "*"]eCLC eCON
+eCLS
+1 F< 17 F< F/F.
+76000F< 17F< F/ F.
+2016 1950 - .
+eDMO
+eDMO
+eC
+1 100[rI#.B27=(^)]" end"
+100{#.B#27=(^)D}
+\
+100{#.B#27=(^)D}
+xQ
+100{#27=(^)#.BD}
+100{#27=(^)#.BD}"end"
+r"test"
+\
+218i7sA
+r"test"
+\\
+:"test";eA
+C
+eC
+xQ
+0sX 1 100[rX24=(^)rI.BdI]
+0sX 1 100[iXrX24=(^)rI.BdI]
+xQ
+888xBL
+\\
+888xBL
+xQ
+888xBL
+777xBL
+10xBL
+eDMO
+eCLS
+xQ
+777xBL
+8388608 eCPB
+eC
+1928F<
+34f<
+F.
+1928F< 34F< F/ F.
+12F< 100F< F/ F.
+100F< 12F< F/ F.
+100F< 8F< F/ F.
+xQ
+rV `r4.h` `rt`\cCAT
+11xBL
+cCAT
+r1.
+xQ
+13,"waiting for a key ... " 1{\K?0=}K@\13,1 40[B]
+13,"waiting for a key ... " 1{\K?0=}K@\13,1 40[B]
+cC
+cR
+cU.
+cHPL
+cHLP
+33 126[rI #. " - " , N]
+33 126[rI #. " - '" , N"'"]
+33 126[rI #. " - '" , "'"N]
+Q
+xQ
+777xBL
+cC
+cBB
+xQ
+888xBL
+:T s1 r1.B 1 100[i1] r1.B;
+34cT
+777xBL
+cBB
+888xBL
+123 100 F>F>F/F.
+\\
+F<F<F/F.
+100 123 F<F<F/F.
+xQ
+xQ
+888 0 bO
+s1
+r1fR{\,r1fR}r1fC
+\
+r1fR{\,r1fR}\r1fC
+\
+999 0 bO s1
+r1 fR{\, r1 fR}\ r1 fC
+222 0 bO #s1 fR{\, r1 fR}\ r1 fC
+999 0 bO #s1 fR{\, r1 fR}\ r1 fC
+10 0 bO #s1 fR{\, r1 fR}\ r1 fC
+777bL
+xQ
+2bL
+cFUM
+cFUN
+cFUN
+cCLS
+cC
+xIH.
+xIAU.
+xIAU xIH
+%%-.
+[rIC@,]
+xIAU xIH
+[rI C@,]
+xQ
+cC
+xIAU xIH
+[rI C@,]
+xIAF
+3 4 *
++
+@
+\
+cC
+cC
+cC
+cC
+1 2 cMIN
+33 44 cMAX
+\\
+777bL
+888bL
+xQ
+:TT 123.: 0(test) :GG cTT;
+cC
+:TT 123.; 0(test) :GG cTT;
+cC
+cGG
+cA
+0bL
+:TT 123.; 0(test) :GG cTT;
+cC
+xQ
+cC
+222 xIH 100+  bR
+xIH
+$%
++
+[rI C@,]
+1xE
+0xE
+1xE
+1_
+_
+~
+~
+\
+h7FFF
+P
+I
+\
+888xE
+888xE
+888xE
+888xE
+888xE
+888xE
+xQ
+xQ
+888bL
+777bL
+888bL
+cC
+777bL
+cC
+cBB
+777xE
+xQ
+1xE
+999xE
+cHLP
+cC
+0bL
+cC
+xIH
+XIAU
+xIAU
+1xE
+\
+cU
+xIAU xIH
+-
+.
+0xE
+xQ
+999xE
+xQ
+cC
+cC
+xQ
+xQ
+cC
+cHLP
+999xE
+xQ
+xQ
+777xE
+888xE
+777bL
+0xE
+cC
+999xE
+999bL
+1 bL
+1xE
+1bL
+777bL
+888bL
+777xE
+xQ
+1xE
+1bL
+777bL
+0xE
+777xE
+777bL
+888xE
+
+888xE
+999xE
+0bL
+0xR
+.
+0xR.
+1 100[0xR.B]
+1 100[100xR.B]
+cC
+777bL
+888bL
+2bL
+cC
+cFUN
+cFUN
+cFUN
+cHLP
+cC
+rCR.
+cR
+cDMO
+cFUN
+xQ
+1xE
+1xE
+1xE
+1xE
+1xE
+1xE
+1bL
+cC
+1xE
+xE
+1xE
+1bL
+cC
+1xE
+1xE
+1bL
+1xE
+1xE
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1xE
+1xE
+1xE
+xQ
+0xE
+cR
+cU.
+xQ
+0xE
+1 10[K@.B]
+
+
+
+119,
+117,
+39,
+37,
+35,
+41,
+40,
+xQ
+cC
+cC
+cC
+cC
+cC
+rR
+\
+cR
+:TEST "holy crap!";
+cTEST
+777bL
+1 100[rI.B]
+:CPH "Count of primes";
+cC
+cCPH
+:Q%%S_(\=;)%<(\;)IIcQ;
+17 3 cQ
+17 3
+%%S_
+\
+%<
+\
+II
+%%S_
+\\
+%%S
+_
+\
+%%<
+\
+\
+II
+%%S_.
+%<.
+\
+.
+17 3 cQ
+111 17 3 cQ
+\
+123 
+:CP 4 sC 11[rI 3 cQ (iC) iI]rC;
+cCP
+\\
+\
+cR
+cC
+cCPH
+:Q%%S_("Y"\=;)%<("N"\;)IIcQ;
+17
+cCP
+\\
+17 3
+cQ
+\
+15 3 cQ
+:Q%%S_(\\0;)%<(\\1;)IIcQ;
+17 3 cQ
+\
+17 5 cQ
+\
+15 3 cQ
+\
+17 3
+%%S
+_
+.
+%<
+.
+cQ
+777bL
+cC
+12 cCPL
+3515 F< 1313F< F/ F.
+888bL
+777bL
+15 bL
+cBB
+15 cCPL
+777bL
+777bL
+15 CPL
+15 cCPL
+xQ
+777bL
+15cCPL
+xQ
+777bL
+15cCPL
+xQ
+777xBL
+bL
+:TESTHERE "hi there!;
+cTESTHERE
+
+:TESTHERE "hi there!";
+cTESTHERE
+cTESTHER
+xQ
+777bL
+15 cCPL
+xQ
+777bL
+15bL
+15cCPL
+777bL
+15 cCPLOOP
+15 cCPLOOP
+777bL
+cC
+15 cCPL
+cC
+777bL
+888bL
+xQ
+cC
+1 10[rI.B]
+xQ
+1 10 [rI.B]
+xQ
+1 10[rI.B]
+cC
+777bL
+888bL
+xQ
+888bL
+xQ
+777bL
+888bL
+3bL
+cFUN
+cFUN
+xQ
+777bL
+cC
+cBB
+xQ
+777bL
+cBB
+xQ
+777bL
+cBB
+xQ
+777bL
+cBB
+777bL
+cBB
+xQ
+777bL
+cBB
+xQ
+777bL
+cBB
+xQ
+777bL
+cBB
+xQ
+777bL
+cBB
+cBB
+cBB
+cBB
+777bL
+cBB
+10bL
+cC
+:TEST cCLS cC;
+cTEST
+:HITHERE "hi there";
+cHITHERE
+xQ
+26##**
+.
+26##**.
+26###***.
+26####****.
+26#####*****.
+13sM
+13sM 1 10[rI.BrM13*sM.BN]
+rM.
+13sM 1 10[rI.BrM13*#sM.BN]
+13sM 1 11[rI.BrM13*#sM.BN]
+26sM 1 6[rI.BrM13*#sM.BN]
+26sM 1 7[rI.BrM13*#sM.BN]
+26sM 1 8[rI.BrM13*#sM.BN]
+26sM 1 7[rI.BrM13*#sM.BN]
+777bL
+888bL
+cC
+xQ
+xQ
+777bL
+cBB
+:HITHERE "hi there!";
+cHITHERE
+xQ
+cC
+xQ
+cC
+777bL
+888bL
+xQ
+777bL
+xQ
+777bL
+xQ
+777bL
+cBB
+cBB
+xQ
+777bL
+cBB
+777bL
+cBB
+cBB
+xQ
+88bL
+888bL
+xQ
+777bL
+xQ
+777bL
+cBB
+cBB
+xQ
+cC
+ERR 
+rERR
+238474sERR
+.
+rERR
+.
+:ML1000#**;
+:BMxT$0[]xT$-.;
+100cMLcBM
+:ML1000#**;
+:BMxT$0[]xT$-.;
+500cMLcBM
+xQ
+xSR
+cC
+0 bL
+cC
+cR
+777bL
+cC
+123 100S
+..
+xQ
+xQ
+cC
+xQ
+:ML1000#**;
+500cML
+:BMxT$0[]cEL;
+:ELxT$-." ms";
+cBM
+500cMLcBM
+777bL
+cC
+4000000 cCP
+.
+4000000 cCPB

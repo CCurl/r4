@@ -1,0 +1,26 @@
+; Block-777.r4
+
+; rC:               Count of primes
+; IP: (n l--f)      Is Prime Number routine
+; CP: (n1--n2)      Count of Primes routine
+; CPB: (n--)        Benchmark routine
+; CPL: (n--)        Loop for multiple benchmarks
+; BB: (--)          Big Benchmark: 8 meg
+
+1 bL
+:CPH "Count of primes";
+:Q%%S_(\=;)%<(\;)IIcQ;
+:CP 4 sC 11[rI 3 cQ (iC) iI]rC;
+:CPB N"# primes in "#." - " xT$ cCP . xT$-" (" . " ms)";
+:CPL 512 s1 1[r1 cCPB r1#+s1]\;
+:BB 1024#* 8* cCPB;
+cCPH 10 cCPL
+                                    
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               
+                                                               

@@ -1,0 +1,46 @@
+r4 examples:
+
+; To enter a comment: 
+    0( here is a comment )
+    ; here is another comment
+  
+;   if (X) { print("Yes") } else { print("No") }
+    rX #("Yes")_("No")
+
+ ; F = (A == B) ? C : D;
+    rB rA=#(rC $)_(rD)sF;
+
+; To make sure F < T
+     %%>($)
+
+; To get the minimum
+     %%>($)\
+
+; To get the maximum
+     %%<($)\
+
+; To do something (in this case, call CC) rX times:
+    1 rX[cCC]
+
+; To output the contents of a file:
+    :CAT fO #s1 fR{\, r1 fR}\ r1 fC;
+    rVH `file.txt` `rt` \ cCAT
+
+; To print the ASCII chars from 33 to 126:
+    33 126[rI #. " - " , N]
+
+; One way to copy N bytes from F to T (using locals)
+    :CPY s2 s1 1[r1 c@ r2 c! i1 i2];
+    rN rF rT cCPY
+
+; A simple benchmark for a 100 million FOR loop:
+    1000#* 100* xT$ 1[] xT$-." ms"
+
+; A simple benchmark for a 100 million WHILE/DECREMENT loop:
+    1000#* 100* xT$ {D} xT$-." ms"
+
+; Define a function to display the currently defined code:
+    :C xIAU xIH D[rI C@ #, 59=(rI I C@ 58=(N))];
+
+; To exit r4:
+    xQ

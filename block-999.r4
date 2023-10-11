@@ -1,0 +1,16 @@
+N"System info: "xIR." registers, "xIF." functions, "xIU." bytes user memory."
+                                                 
+N"Reference: https://github.com/CCurl/Projects/blob/main/r4/reference.txt"N
+                                                   
+N"Block#    Description"                                       
+N"------    -----------------"                                 
+N"  000     Startup block"                                     
+N"  001     General System functions"                          
+N"  002     A sandbox"                                         
+N"  010     Screen / Color functions"                          
+N"  011     Binary / Hex functions"                            
+N"  222     Genetic evolution"                                 
+N"  777     Count of primes"                                   
+N"  888     Mandelbrot set"                                    
+N"  999     This file"                                         
+                                                               

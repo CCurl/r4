@@ -1,0 +1,91 @@
+0( Block-222.r4 )
+
+1 bL
+10 bL
+
+:HDR "Genetic Evolution"N; cHDR
+:NTH 1000+1000/1000*;
+
+0(Each connection is 32 bits)
+0(first byte is input, 2nd is output)
+0(So, [type:1][id:7][type:1][id:7][weight:16])
+
+0(rC: current critter)
+
+         25 sNCR   0(Number of critters)
+          8 sNCN   0(Number of connections - in CELLs)
+ rNCN 1+ 4* sCSZ   0(Critter size - in BYTES)
+        150 sWX    0(World size X)
+         40 sWY    0(World size Y)
+  rWX rWY * sWSZ   0(World size)
+
+xIAU  8000+ cNTH  sBSA   0(Brain start address)
+      rBSA  1000+ sWSA   0(World start address)
+rWSA rWSZ+ cNTH   sCSA   0(Critters start address)
+
+:WGT (x y--n): World ;
+:WGT $rWX*+rWSA+c@;
+
+:WST (n x y--): World Set;
+:WST $rWX*+rWSA+c!;
+
+:WIN (--): World Init;
+:WIN rWX rWY* rWSA+[0 rIc!];
+
+:NT (nid--id t) Get neuron id/type);
+:NT # h1F b& $ 7R 1 b&;
+
+:DN (nid--): dump neuron info;
+:DN eNT "{ type: ".", id: "." }";
+
+:CXY (--x y) Critter: x y);
+:CXY rC c@ rC I c@;
+
+:CNI (I--nid) Critter: input connection #I;
+:CNI 2L rC+ c@;
+
+:CNO (I--nid) Critter: output connection #I;
+:CNO D 2L rC+ I c@;
+
+:CNW(I--wt) Critter: weight #I);
+:CNW 2L rC+ @ hFF&;
+
+:DCN (--): Connection dump;
+:DCN # eCNI eND ", " # eCNO eND eCNW ", wt: ".;
+
+:SCR (I--): Set Critter, I:[1..N];
+:SCR #sCI D rCSZ * rCSA + sC;
+
+:SXY (x y--): Set X/Y;
+:SXY rC I c! rC c!;
+
+:RXY (--x y): Random X/Y;
+:RXY rWX xr rWY xr;
+
+:RNC (--): Create a random critter;
+:RNC eRXY eSXY rC 4+ # rNCN 4*+[255 xr rI c!];
+
+:CDN (--): Critter dump connection;
+:CDN 1 rNCN[E"    " rI eCND];
+
+:CDM (--): Critter dump;
+:CDM eCXY$"{ x: ". ", y: ".", [" eCDN E"]}";
+
+:DAC (--): Dump all critters;
+:DAC 1 rNCR[rI #.B eSCR eCDM E];
+
+:RAC (--): Randomize all critters;
+:RAC 1 rNCR[rI eSCR eRNC];
+
+:CRS (--): Critter Show;
+:CRS eCXY eGXY rC 7M 31+ 40 eSTC "*";
+
+:CRU (--): Critter Unshow;
+:CRU eCXY eGXY " ";
+
+:STS (--): Show all critters;
+:STS 1 rNCR[rI eSCR 100xr50<#(eCRS)_(eCRU)] eCLC;
+
+eRAC 0(eCLS eCOF 1{\eSTS 0xW K?0=}K@\ eCON)
+eDAC
+
