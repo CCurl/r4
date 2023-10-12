@@ -3,7 +3,7 @@
 // NOTE: A huge thanks to Alain Theroux. This editor was inspired by
 //       his editor and is a shameful reverse-engineering of it. :D
 
-#include "R4.h"
+#include "r4.h"
 
 #ifndef __EDITOR__
 void doEditor() { printString("-noEdit-"); }

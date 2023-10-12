@@ -1,6 +1,7 @@
 // R4 - A Minimal Interpreter
 
 #include "r4.h"
+#include "config.h"
 
 byte ir, isBye = 0, isError = 0;
 static char buf[96];
@@ -9,7 +10,7 @@ CELL n1, t1, seed = 0;
 ushort dsp, rsp, lsp, locStart;
 CELL   dstack[STK_SZ + 1];
 addr   rstack[RSTK_SZ + 1];
-LOOP_ENTRY_T lstack[LSTACK_SZ + 1];
+CELL   lstack[LSTACK_SZ*3];
 addr   func[NUM_FUNCS];
 CELL   reg[NUM_REGS];
 byte   user[USER_SZ];
@@ -102,34 +103,8 @@ void doFor() {
     CELL t = (NOS < TOS) ? TOS : NOS;
     CELL f = (NOS < TOS) ? NOS : TOS;
     DROP2;
-    LOOP_ENTRY_T *x = lpush();
-    x->start = pc;
-    INDEX = x->from = f;
-    x->to = t;
-    x->end = 0;
-}
-
-void doNext() {
-    LOOP_ENTRY_T* x = lAt();
-    x->from = ++INDEX;
-    if (x->from <= x->to) {
-        x->end = pc;
-        pc = x->start;
-    } else {
-        INDEX = ldrop()->from;
-    }
-}
-
-void loopExit() {
-    if (!lsp) { isError = 1; return; }
-    LOOP_ENTRY_T* x = lAt();
-    ldrop();
-    char c = ((x->from) || (x->to)) ? ']' : '}';
-    if (c == '}') { pop(); }
-    if (x->end) { pc = x->end; }
-    else { 
-        skipTo(c, 0);
-    }
+    lsp += (lsp<LSTACK_SZ) ? 3 : 0;
+    L0 = f; L1 = t; L2 = (CELL)pc;
 }
 
 int isOk(int exp, const char* msg) {
@@ -261,7 +236,7 @@ addr run(addr start) {
         case 'Q': /*FREE*/                                         break;
         case 'R': t1 = pop(); TOS = (TOS >> t1);                   break;  // RIGHT-SHIFT
         case 'S': if (TOS) { t1 = TOS; TOS = NOS % t1; NOS /= t1; }                  // /MOD
-                else { isError = 1; printString("-0div-"); }       break;
+                  else { isError = 1; printString("-0div-"); }       break;
         case 'T': /*FREE*/                                         break;
         case 'U': /*FREE*/                                         break;
         case 'V': /*FREE*/                                         break;
@@ -269,10 +244,10 @@ addr run(addr start) {
         case 'X': if (TOS) { rpush(pc); pc = (addr)TOS; } pop();   break;  // eXecute
         case 'Y': /*FREE*/                                         break;
         case 'Z': printString((char *)pop());                      break;  // ZPRINT
-        case '[': doFor();                                         break;  // 91 FOR
+        case '[': doFor();                                         break;  // 91 DO
         case '\\': pop();                                          break;  // 92 DROP
-        case ']': doNext();                                        break;  // 93 NEXT
-        case '^': loopExit();                                      break;  // 94 Exit LOOP
+        case ']': if (++L0<L1) { pc=(addr)L2; break; }                     // 93 LOOP
+        case '^': lsp -= 3;                                        break;  // 94 UNLOOP
         case '_': TOS = (TOS) ? 0 : 1;                             break;  // 95 NOT (LOGICAL)
         case '`': push(TOS);                                                 // 96 ZCOPY
             while ((*pc) && (*pc != ir)) { *(A++) = *(pc++); }
@@ -291,7 +266,7 @@ addr run(addr start) {
             pc = func[TOS];
         } pop(); break;
         case 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
-                else { if (getRFnum(1)) { --reg[pop()]; } }        break;  // REG DECREMENT
+                  else { if (getRFnum(1)) { --reg[pop()]; } }      break;  // REG DECREMENT
         case 'e': /*FREE*/                                         break;
         case 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
@@ -309,7 +284,7 @@ addr run(addr start) {
                 TOS = (TOS * 16) + t1; ++pc;
             } break;
         case 'i': if (isLocal(*pc)) { ++locals[*(pc++) - '0' + locStart]; }
-                else { if (getRFnum(1)) { ++reg[pop()]; } }        break;  // SET-REGISTER
+                  else { if (getRFnum(1)) { ++reg[pop()]; } }        break;  // SET-REGISTER
         case 'j': /*FREE*/                                         break;
         case 'k': /*FREE*/                                         break;
         case 'l': /*FREE*/                                         break;
@@ -319,9 +294,9 @@ addr run(addr start) {
         case 'p': /*FREE*/                                         break;
         case 'q': /*FREE*/                                         break;
         case 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); } 
-                else { if (getRFnum(1)) { TOS = reg[TOS]; } }      break;  // READ-REGISTER
+                  else { if (getRFnum(1)) { TOS = reg[TOS]; } }      break;  // READ-REGISTER
         case 's': if (isLocal(*pc)) { locals[*(pc++)-'0'+locStart] = pop(); }
-              else { if (getRFnum(1)) { reg[TOS] = NOS; DROP2; } } break;  // SET-REGISTER
+                  else { if (getRFnum(1)) { reg[TOS] = NOS; DROP2; } } break;  // SET-REGISTER
         case 't': /*FREE*/                                         break;
         case 'u': /*FREE*/                                         break;
         case 'v': /*FREE*/                                         break;
@@ -329,14 +304,12 @@ addr run(addr start) {
         case 'x': doExt();                                         break;  // EXTENDED ops
         case 'y': /*FREE*/                                         break;
         case 'z': /*FREE*/                                         break;
-        case '{': { LOOP_ENTRY_T *x = lpush();                             // 123 BEGIN
-                x->start = pc; x->end = 0; x->from = x->to = 0;
-                if (!TOS) { skipTo('}', 0); }
-            } break;
+        case '{': if (!TOS) { skipTo('}', 0); break; }                     // 123 BEGIN
+                lsp += (lsp < LSTACK_SZ) ? 3 : 0;
+                L0 = 0; L1 = 1; L2 = (CELL)pc;                     break;
         case '|':  /*FREE*/                                        break;  // 124
-        case '}': if (!TOS) { ldrop(); pop(); }                            // 125 WHILE
-            else { lAt()->end = pc; pc = lAt()->start; }
-            break;
+        case '}': if (TOS) { pc = (addr)L2; }                              // 125 WHILE
+                  else { pop(); lsp -= 3; }                        break;
         case '~': TOS = -TOS;                                      break;  // 126 NEGATE
         }
     }

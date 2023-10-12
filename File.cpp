@@ -1,4 +1,4 @@
-#include "R4.h"
+#include "r4.h"
 
 #ifndef __FILES__
 #ifndef __LITTLEFS__
@@ -100,7 +100,7 @@ void fileWrite() {
 
 // fL (--) - File Load code
 addr codeLoad(addr user, addr here) {
-    FILE *fh = fopen("Code.R4", "rt");
+    FILE *fh = fopen("code.r4", "rt");
     if (fh) {
         vmInit();
         int num = fread(user, 1, USER_SZ, fh);
@@ -117,7 +117,7 @@ addr codeLoad(addr user, addr here) {
 
 // fS (--) - File Save code
 void codeSave(addr user, addr here) {
-    FILE* fh = fopen("Code.R4", "wt");
+    FILE* fh = fopen("code.r4", "wt");
     if (fh) {
         int count = here - user;
         fwrite(user, 1, count, fh);
@@ -133,7 +133,7 @@ void codeSave(addr user, addr here) {
 // Loads a block file
 void blockLoad(CELL num) {
     char buf[24];
-    sprintf(buf, "Block-%03ld.r4", num);
+    sprintf(buf, "block-%03ld.r4", num);
     FILE* fp = fopen(buf, "rb");
     if (fp) {
         if (input_fp) { fpush(input_fp); }
@@ -143,7 +143,7 @@ void blockLoad(CELL num) {
 
 int saveBlock(int blk, char* buf, int sz) {
     char fn[24];
-    sprintf(fn, "Block-%03d.R4", blk);
+    sprintf(fn, "block-%03d.R4", blk);
     FILE* fp = fopen(fn, "wb");
     if (fp) {
         int n = fwrite(buf, 1, sz, fp);
@@ -157,7 +157,7 @@ int saveBlock(int blk, char* buf, int sz) {
 int readBlock(int blk, char* buf, int sz) {
     int cn = 0;
     char fn[24];
-    sprintf(fn, "Block-%03d.R4", blk);
+    sprintf(fn, "block-%03d.R4", blk);
     for (int i = 0; i < sz; i++) { buf[i] = 32; }
     FILE* fp = fopen(fn, "rb");
     if (fp) {
@@ -178,7 +178,7 @@ int readBlock(int blk, char* buf, int sz) {
 
 int writeBlock(int blk, char* buf, int sz) {
     char fn[24];
-    sprintf(fn, "Block-%03d.R4", blk);
+    sprintf(fn, "block-%03d.R4", blk);
     FILE* fp = fopen(fn, "wb");
     if (fp) {
         int n = fwrite(buf, 1, sz, fp);

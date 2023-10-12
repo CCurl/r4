@@ -16,6 +16,9 @@ typedef byte *addr;
 #define A          (addr)TOS
 #define NOS        dstack[dsp-1]
 #define R          rstack[dsp]
+#define L0         lstack[lsp]
+#define L1         lstack[lsp-1]
+#define L2         lstack[lsp-2]
 #define DROP1      pop()
 #define DROP2      pop(); pop()
 #define BTWI(n, x, y) (((x) <= (n)) && ((n) <= (y)))
