@@ -10,7 +10,7 @@ CELL n1, t1, seed = 0;
 ushort dsp, rsp, lsp, locStart;
 CELL   dstack[STK_SZ + 1];
 addr   rstack[RSTK_SZ + 1];
-CELL   lstack[LSTACK_SZ*3];
+CELL   lstack[LSTACK_SZ+3];
 addr   func[NUM_FUNCS];
 CELL   reg[NUM_REGS];
 byte   user[USER_SZ];
@@ -31,10 +31,6 @@ static int flsp = 0;
 #define fDROP2 flpop(); flpop();
 static void flpush(float v) { if (flsp < STK_SZ) { flstack[++flsp] = v; } }
 static float flpop() { return (flsp) ? flstack[flsp--] : 0; }
-
-#define lAt() (&lstack[lsp])
-inline LOOP_ENTRY_T* lpush() { if (lsp < STK_SZ) { ++lsp; } return lAt(); }
-inline LOOP_ENTRY_T *ldrop() { if (0 < lsp) { --lsp; } return lAt(); }
 
 void vmInit() {
     dsp = rsp = lsp = flsp = locStart = 0;
@@ -103,7 +99,7 @@ void doFor() {
     CELL t = (NOS < TOS) ? TOS : NOS;
     CELL f = (NOS < TOS) ? NOS : TOS;
     DROP2;
-    lsp += (lsp<LSTACK_SZ) ? 3 : 0;
+    lsp += ((lsp+2)<LSTACK_SZ) ? 3 : 0;
     L0 = f; L1 = t; L2 = (CELL)pc;
 }
 
@@ -235,8 +231,8 @@ addr run(addr start) {
         case 'P': /*FREE*/                                         break;
         case 'Q': /*FREE*/                                         break;
         case 'R': t1 = pop(); TOS = (TOS >> t1);                   break;  // RIGHT-SHIFT
-        case 'S': if (TOS) { t1 = TOS; TOS = NOS % t1; NOS /= t1; }                  // /MOD
-                  else { isError = 1; printString("-0div-"); }       break;
+        case 'S': if (TOS) { t1 = TOS; TOS = NOS % t1; NOS /= t1; }        // /MOD
+                  else { isError = 1; printString("-0div-"); }     break;
         case 'T': /*FREE*/                                         break;
         case 'U': /*FREE*/                                         break;
         case 'V': /*FREE*/                                         break;
@@ -246,10 +242,10 @@ addr run(addr start) {
         case 'Z': printString((char *)pop());                      break;  // ZPRINT
         case '[': doFor();                                         break;  // 91 DO
         case '\\': pop();                                          break;  // 92 DROP
-        case ']': if (++L0<L1) { pc=(addr)L2; break; }                     // 93 LOOP
-        case '^': lsp -= 3;                                        break;  // 94 UNLOOP
+        case ']': if ((lsp) && (++L0<L1)) { pc=(addr)L2; break; }          // 93 LOOP
+        case '^': lsp = (2<lsp) ? lsp-3: 0;                        break;  // 94 UNLOOP
         case '_': TOS = (TOS) ? 0 : 1;                             break;  // 95 NOT (LOGICAL)
-        case '`': push(TOS);                                                 // 96 ZCOPY
+        case '`': push(TOS);                                               // 96 ZCOPY
             while ((*pc) && (*pc != ir)) { *(A++) = *(pc++); }
             *(A++) = 0; pc++;
             break;
@@ -289,9 +285,9 @@ addr run(addr start) {
         case 'k': /*FREE*/                                         break;
         case 'l': /*FREE*/                                         break;
         case 'm': /*FREE*/                                         break;
-        case 'n': /*FREE*/                                         break;
+        case 'n': push(L0);                                        break;
         case 'o': /*FREE*/                                         break;
-        case 'p': /*FREE*/                                         break;
+        case 'p': L0 += pop();                                     break;
         case 'q': /*FREE*/                                         break;
         case 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); } 
                   else { if (getRFnum(1)) { TOS = reg[TOS]; } }      break;  // READ-REGISTER
@@ -305,7 +301,7 @@ addr run(addr start) {
         case 'y': /*FREE*/                                         break;
         case 'z': /*FREE*/                                         break;
         case '{': if (!TOS) { skipTo('}', 0); break; }                     // 123 BEGIN
-                lsp += (lsp < LSTACK_SZ) ? 3 : 0;
+                lsp += ((lsp+2) < LSTACK_SZ) ? 3 : 0;
                 L0 = 0; L1 = 1; L2 = (CELL)pc;                     break;
         case '|':  /*FREE*/                                        break;  // 124
         case '}': if (TOS) { pc = (addr)L2; }                              // 125 WHILE

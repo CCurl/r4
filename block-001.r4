@@ -1,8 +1,8 @@
 xSR   
 0(C:code, R:registers, U:Used bytes)   
 xIAU 10240+ sV   
-:C xIAU xIH D[rI C@#,59=(rI I C@ 58=(N))];
-:R 0 xIR D[rI xIC*xIAR+@#s1(rI 26 S$ 26 S$ 'A+,'A+,'A+,": "r1.N)];
+:C xIAU xIH 1-[n C@#,59=(n 1+ C@ 58=(N))];
+:R 0 xIR D[n xIC*xIAR+@#s1(n 26 S$ 26 S$ 'A+,'A+,'A+,": "r1.N)];
 :U xIH xIAU-;
 :HLP 999 bL;
 

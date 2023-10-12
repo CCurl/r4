@@ -209,18 +209,18 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 ### FOR LOOPS
 |OP |Stack |Description|
 |:-- |:-- |:--|
-| [   | (F T--)   |FOR: start a For/Next loop. if (T < F), swap T and F
-| rI  | (--n)     |n: the index of the current FOR loop
-| sI  | (n--)     |n: a new value for the index of the current FOR loop
-| ^   | (--)      |EXIT for loop
-| ]   | (--)      |NEXT: increment index (I) and loop if (I <= T)
+| [   | (T F--)   |FOR: start a For/Next loop. if (T < F), swap T and F
+| n   | (--i)     |i: the index of the current FOR loop
+| p   | (i--)     |i: number to add to "n"
+| ^   | (--)      |un-loop
+| ]   | (--)      |NEXT: increment index (n) and loop if (n <= T)
 
 
 ### WHILE LOOPS
 |OP |Stack |Description|
 |:-- |:-- |:--|
 | {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
-| ^  | (--)        |EXIT while loop
+| ^  | (--)        |un-loop
 | }  | (f--f?)     |WHILE: if (f != 0) jump to matching '{', else drop f and continue
 
 
