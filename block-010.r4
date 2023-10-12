@@ -14,10 +14,10 @@
 :CLC 37 40cSTC;
 
 0(CLL (--): To list the colors )
-:CLL 30 37[N rI s1 40 47[r1 rI cSTC " ("r1.";"rI.") "] cCLC];
+:CLL 30 37[N I s1 40 47[r1 r cSTC " ("r1.";"I.") "] cCLC];
 
 0(CLU (--): More, ugly)
-:CLU 90 97[N rI s1 100 107[r1 rI cSTC " ("r1.";"rI.") "] cCLC];
+:CLU 90 97[N I s1 100 107[r1 I cSTC " ("r1.";"I.") "] cCLC];
 
 0(COF (--): Cursor off)
 :COF cCSI"?25l";
@@ -26,11 +26,4 @@
 :CON cCSI"?25h";
 
 0(DMO (--): A little demo of using these)
-:DMO 0sT cCLS cCOF rX 0=(100sX) rY 0=(40sY)1{\iT 8xR 30+ 40 cSTC rX xR I rY xR I cGXY"*"K?0=}K@\cCLC cCON;
-           
-                                                               
-                                                               
-                                                               
-                                                               
-                                                               
-                                                               
+:DMO 0sT cCLS cCOF rX 0=(100sX) rY 0=(40sY)1{\iT 8xR 30+ 40 cSTC rX xR 1+ rY xR 1+ cGXY "*" K? 0=} K@ \ cCLC cCON;

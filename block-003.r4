@@ -5,6 +5,6 @@ xSR
 
 
 cRCA cDCA
-:DCA 1 rNCR[rI cSCR cDCR];
+:DCA 1 rNCR[I cSCR cDCR];
 
 :FUN cCLS 1{\cRCA cPCA K?_}K@ \ 1 rWY cGXY;

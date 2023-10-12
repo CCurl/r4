@@ -4,7 +4,7 @@ r4 is an simple, minimal, and interactive environment where the source code IS t
 
 ## What is r4?
 
-r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, and any amount of user ram.
+r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, and any amount of RAM.
 
 A register (a built-in variable) is identified by up to 3 upper-case characters, so there is a maximum of (26x26x26) = 17576 registers available. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
 
@@ -14,7 +14,7 @@ Similarly, a function is also identified by up to 3 upper-case characters, so th
 - :CPY s2 s1 1[r1 C@ r2 C! i1 i2];
 - 123 1000 2000 cCPY 0(copy 123 bytes from 1000 to 2000)
 
-The number of registers, functions, and user memory can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 676 (26*26) registers and functions, and 24K of user ram. In such a system, the register names would be in the range of [AA..ZZ], and function names would be in the range of [AA..ZZ]. On a Arduino Leonardo, you might configure the system to have 13 registers, 26 functions, and 1K user ram. On a RPI Pico, you can have 676 registers and functions, with 64K ram.
+The number of registers, functions, and user memory can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 676 (26*26) registers and functions, and 24K of user RAM. In such a system, the register names would be in the range of [AA..ZZ], and function names would be in the range of [AA..ZZ]. On a Arduino Leonardo, you might configure the system to have 13 registers, 26 functions, and 1K user RAM. On a RPI Pico, you can have 676 registers and functions, with 64K RAM.
 
 - Example 1: "Hello World!" - the standard "hello world" program.
 - Example 2: 1 sA 2 sB 3 sC rA rB rC ++ . -would print 6.
@@ -47,6 +47,13 @@ There are multiple goals for r4:
   - There are a few additional files to support optional functionality (e.g.-WiFi and File access).
 - The same code runs on Windows, Linux, and multiple development boards (via the Arduino IDE).
 - See the file "config.h" for system configuration settings.
+
+## Memory areas
+There are 2 memory areas in r4:
+- USER: r4 function code goes in this area. Default size is 128K.
+- VARS: use with 'V' opcode. Default size is 256K.
+  - The USER area can also be used for data. See the 'U' opcode.
+  - The VARS area is not used by the r4 system at all, 100% free.
 
 ## Locals
 
@@ -118,17 +125,19 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | %  | (a b--a b a)   |Push 2nd                  (OVER)|
 | ~  | (a--b)         |b: -a                     (Negate)|
 | D  | (a--b)         |b: a-1                    (Decrement TOS)|
-| I  | (a--b)         |b: a+1                    (Increment TOS)|
+| P  | (a--b)         |b: a+1                    (Increment TOS)|
 | A  | (a--b)         |b: abs(a)                 (Absolute value)|
 
 
 ### MEMORY
 |OP |Stack |Description|
 |:-- |:-- |:--|
-| @   | (a--n)      |Fetch CELL n from address a|
-| !   | (n a--)     |Store CELL n  to  address a|
-| C@  | (a--n)      |Fetch BYTE n from address a|
-| C!  | (n a--)     |Store BYTE n  to  address a|
+| @   | (a--n)      |Fetch CELL n from address a
+| !   | (n a--)     |Store CELL n  to  address a
+| C@  | (a--n)      |Fetch BYTE n from address a
+| C!  | (n a--)     |Store BYTE n  to  address a
+| U   | (n--a)      |a: address of byte n in the USER area.
+| V   | (n--a)      |a: address of byte n in the VARS area.
 
 
 ### REGISTERS
@@ -140,10 +149,10 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 |OP |Stack |Description|
 |:-- |:-- |:--|
-| rABC  | (--v)      |v: value of register ABC.|
-| sABC  | (v--)      |v: store v to register ABC.|
-| iABC  | (--)       |Increment register ABC.|
-| dABC  | (--)       |Decrement register ABC.|
+| rABC  | (--v)      |v: value of register ABC.
+| sABC  | (v--)      |v: store v to register ABC.
+| iABC  | (--)       |Increment register ABC.
+| dABC  | (--)       |Decrement register ABC.
 
 
 ### LOCALS
@@ -165,13 +174,13 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h"
 - Function A is the same as function AAA, B <-> AAB, Z <-> AAZ
 - :"TEST"; will define function #0 (AAA).
-- Returning while inside of a loop is not supported; behavior will be undefined. 
-  - Use '^' to exit the loop first.
+- Returning while inside of a loop will eventually cause a problem.
+  - Use '^' to unwind the loop stack first.
 
 |OP |Stack |Description|
 |:-- |:-- |:--|
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
-| cABC  | (--)   |Call function ABC. Handles "tail call optimization"
+| cABC  | (--)   |Call function ABC. Handles "tail call optimization".
 | ;     | (--)   |Return: PC = rpop()
 
 
@@ -180,7 +189,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 |:-- |:-- |:--|
 | .     | (N--)    |Output N as a decimal number
 | ,     | (N--)    |Output N as a character (EMIT)
-| "     | (--)     |Output characters until the next '"'
+| "str" | (--)     |Output characters until the next '"'
 | B     | (--)     |Output a single SPACE (32,)
 | N     | (--)     |Output a single NEWLINE (13,10,)
 | K?    | (--f)    |f: non-zero if char is ready to be read, else 0.
@@ -190,8 +199,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 |       |          |- to enter a negative number, use "negate" (eg - 490~)
 |hXXX   | (--N)    |Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
 | 'C    | (n)      |n: the ASCII value of C
-| `x    | (a--a b) |Copy following chars until closing '`' to (a++).
-|       |          |a: address, b next byte after trailing NULL.
+| `x`   | (a--a b) |Copy following chars until closing '`' to (a++).
+|       |          |- a: address, b next byte after trailing NULL.
 
 
 ### LOGICAL/CONDITIONS/FLOW CONTROL
@@ -203,24 +212,24 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | _  | (x--f)      |f: (x = 0) ? 1 : 0; (logical NOT)
 | (  | (f--)       |if (f != 0), execute code in '()', else skip to matching ')'
 | X  | (a--)       |if (a != 0), execute/call function at address a
-| G  | (a--)       |if (a != 0), go/jump) to function at address a
+| G  | (a--)       |if (a != 0), go/jump to function at address a
 
 
-### FOR LOOPS
+### FOR/NEXT LOOPS
 |OP |Stack |Description|
 |:-- |:-- |:--|
 | [   | (T F--)   |FOR: start a For/Next loop. if (T < F), swap T and F
-| n   | (--i)     |i: the index of the current FOR loop
-| p   | (i--)     |i: number to add to "n"
-| ^   | (--)      |un-loop
-| ]   | (--)      |NEXT: increment index (n) and loop if (n <= T)
+| I   | (--i)     |i: the index of the current FOR loop
+| p   | (i--)     |i: number to add to "I"
+| ^   | (--)      |un-loop, used with ';'. Example: rF(^;)
+| ]   | (--)      |NEXT: increment index (I) and loop if (I <= T)
 
 
-### WHILE LOOPS
+### BEGIN/WHILE LOOPS
 |OP |Stack |Description|
 |:-- |:-- |:--|
 | {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
-| ^  | (--)        |un-loop
+| ^  | (--)        |un-loop, used with ';'. Example: rF(^;)
 | }  | (f--f?)     |WHILE: if (f != 0) jump to matching '{', else drop f and continue
 
 
@@ -243,12 +252,12 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xIAF  | (--a)     |INFO: Address where the function vectors begin
 | xIAH  | (--a)     |INFO: Address of the HERE variable
 | xIAR  | (--a)     |INFO: Address where the registers begin
-| xIAU  | (--a)     |INFO: Address there the user area begins
+| xIAU  | (--a)     |INFO: Address there the USER area begins
 | xIC   | (--n)     |INFO: CELL size
 | xIF   | (--n)     |INFO: Number of functions
 | xIH   | (--a)     |INFO: HERE
 | xIR   | (--n)     |INFO: Number of registers
-| xIU   | (--n)     |INFO: Size of user area
+| xIU   | (--n)     |INFO: Size of USER area
 | xLA   | (--)      |PC: Load Abort: to stop loading a block (eg - if the block has already been loaded)
 | xPI   | (p--)     |Arduino: pin input  (pinMode(p, INPUT))
 | xPU   | (p--)     |Arduino: pin pullup (pinMode(p, INPUT_PULLUP))

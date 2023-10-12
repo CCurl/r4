@@ -21,6 +21,8 @@ typedef byte *addr;
 #define L2         lstack[lsp-2]
 #define DROP1      pop()
 #define DROP2      pop(); pop()
+#define NEXT       goto next
+#define NCASE      NEXT; case
 #define BTWI(n, x, y) (((x) <= (n)) && ((n) <= (y)))
 #define isLocal(x) (('0' <= (x)) && ((x) <= '9'))
 #define isRegChar(x) (('A' <= (x)) && ((x) <= 'Z'))

@@ -20,7 +20,8 @@
   #define STK_SZ          32
   #define RSTK_SZ         16
   #define LSTACK_SZ       10*3
-  #define USER_SZ        (256*1024)
+  #define USER_SZ        (128*1024)
+  #define VARS_SZ        (256*1024)
   #define NUM_REGS       (26*26*26)
   #define NUM_FUNCS      (26*26*26)
   #define __FILES__
