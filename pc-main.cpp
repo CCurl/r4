@@ -98,8 +98,11 @@ void loop() {
 
 int main(int argc, char** argv) {
     vmInit();
-    loadCode(":C 0U xIH D[I C@#,59=(I P C@ 58=(N))];");
-    loadCode("0 bL");
+    if (1 < argc) { input_fp = (CELL)fopen(argv[1], "rt"); }
+    if (!input_fp) {
+        loadCode(":C 0U xIH D[I C@#,59=(I P C@ 58=(N))];");
+        loadCode("0 bL");
+    }
     while (!isBye) { loop(); }
     return 0;
 }
