@@ -90,8 +90,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### FLOATING POINT
 #### NOTES:
-
 - r4 uses 64-bit floating point numbers
+
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | F< | (n--)     |Float: data -> float stack
