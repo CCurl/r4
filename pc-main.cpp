@@ -50,9 +50,9 @@ addr doCustom(byte ir, addr pc) {
 }
 
 void ok() {
-    printString("\r\nr4:(");
+    printString("\r\nr4:");
     dumpStack();
-    printString(")>");
+    printString(">");
 }
 
 void rtrim(char* cp) {
@@ -98,7 +98,7 @@ void loop() {
 
 int main(int argc, char** argv) {
     vmInit();
-    loadCode(":C xIAU xIH D[rI C@#,59=(rI I C@ 58=(N))];");
+    loadCode(":C 0U xIH D[I C@#,59=(I P C@ 58=(N))];");
     loadCode("0 bL");
     while (!isBye) { loop(); }
     return 0;

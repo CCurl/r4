@@ -41,7 +41,7 @@ extern byte isBye;
 extern byte isError;
 extern addr HERE;
 extern CELL dstack[];
-extern ushort dsp;
+extern int dsp;
 extern addr func[];
 extern CELL input_fp;
 

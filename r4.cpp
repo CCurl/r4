@@ -4,33 +4,29 @@
 #include "config.h"
 
 byte ir, isBye = 0, isError = 0;
-static char buf[96];
 addr pc, HERE;
 CELL n1, t1, seed = 0;
-ushort dsp, rsp, lsp, locStart;
-CELL   dstack[STK_SZ + 1];
-addr   rstack[RSTK_SZ + 1];
-CELL   lstack[LSTACK_SZ+3];
-addr   func[NUM_FUNCS];
-CELL   reg[NUM_REGS];
+int dsp, rsp, lsp, locStart;
+CELL   dstack[STK_SZ+1], lstack[LSTACK_SZ+1];
+CELL   reg[NUM_REGS], locals[(RSTK_SZ+1)*10];
+addr   rstack[RSTK_SZ+1], func[NUM_FUNCS];
 byte   user[USER_SZ], vars[VARS_SZ];
-CELL locals[RSTK_SZ * 10];
 
 void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp] = v; } }
 CELL pop() { return (dsp) ? dstack[dsp--] : 0; }
 
-inline void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; } }
-inline addr rpop() { return (rsp) ? rstack[rsp--] : 0; }
+void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; } }
+addr rpop() { return (rsp) ? rstack[rsp--] : 0; }
 
-static float flstack[STK_SZ+1];
-static int flsp = 0;
+static double flstack[STK_SZ+1];
+static ushort flsp = 0;
 
 #define fT flstack[flsp]
 #define fN flstack[flsp-1]
 #define fDROP1 flpop()
 #define fDROP2 flpop(); flpop();
-static void flpush(float v) { if (flsp < STK_SZ) { flstack[++flsp] = v; } }
-static float flpop() { return (flsp) ? flstack[flsp--] : 0; }
+static void flpush(double v) { if (flsp < STK_SZ) { flstack[++flsp] = v; } }
+static double flpop() { return (flsp) ? flstack[flsp--] : 0; }
 
 void vmInit() {
     dsp = rsp = lsp = flsp = locStart = 0;
@@ -66,6 +62,7 @@ CELL getCell(byte* from) {
 }
 
 void printStringF(const char* fmt, ...) {
+    static char buf[96];
     va_list args;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
@@ -74,9 +71,11 @@ void printStringF(const char* fmt, ...) {
 }
 
 void dumpStack() {
-    for (UCELL i = 1; i <= dsp; i++) {
+    printChar('(');
+    for (int i = 1; i <= dsp; i++) {
         printStringF("%s%ld", (i > 1 ? " " : ""), (CELL)dstack[i]);
     }
+    printChar(')');
 }
 
 void skipTo(byte to, int isCreate) {
@@ -96,11 +95,9 @@ void skipTo(byte to, int isCreate) {
 }
 
 void doFor() {
-    CELL t = (NOS < TOS) ? TOS : NOS;
-    CELL f = (NOS < TOS) ? NOS : TOS;
-    DROP2;
-    lsp += ((lsp+3) <= LSTACK_SZ) ? 3 : 0;
-    L0 = f; L1 = t; L2 = (CELL)pc;
+    CELL f = pop(), t=pop();
+    lsp += 3; if (LSTACK_SZ < lsp) { printString("-[lsp]-"); lsp=LSTACK_SZ; }
+    L0 = (f<t)?f:t; L1 = (t>f)?t:f; L2 = (CELL)pc;
 }
 
 int isOk(int exp, const char* msg) {
@@ -110,7 +107,7 @@ int isOk(int exp, const char* msg) {
 
 void doFloat() {
     switch (*(pc++)) {
-    case '<': flpush((float)pop());                             return;
+    case '<': flpush((double)pop());                            return;
     case '>': push((CELL)flpop());                              return;
     case '+': fN += fT; fDROP1;                                 return;
     case '-': fN -= fT; fDROP1;                                 return;
@@ -142,6 +139,7 @@ void doExt() {
             if (ir == 'H') { push((CELL)&HERE); }
             if (ir == 'R') { push((CELL)&reg[0]); }
             if (ir == 'U') { push((CELL)&user[0]); }
+            if (ir == 'V') { push((CELL)&vars[0]); }
             return;
         };
         if (ir == 'C') { push(CELL_SZ); }
@@ -149,10 +147,14 @@ void doExt() {
         if (ir == 'H') { push((CELL)HERE); }
         if (ir == 'R') { push(NUM_REGS); }
         if (ir == 'U') { push(USER_SZ); }
+        if (ir == 'V') { push(VARS_SZ); }
         return;
     case 'E': doEditor();                            return;
-    case 'S': if (*pc == 'R') { ++pc; vmInit(); }    return;
-    case 'N': push(doMicros());                      return;
+    case 'K': dumpStack();                           return;
+    case 'S': if (*pc == 'R') { ++pc; vmInit(); }
+              else if (*pc == 'Y') { ++pc; system((char*)pop()); }
+            return;
+    case 'M': push(doMicros());                      return;
     case 'T': push(doMillis());                      return;
     case 'W': if (0 < TOS) { doDelay(TOS); } pop();  return;
     case 'R': if (!seed) { seed = getSeed(); }
@@ -184,7 +186,7 @@ next:
         // NCASE '&': /*FREE*/
         NCASE '\'': push(*(pc++));
         NCASE '(': if (!TOS) { skipTo(')', 0); } pop();
-        NCASE ')':
+        NCASE ')': /* nothing to do here */
         NCASE '*': t1 = pop(); TOS *= t1;
         NCASE '+': t1 = pop(); TOS += t1;
         NCASE ',': printChar((char)pop());
@@ -239,8 +241,8 @@ next:
         NCASE 'Z': printString((char*)pop());
         NCASE '[': doFor();
         NCASE '\\': pop();
-        NCASE ']': if ((++L0)<L1) { pc=(addr)L2; NEXT; }
-        NCASE '^': lsp = (2<lsp) ? lsp-3: 0;
+        NCASE ']': if ((++L0)<L1) { pc=(addr)L2; NEXT; } /* fall through */
+        case '^': lsp = 3; if (lsp<0) { lsp=0; }
         NCASE '_': TOS = (TOS) ? 0 : 1;
         NCASE '`': push(TOS);
             while ((*pc) && (*pc != ir)) { *(A++) = *(pc++); }

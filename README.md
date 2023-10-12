@@ -18,10 +18,10 @@ The number of registers, functions, and user memory can be scaled as necessary t
 
 - Example 1: "Hello World!" - the standard "hello world" program.
 - Example 2: 1 sA 2 sB 3 sC rA rB rC ++ . -would print 6.
-- Example 4: 32 126\[13,10,rI#." - ",\] - would print the ASCII table
+- Example 4: 32 126\[13,10,I#." - ",\] - would print the ASCII table
 - Example 3: The typical Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
-    1000 sS 13 xPO 1{\ 0 1[rI 13 xPWD rS xW] K? 0=} K@ \
+    1000 sS 13 xPO 1{\ 0 1[I 13 xPWD rS xW] K? 0=} K@ \
 
 Examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
 
@@ -29,17 +29,12 @@ Examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
 
 There are multiple goals for r4:
 
-1. Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build and deploy r4, but at least after that, you are free of them.
-
-2. Many programming environments use tokens and a large SWITCH statement in a loop to execute the user's program. In those systems, the machine code (aka - byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when looking at the code that is actually being executed. Additionally there is a compiler that is needed in order to work in that environment. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the user environment, (2) the hundreds or thousands of user functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much as that as possible, and have only one thing to learn: the machine code.
-
-3. A desire for a simple, minimal, and interactive programming environment that was easy to modify and enhance.
-
-4. An environment that could be deployed to many different types of development boards via the Arduino IDE.
-
-5. To be able to use the same environment on my personal computer as well as development boards.
-
-6. Short commands so that there was not a lot of typing needed.
+- Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build and deploy r4, but at least after that, you are free of them.
+- Many programming environments use tokens and a large SWITCH statement in a loop to execute the user's program. In those systems, the machine code (aka - byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when looking at the code that is actually being executed. Additionally there is a compiler that is needed in order to work in that environment. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the user environment, (2) the hundreds or thousands of user functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much as that as possible, and have only one thing to learn: the machine code.
+- A simple, minimal, and interactive programming environment that is easy to modify and enhance.
+- An environment that could be deployed to many different types of development boards via the Arduino IDE.
+- The ablility to use the same environment on my personal computer as well as development boards.
+- Short commands so that there was not a lot of typing needed.
 
 ## The implementation of r4
 
@@ -75,69 +70,72 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 ## Building r4
 
 - The target machine/environment is controlled by the #defined in the file "config.h"
-- For Windows, I use Microsoft's Visual Studio (Community edition). I use the x86 configuration.
+- For Windows, I use Microsoft's Visual Studio (Community edition). Use the x86 configuration (32-bit).
 - For Development boards, I use the Arduino IDE. See the file "config.h" for board-specific settings.
-- For Linux systems, I use vi and clang. See the "make" script for more info.
+- For Linux systems, I use clang. See the "make" script for more info. Default is 64-bit.
 - I do not have an Apple system, so I haven't tried to build r4 for that environment.
-- However, being such a simple and minimal C program, it should not be difficult to port r4 to any environment.
+  - However, being such a simple and minimal C program, it should not be difficult to port r4 to any environment.
 
 ##  r4 Reference
 
 ### ARITHMETIC
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| + |  (a b--n)   |n: a+b - addition|
-| - |  (a b--n)   |n: a-b - subtraction|
-| * |  (a b--n)   |n: a*b - multiplication|
-| / |  (a b--q)   |q: a/b - division|
-| M |  (a b--r)   |r: a%b - modulo|
-| S |  (a b--q r) |q: div(a,b), r: modulo(a,b)  (SLASH-MOD)|
+| +  |  (a b--n)   |n: a+b - addition
+| -  |  (a b--n)   |n: a-b - subtraction
+| *  |  (a b--n)   |n: a*b - multiplication
+| /  |  (a b--q)   |q: a/b - division
+| M  |  (a b--r)   |r: a%b - modulo
+| S  |  (a b--q r) |q: div(a,b), r: modulo(a,b)  (SLASH-MOD)
 
 ### FLOATING POINT
-|OP |Stack |Description|
+#### NOTES:
+- r4 uses 64-bit floating point numbers
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| F< | (n--)     |Float: data -> float stack|
-| F> | (n--)     |Float: float -> data stack|
-| F+ | (a b--n)  |Float: add|
-| F- | (a b--n)  |Float: subtract|
-| F* | (a b--n)  |Float: multiply|
-| F/ | (a b--n)  |Float: divide|
-| F. | (n--)     |Float: print top of fload stack|
+| F< | (n--)     |Float: data -> float stack
+| F> | (n--)     |Float: float -> data stack
+| F+ | (a b--n)  |Float: add
+| F- | (a b--n)  |Float: subtract
+| F* | (a b--n)  |Float: multiply
+| F/ | (a b--n)  |Float: divide
+| F. | (n--)     |Float: print top of fload stack
 
 
 ### BIT MANIPULATION
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| b& | (a b--n)   |n: a and b|
-| b| | (a b--n)   |n: a or b|
-| b^ | (a b--n)   |n: a xor b|
-| b~ | (a--b)     |b: not a      (e.g - 1011 => 0100)|
-| L  | (a n--b)   |b: a << n     (Left-Shift)|
-| R  | (a n--b)   |b: a >> n     (Right-Shift)|
+| b& | (a b--n)   |n: a and b
+| b| | (a b--n)   |n: a or b
+| b^ | (a b--n)   |n: a xor b
+| b~ | (a--b)     |b: not a      (e.g - 1011 => 0100)
+| L  | (a n--b)   |b: a << n     (Left-Shift)
+| R  | (a n--b)   |b: a >> n     (Right-Shift)
 
 
 ### STACK
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| #  | (a--a a)       |Duplicate TOS             (DUP)|
-| \  | (a b--a)       |Drop TOS                  (DROP)|
-| $  | (a b--b a)     |Swap top 2 stack items    (SWAP)|
-| %  | (a b--a b a)   |Push 2nd                  (OVER)|
-| ~  | (a--b)         |b: -a                     (Negate)|
-| D  | (a--b)         |b: a-1                    (Decrement TOS)|
-| P  | (a--b)         |b: a+1                    (Increment TOS)|
-| A  | (a--b)         |b: abs(a)                 (Absolute value)|
+| #  | (a--a a)       |Duplicate TOS (DUP)
+| \  | (a b--a)       |Drop TOS (DROP)
+| $  | (a b--b a)     |Swap top 2 stack items (SWAP)
+| %  | (a b--a b a)   |Push 2nd (OVER)
+| ~  | (a--b)         |b: -a (NEGATE)
+| D  | (a--b)         |b: a-1 (1-)
+| P  | (a--b)         |b: a+1 (1+)
+| A  | (a--b)         |b: absolute value of a (ABS)
+| xK | (--)           |Display the stack (.S)
 
 
 ### MEMORY
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| @   | (a--n)      |Fetch CELL n from address a
-| !   | (n a--)     |Store CELL n  to  address a
-| C@  | (a--n)      |Fetch BYTE n from address a
-| C!  | (n a--)     |Store BYTE n  to  address a
-| U   | (n--a)      |a: address of byte n in the USER area.
-| V   | (n--a)      |a: address of byte n in the VARS area.
+| @  | (a--n)      |Fetch CELL n from address a
+| !  | (n a--)     |Store CELL n  to  address a
+| C@ | (a--n)      |Fetch BYTE n from address a
+| C! | (n a--)     |Store BYTE n  to  address a
+| U  | (n--a)      |a: address of byte n in the USER area.
+| V  | (n--a)      |a: address of byte n in the VARS area.
 
 
 ### REGISTERS
@@ -147,12 +145,12 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 - Register A is the same as register AAA, B <-> AAB, Z <-> AAZ
 - r"TEST" will push the value of register AAA and then print TEST
 
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| rABC  | (--v)      |v: value of register ABC.
-| sABC  | (v--)      |v: store v to register ABC.
-| iABC  | (--)       |Increment register ABC.
-| dABC  | (--)       |Decrement register ABC.
+| rABC | (--v)      |v: value of register ABC.
+| sABC | (v--)      |v: store v to register ABC.
+| iABC | (--)       |Increment register ABC.
+| dABC | (--)       |Decrement register ABC.
 
 
 ### LOCALS
@@ -160,12 +158,12 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 - On each function call, 10 locals [r0..r9] are allocated.
 - Locals are NOT initialized.
 
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| rN  | (--v)  |v: value of local #N.|
-| sN  | (v--)  |v: store v to local #N.|
-| iN  | (--)   |Increment local N.|
-| dN  | (--)   |Decrement local n.|
+| rN | (--v)  |v: value of local #N.|
+| sN | (v--)  |v: store v to local #N.|
+| iN | (--)   |Increment local N.|
+| dN | (--)   |Decrement local n.|
 
 
 ### FUNCTIONS
@@ -177,7 +175,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
 
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
@@ -185,7 +183,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 
 ### INPUT/OUTPUT
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
 | .     | (N--)    |Output N as a decimal number
 | ,     | (N--)    |Output N as a character (EMIT)
@@ -204,7 +202,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 
 ### LOGICAL/CONDITIONS/FLOW CONTROL
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
 | <  | (a b--f)    |f: (a < b) ? 1 : 0;
 | =  | (a b--f)    |f: (a = b) ? 1 : 0;
@@ -216,17 +214,17 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 
 ### FOR/NEXT LOOPS
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| [   | (T F--)   |FOR: start a For/Next loop. if (T < F), swap T and F
-| I   | (--i)     |i: the index of the current FOR loop
-| p   | (i--)     |i: number to add to "I"
-| ^   | (--)      |un-loop, used with ';'. Example: rF(^;)
-| ]   | (--)      |NEXT: increment index (I) and loop if (I <= T)
+| [  | (T F--)   |FOR: start a For/Next loop. if (T < F), swap T and F
+| I  | (--i)     |i: the index of the current FOR loop
+| p  | (i--)     |i: number to add to "I"
+| ^  | (--)      |un-loop, used with ';'. Example: rF(^;)
+| ]  | (--)      |NEXT: increment index (I) and loop if (I <= T)
 
 
 ### BEGIN/WHILE LOOPS
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
 | {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
 | ^  | (--)        |un-loop, used with ';'. Example: rF(^;)
@@ -234,30 +232,32 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 
 ### FILES
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
-| fO  | (nm md--fh)  |FILE: Open, nm: name, md: mode, fh: fileHandle
-| fC  | (fh--)       |FILE: Close, fh: fileHandle
-| fD  | (nm--)       |FILE: Delete
-| fR  | (fh--c n)    |FILE: Read, fh: fileHandle, c: char, n: num
-| fW  | (c fh--n)    |FILE: Write, fh: fileHandle, c: char, n: num
-| fS  | (--)         |FILE: Save Code
-| fL  | (--)         |FILE: Load Code
-| bL  | (n--)        |BLOCK: Load code from block file (Block-nnn.r4). This can be nested.
+| fO | (nm md--fh)  |FILE: Open, nm: name, md: mode, fh: fileHandle
+| fC | (fh--)       |FILE: Close, fh: fileHandle
+| fD | (nm--)       |FILE: Delete
+| fR | (fh--c n)    |FILE: Read, fh: fileHandle, c: char, n: num
+| fW | (c fh--n)    |FILE: Write, fh: fileHandle, c: char, n: num
+| fS | (--)         |FILE: Save Code
+| fL | (--)         |FILE: Load Code
+| bL | (n--)        |BLOCK: Load code from block file (Block-nnn.r4). This can be nested.
 
 
 ### OTHER
-|OP |Stack |Description|
+| OP |Stack |Description|
 |:-- |:-- |:--|
 | xIAF  | (--a)     |INFO: Address where the function vectors begin
 | xIAH  | (--a)     |INFO: Address of the HERE variable
 | xIAR  | (--a)     |INFO: Address where the registers begin
 | xIAU  | (--a)     |INFO: Address there the USER area begins
+| xIAV  | (--a)     |INFO: Address there the VARS area begins
 | xIC   | (--n)     |INFO: CELL size
 | xIF   | (--n)     |INFO: Number of functions
 | xIH   | (--a)     |INFO: HERE
 | xIR   | (--n)     |INFO: Number of registers
 | xIU   | (--n)     |INFO: Size of USER area
+| xIV   | (--n)     |INFO: Size of VARS area
 | xLA   | (--)      |PC: Load Abort: to stop loading a block (eg - if the block has already been loaded)
 | xPI   | (p--)     |Arduino: pin input  (pinMode(p, INPUT))
 | xPU   | (p--)     |Arduino: pin pullup (pinMode(p, INPUT_PULLUP))
@@ -267,8 +267,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xPWA  | (n p--)   |Arduino: pin write analog  (analogWrite(p, n))
 | xPWD  | (n p--)   |Arduino: pin write digital (digitalWrite(p, n))
 | xSR   | (--)      |R4 System Reset
-| xT    | (--n)     |Time (Arduino: millis(), Windows: GetTickCount())
-| xN    | (--n)     |Time (Arduino: micros(), Windows: N/A)
+| xT    | (--n)     |Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
+| xM    | (--n)     |Time in microseconds (Arduino: micros())
 | xW    | (n--)     |Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    |r: a random number between 0 and n
 |       |           |NOTE: when n=0, r is the entire 32-bit number

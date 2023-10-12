@@ -6,14 +6,15 @@
 ; EL: (T--)         Print elapsed time since T
 ; CPB: (n--)        Benchmark routine
 ; CPL: (n--)        Loop for multiple benchmarks
-; BB: (--)          Big Benchmark: 8 meg
+; BB: (--)          Big Benchmark: 8 MIL
 
 1 bL
 :CPH "Count of primes";
 :Q%%S_(\=;)%<(\;)PPcQ;
 :CP 4 s1 11[I 3 cQ (i1) 1p]r1;
 :EL xT$- " (" . ")";
-:CPB N"# primes in "#." - " xT$ cCP . cEL;
+:CPB N"# primes in "#." ... " xT$ cCP . cEL;
 :CPL 512 s1 1[r1 cCPB r1#+s1]\;
-:BB 1024#* 8* cCPB;
+:MIL 1000#**;
+:BB 8 cMIL cCPB;
 cCPH 10 cCPL
