@@ -1,16 +1,15 @@
 "r4 - v0.0.1 - by Chris Curl"
 N"System info: "xIR." registers, "xIF." functions, "xIU." bytes user memory."
-                                                 
-N"Reference: https://github.com/CCurl/r4/blob/main/reference.txt"N
-                                                   
-N"Block#    Description"                                       
-N"------    -----------------"                                 
-N"  000     Startup block"                                     
-N"  001     General System functions"                          
-N"  002     A sandbox"                                         
-N"  010     Screen / Color functions"                          
-N"  011     Binary / Hex functions"                            
-N"  222     Genetic evolution"                                 
-N"  777     Count of primes"                                   
-N"  888     Mandelbrot set"                                    
+N"GitHub repo: https://github.com/CCurl/r4"N
+
+N"Block#    Description"
+N"------    -----------------"
+N"  000     Startup block"
+N"  001     General System functions"
+N"  002     A sandbox"
+N"  010     Screen / Color functions"
+N"  011     Binary / Hex functions"
+N"  222     Genetic evolution"
+N"  777     Count of primes benchmark"
+N"  888     The Mandelbrot set"
 N"  999     This file"
