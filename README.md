@@ -268,6 +268,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xPWA  | (n p--)   |Arduino: pin write analog  (analogWrite(p, n))
 | xPWD  | (n p--)   |Arduino: pin write digital (digitalWrite(p, n))
 | xSR   | (--)      |R4 System Reset
+| xs    | (a--)     |PC: call "system(a)"
 | xT    | (--n)     |Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
 | xM    | (--n)     |Time in microseconds (Arduino: micros())
 | xW    | (n--)     |Wait (Arduino: delay(),  Windows: Sleep())

@@ -41,10 +41,11 @@ int charAvailable() { return _kbhit(); }
 
 addr doCustom(byte ir, addr pc) {
     switch (ir) {
-    case 'Q': isBye = 1;                       break;
-    default:
-        isError = 1;
-        printString("-notExt-");
+        case 'Q': isBye = 1;                 break;
+        case 's': system((char*)pop());      break;
+        default:
+            isError = 1;
+            printString("-notExt-");
     }
     return pc;
 }

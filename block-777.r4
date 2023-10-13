@@ -1,4 +1,4 @@
-; Block-777.r4
+; Block-777.r4 - benchmarks
 
 ; rC:               Count of primes
 ; IP: (n l--f)      Is Prime Number routine
@@ -12,9 +12,15 @@
 :CPH "Count of primes";
 :Q%%S_(\=;)%<(\;)PPcQ;
 :CP 4 s1 11[I 3 cQ (i1) 1p]r1;
-:EL xT$- " (" . ")";
+:EL xT$- " (" . " ms)";
 :CPB N"# primes in "#." ... " xT$ cCP . cEL;
-:CPL 512 s1 1[r1 cCPB r1#+s1]\;
+:CPL 500 s1 1[r1 cCPB r1#+s1]\;
 :MIL 1000#**;
 :BB 8 cMIL cCPB;
-cCPH 10 cCPL
+
+:DBM N"Decrement loop, "#." iterations ... "xT${D}cEL;
+:EFL N"Empty for loop, "#." iterations ... "xT$0[]cEL;
+
+cCPH 13 cCPL
+250 cMIL cDBM
+250 cMIL cEFL

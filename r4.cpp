@@ -120,13 +120,20 @@ void doFloat() {
     }
 }
 
-int getRFnum(int isReg) {
-    push(0);
-    while (isRegChar(*pc)) { TOS = (TOS * 26) + *(pc++)-'A'; }
-    if ((isReg == 1) && (NUM_REGS <= TOS)) { isError = 1; printString("-#reg-"); }
-    if ((isReg == 0) && (NUM_FUNCS <= TOS)) { isError = 1; printString("-#func-"); }
-    if (isError) { pop(); }
-    return isError == 0;
+int getRnum() {
+    CELL n = 0;
+    while (isRegChar(*pc)) { n = (n * 26) + *(pc++)-'A'; }
+    if (isReg(n)) { push(n); return 1; }
+    printString("-reg#-");
+    return 0;
+}
+
+int getFnum() {
+    CELL n = 0;
+    while (isRegChar(*pc)) { n = (n * 26) + *(pc++)-'A'; }
+    if (isFunc(n)) { push(n); return 1; }
+    printString("-func#-");
+    return 0;
 }
 
 void doExt() {
@@ -151,9 +158,7 @@ void doExt() {
         return;
     case 'E': doEditor();                            return;
     case 'K': dumpStack();                           return;
-    case 'S': if (*pc == 'R') { ++pc; vmInit(); }
-              else if (*pc == 'Y') { ++pc; system((char*)pop()); }
-            return;
+    case 'S': if (*pc == 'R') { ++pc; vmInit(); }    return;
     case 'M': push(doMicros());                      return;
     case 'T': push(doMillis());                      return;
     case 'W': if (0 < TOS) { doDelay(TOS); } pop();  return;
@@ -193,11 +198,10 @@ next:
         NCASE '-': t1 = pop(); TOS -= t1;
         NCASE '.': printStringF("%ld", (CELL)pop());
         NCASE '/': if (isOk(TOS, "-0div-")) { NOS /= TOS; pop(); }
-        NCASE '0': case '1': case '2': case '3': case '4':                  // 48-57 NUMBER
-        case  '5': case '6': case '7': case '8': case '9':
-            push(ir-'0');
+        NCASE '0': case '1': case '2': case '3': case '4': case  '5': case '6':
+        case '7': case '8': case '9': push(ir-'0');
             while (BTWI(*pc, '0', '9')) { TOS = (TOS * 10) + *(pc++) - '0'; }
-        NCASE ':': if (!getRFnum(0)) { NEXT; }
+        NCASE ':': if (!getFnum()) { NEXT; }
             while (*(pc) == ' ') { pc++; }
             func[pop()] = pc;
             skipTo(';', 0);
@@ -237,7 +241,7 @@ next:
         NCASE 'V': TOS += (CELL)&vars[0];
         // NCASE 'W': /*FREE*/
         NCASE 'X': if (TOS) { rpush(pc); pc = (addr)TOS; } pop();
-        NCASE 'Y': /*FREE*/
+        // NCASE 'Y': /*FREE*/
         NCASE 'Z': printString((char*)pop());
         NCASE '[': doFor();
         NCASE '\\': pop();
@@ -254,12 +258,12 @@ next:
             else if (ir == '^') { NOS ^= TOS; pop(); }      // XOR
             else if (ir == '~') { TOS = ~TOS; }             // NOT (COMPLEMENT)
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
-        NCASE 'c': if (getRFnum(0) && func[TOS]) {
+        NCASE 'c': if (getFnum() && func[TOS]) {
             if (*pc != ';') { rpush(pc); locStart += 10; }
             pc = func[TOS];
         } pop();
         NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
-                  else { if (getRFnum(1)) { --reg[pop()]; } }
+                  else { if (getRnum()) { --reg[pop()]; } }
         // NCASE 'e': /*FREE*/
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
@@ -276,7 +280,7 @@ next:
                 TOS = (TOS * 16) + t1; ++pc;
             }
         NCASE 'i': if (isLocal(*pc)) { ++locals[*(pc++) - '0' + locStart]; }
-                  else { if (getRFnum(1)) { ++reg[pop()]; } }
+                  else { if (getRnum()) { ++reg[pop()]; } }
         // NCASE 'j': /*FREE*/
         // NCASE 'k': /*FREE*/
         // NCASE 'l': /*FREE*/
@@ -286,9 +290,9 @@ next:
         NCASE 'p': L0 += pop();
         // NCASE 'q': /*FREE*/
         NCASE 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); }
-                  else { if (getRFnum(1)) { TOS = reg[TOS]; } }
+                  else { if (getRnum()) { TOS = reg[TOS]; } }
         NCASE 's': if (isLocal(*pc)) { locals[*(pc++)-'0'+locStart] = pop(); }
-                  else { if (getRFnum(1)) { reg[TOS] = NOS; DROP2; } }
+                  else { if (getRnum()) { reg[TOS] = NOS; DROP2; } }
         // NCASE 't': /*FREE*/
         // NCASE 'u': /*FREE*/
         // NCASE 'v': /*FREE*/
