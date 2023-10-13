@@ -23,6 +23,7 @@ typedef byte *addr;
 #define DROP2      pop(); pop()
 #define NEXT       goto next
 #define NCASE      NEXT; case
+#define BCASE      break; case
 #define BTWI(n, x, y) (((x) <= (n)) && ((n) <= (y)))
 #define isLocal(x) (('0' <= (x)) && ((x) <= '9'))
 #define isRegChar(x) (('A' <= (x)) && ((x) <= 'Z'))
@@ -58,8 +59,8 @@ extern CELL getSeed();
 extern CELL doMicros();
 extern CELL doMillis();
 extern void doDelay(CELL);
-extern int charAvailable();
-extern int getChar();
+extern int qkey();
+extern int key();
 
 // Built-in editor
 extern void doEditor();

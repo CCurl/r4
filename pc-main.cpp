@@ -1,6 +1,7 @@
 // MINT - A Minimal Interpreter - for details, see https://github.com/monsonite/MINT
 
 #include "r4.h"
+#include <stdlib.h>
 
 #ifdef __PC__
 
@@ -24,6 +25,44 @@ void doDelay(CELL ms) {
     ts.tv_sec = ms / 1000;
     ts.tv_nsec = (ms % 1000) * 1000000;
     nanosleep(&ts, NULL); 
+}
+// Support for Linux
+#include <unistd.h>
+#include <termios.h>
+#define isPC
+static struct termios normT, rawT;
+static int isTtyInit = 0;
+void ttyInit() {
+    tcgetattr( STDIN_FILENO, &normT);
+    cfmakeraw(&rawT);
+    isTtyInit = 1;
+}
+void ttyModeNorm() {
+    if (!isTtyInit) { ttyInit(); }
+    tcsetattr( STDIN_FILENO, TCSANOW, &normT);
+}
+void ttyModeRaw() {
+    if (!isTtyInit) { ttyInit(); }
+    tcsetattr( STDIN_FILENO, TCSANOW, &rawT);
+}
+int qkey() {
+    struct timeval tv;
+    fd_set rdfs;
+    ttyModeRaw();
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    FD_ZERO(&rdfs);
+    FD_SET(STDIN_FILENO, &rdfs);
+    select(STDIN_FILENO+1, &rdfs, NULL, NULL, &tv);
+    int x = FD_ISSET(STDIN_FILENO, &rdfs);
+    ttyModeNorm();
+    return x;
+}
+int key() {
+    ttyModeRaw();
+    int x = getchar();
+    ttyModeNorm();
+    return x;
 }
 int _kbhit() { return 0; }
 int _getch() { return 0; }

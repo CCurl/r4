@@ -14,7 +14,7 @@
 :CLC 37 40cSTC;
 
 0(CLL (--): To list the colors )
-:CLL 30 37[N I s1 40 47[r1 r cSTC " ("r1.";"I.") "] cCLC];
+:CLL 30 37[N I s1 40 47[r1 I cSTC " ("r1.";"I.") "] cCLC];
 
 0(CLU (--): More, ugly)
 :CLU 90 97[N I s1 100 107[r1 I cSTC " ("r1.";"I.") "] cCLC];

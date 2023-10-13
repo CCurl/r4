@@ -9,7 +9,7 @@ CELL n1, t1, seed = 0;
 int dsp, rsp, lsp, locStart;
 CELL   dstack[STK_SZ+1], lstack[LSTACK_SZ+1];
 CELL   reg[NUM_REGS], locals[(RSTK_SZ+1)*10];
-addr   rstack[RSTK_SZ+1], func[NUM_FUNCS];
+addr   rstack[RSTK_SZ+1]; // , func[NUM_FUNCS];
 byte   user[USER_SZ], vars[VARS_SZ];
 
 void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp] = v; } }
@@ -32,7 +32,7 @@ void vmInit() {
     dsp = rsp = lsp = flsp = locStart = 0;
     for (int i = 0; i < NUM_REGS; i++) { reg[i] = 0; }
     for (int i = 0; i < USER_SZ; i++) { user[i] = 0; }
-    for (int i = 0; i < NUM_FUNCS; i++) { func[i] = 0; }
+    // for (int i = 0; i < NUM_FUNCS; i++) { func[i] = 0; }
     HERE = &user[0];
 }
 
@@ -128,21 +128,13 @@ int getRnum() {
     return 0;
 }
 
-int getFnum() {
-    CELL n = 0;
-    while (isRegChar(*pc)) { n = (n * 26) + *(pc++)-'A'; }
-    if (isFunc(n)) { push(n); return 1; }
-    printString("-func#-");
-    return 0;
-}
-
 void doExt() {
     ir = *(pc++);
     switch (ir) {
     case 'I': ir = *(pc++);
         if (ir == 'A') { 
             ir = *(pc++);
-            if (ir == 'F') { push((CELL)&func[0]); }
+            // if (ir == 'F') { push((CELL)&func[0]); }
             if (ir == 'H') { push((CELL)&HERE); }
             if (ir == 'R') { push((CELL)&reg[0]); }
             if (ir == 'U') { push((CELL)&user[0]); }
@@ -150,7 +142,7 @@ void doExt() {
             return;
         };
         if (ir == 'C') { push(CELL_SZ); }
-        if (ir == 'F') { push(NUM_FUNCS); }
+        //if (ir == 'F') { push(NUM_FUNCS); }
         if (ir == 'H') { push((CELL)HERE); }
         if (ir == 'R') { push(NUM_REGS); }
         if (ir == 'U') { push(USER_SZ); }
@@ -201,9 +193,9 @@ next:
         NCASE '0': case '1': case '2': case '3': case '4': case  '5': case '6':
         case '7': case '8': case '9': push(ir-'0');
             while (BTWI(*pc, '0', '9')) { TOS = (TOS * 10) + *(pc++) - '0'; }
-        NCASE ':': if (!getFnum()) { NEXT; }
+        NCASE ':': if (!getRnum()) { NEXT; }
             while (*(pc) == ' ') { pc++; }
-            func[pop()] = pc;
+            reg[pop()] = (CELL)pc;
             skipTo(';', 0);
             HERE = (HERE < pc) ? pc : HERE;
         NCASE ';': pc = rpop(); locStart -= (9<locStart) ? 10 : 0; if (!pc) return pc;
@@ -225,8 +217,8 @@ next:
         NCASE 'I': push(L0);
         // NCASE 'J': /*FREE*/
         NCASE 'K': ir = *(pc++);
-            if (ir == '?') { push(charAvailable()); }
-            else if (ir == '@') { push(getChar()); }
+            if (ir == '?') { push(qkey()); }
+            else if (ir == '@') { push(key()); }
         NCASE 'L': t1 = pop(); TOS = (TOS << t1);
         NCASE 'M': if (isOk(TOS, "-0div-")) { t1 = pop(); TOS %= t1; }
         NCASE 'N': printString("\r\n");
@@ -258,9 +250,9 @@ next:
             else if (ir == '^') { NOS ^= TOS; pop(); }      // XOR
             else if (ir == '~') { TOS = ~TOS; }             // NOT (COMPLEMENT)
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
-        NCASE 'c': if (getFnum() && func[TOS]) {
+        NCASE 'c': if (getRnum() && reg[TOS]) {
             if (*pc != ';') { rpush(pc); locStart += 10; }
-            pc = func[TOS];
+            pc = (addr)reg[TOS];
         } pop();
         NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
                   else { if (getRnum()) { --reg[pop()]; } }

@@ -8,54 +8,15 @@
 #ifndef __EDITOR__
 void doEditor() { printString("-noEdit-"); }
 #else
-#define LLEN        64
+#define LLEN        128
 #define MAX_X       (LLEN-1)
-#define MAX_Y       15
+#define MAX_Y       31
 #define BLOCK_SZ    (LLEN)*(MAX_Y+1)
 #define MAX_CUR     (BLOCK_SZ-1)
 int line, off, blkNum;
 int cur, isDirty = 0;
 char theBlock[BLOCK_SZ];
 const char *msg = NULL;
-
-int edGetChar() {
-    int c = getChar();
-    // in PuTTY, cursor keys are <esc>, '[', [A..D]
-    // other keys are <esc>, '[', [1..6] , '~'
-    if (c == 27) {
-        c = getChar();
-        if (c == '[') {
-            c = getChar();
-            if (c == 'A') { return 'w'; } // up
-            if (c == 'B') { return 's'; } // down
-            if (c == 'C') { return 'd'; } // right
-            if (c == 'D') { return 'a'; } // left
-            if (c == '1') { if (getChar() == '~') { return 'q'; } } // home
-            if (c == '4') { if (getChar() == '~') { return 'e'; } } // end
-            if (c == '5') { if (getChar() == '~') { return 't'; } } // top (pgup)
-            if (c == '6') { if (getChar() == '~') { return 'l'; } } // last (pgdn)
-            if (c == '3') { if (getChar() == '~') { return 'x'; } } // del
-        }
-        return c;
-    } else {
-        // in Windows, cursor keys are 224, [HPMK]
-        // other keys are 224, [GOIQS]
-        if (c == 224) {
-            c = getChar();
-            if (c == 'H') { return 'w'; } // up
-            if (c == 'P') { return 's'; } // down
-            if (c == 'M') { return 'd'; } // right
-            if (c == 'K') { return 'a'; } // left
-            if (c == 'G') { return 'q'; } // home
-            if (c == 'O') { return 'e'; } // end
-            if (c == 'I') { return 't'; } // top pgup (pgup)
-            if (c == 'Q') { return 'l'; } // last (pgdn)
-            if (c == 'S') { return 'x'; } // del
-            return c;
-        }
-    }
-    return c;
-}
 
 void edRdBlk() {
     int r = readBlock(blkNum, theBlock, BLOCK_SZ);
@@ -73,10 +34,11 @@ void GotoXY(int x, int y) { printStringF("\x1B[%d;%dH", y, x); }
 void CLS() { printString("\x1B[2J"); GotoXY(1, 1); }
 void CursorOn() { printString("\x1B[?25h"); }
 void CursorOff() { printString("\x1B[?25l"); }
+void Color(int fg, int bg) { printStringF("\x1B[%d;%dm", bg, fg); }
 
 void showGuide() {
     printString("\r\n    +"); 
-    for (int i = 0; i <= MAX_X; i++) { printChar('-'); } 
+    for (int i = 0; i <= MAX_X; i++) { printChar('-'); }
     printChar('+');
 }
 
@@ -99,15 +61,15 @@ void showEditor() {
     for (int i = 0; i <= MAX_Y; i++) {
         printStringF("\r\n %2d |", i);
         for (int j = 0; j <= MAX_X; j++) {
-            if (cur == cp) {
-                printChar((char)178);
-            }
+            int isCur = (cur==cp) ? 1 : 0;
             unsigned char c = theBlock[cp++];
             if (c == 13) { c = 174; }
             if (c == 10) { c = 241; }
             if (c ==  9) { c = 242; }
             if (c <  32) { c = '.'; }
+            if (isCur) { Color(30, 46); }
             printChar((char)c);
+            if (isCur) { Color(0, 0); }
         }
         printString("| ");
     }
@@ -130,7 +92,7 @@ void insertChar(char c) {
 void doType(int isInsert) {
     CursorOff();
     while (1) {
-        char c= getChar();
+        char c= key();
         if (c == 27) { --cur;  return; }
         int isBS = ((c == 127) || (c == 8));
         if (isBS) {
@@ -161,8 +123,8 @@ int processEditorChar(char c) {
     case 'q': cur -= (cur % LLEN);                       break;
     case 'e': cur -= (cur % LLEN); cur += MAX_X;         break;
     case 't': cur = 0;                                   break;
-    case 'l': cur = MAX_CUR - MAX_X;                     break;
-    case 'r': isDirty = 1; theBlock[cur++] = getChar();  break;
+    case 'b': cur = MAX_CUR - MAX_X;                     break;
+    case 'r': isDirty = 1; theBlock[cur++] = key();      break;
     case 'I': isDirty = 1; doType(1);                    break;
     case 'R': isDirty = 1; doType(0);                    break;
     case 'n': isDirty = 1; theBlock[cur++] = 10;         break;
@@ -189,7 +151,7 @@ void doEditor() {
     edRdBlk();
     showEditor();
     showFooter();
-    while (processEditorChar(edGetChar())) {
+    while (processEditorChar(key())) {
         if (cur < 0) { cur = 0; }
         if (MAX_CUR < cur) { cur = MAX_CUR; }
         showEditor();
