@@ -94,12 +94,15 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 | OP |Stack |Description|
 |:-- |:-- |:--|
-| F< | (n--)     |Float: data -> float stack
-| F> | (n--)     |Float: float -> data stack
+| FF | (n--)     |Float: data -> float stack
+| FI | (n--)     |Float: float -> data stack
 | F+ | (a b--n)  |Float: add
 | F- | (a b--n)  |Float: subtract
 | F* | (a b--n)  |Float: multiply
 | F/ | (a b--n)  |Float: divide
+| F< | (a b--f)  |f: 1 if a<b, else 0
+| F= | (a b--f)  |f: 1 if a=b, else 0
+| F> | (a b--f)  |f: 1 if a>b, else 0
 | F. | (n--)     |Float: print top of fload stack
 
 
