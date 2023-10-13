@@ -78,7 +78,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ##  r4 Reference
 
-### ARITHMETIC
+### INTEGER OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | +  |  (a b--n)   |n: a+b - addition
@@ -88,25 +88,26 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | M  |  (a b--r)   |r: a%b - modulo
 | S  |  (a b--q r) |q: div(a,b), r: modulo(a,b)  (SLASH-MOD)
 
-### FLOATING POINT
+
+### FLOATING POINT OPERATIONS
 #### NOTES:
-- r4 uses 64-bit floating point numbers
+- r4 uses double wide (64-bit) floating point numbers
 
 | OP |Stack |Description|
 |:-- |:-- |:--|
-| FF | (n--)     |Float: data -> float stack
-| FI | (n--)     |Float: float -> data stack
+| FF | (--)      |Convert TOS to float
+| FI | (--)      |Convert TOS to integer
 | F+ | (a b--n)  |Float: add
 | F- | (a b--n)  |Float: subtract
 | F* | (a b--n)  |Float: multiply
 | F/ | (a b--n)  |Float: divide
-| F< | (a b--f)  |f: 1 if a<b, else 0
-| F= | (a b--f)  |f: 1 if a=b, else 0
-| F> | (a b--f)  |f: 1 if a>b, else 0
+| F< | (a b--f)  |f: if (a < b), else 0
+| F= | (a b--f)  |f: if (a = b), else 0
+| F> | (a b--f)  |f: if (a > b), else 0
 | F. | (n--)     |Float: print top of fload stack
 
 
-### BIT MANIPULATION
+### BIT MANIPULATION OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | b& | (a b--n)   |n: a and b
@@ -117,7 +118,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | R  | (a n--b)   |b: a >> n     (Right-Shift)
 
 
-### STACK
+### STACK OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | #  | (a--a a)       |Duplicate TOS (DUP)
@@ -131,7 +132,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xK | (--)           |Display the stack (.S)
 
 
-### MEMORY
+### MEMORY OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | @  | (a--n)      |Fetch CELL n from address a
@@ -142,7 +143,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | V  | (n--a)      |a: address of byte n in the VARS area.
 
 
-### REGISTERS
+### REGISTERS OPERATIONS
 #### NOTES:
 - A register reference is 1-3 UPPERCASE characters [A..ZZZ]
 - The number of registers is controlled by the NUM_REGS #define in "config.h"
@@ -157,7 +158,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | dABC | (--)       |Decrement register ABC.
 
 
-### LOCALS
+### LOCALS OPERATIONS
 #### NOTES:
 - On each function call, 10 locals [r0..r9] are allocated.
 - Locals are NOT initialized.
@@ -170,7 +171,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | dN | (--)   |Decrement local n.|
 
 
-### FUNCTIONS
+### FUNCTIONS OPERATIONS
 #### NOTES:
 - A function reference is 1-3 UPPERCASE characters [A..ZZZ]
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h"
@@ -185,8 +186,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
 | ;     | (--)   |Return: PC = rpop()
 
-
-### INPUT/OUTPUT
+ 
+### INPUT/OUTPUT OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | .     | (N--)    |Output N as a decimal number
@@ -205,37 +206,37 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 |       |          |- a: address, b next byte after trailing NULL.
 
 
-### LOGICAL/CONDITIONS/FLOW CONTROL
+### LOGICAL/CONDITIONS/FLOW CONTROL OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
-| <  | (a b--f)    |f: (a < b) ? 1 : 0;
-| =  | (a b--f)    |f: (a = b) ? 1 : 0;
-| >  | (a b--f)    |f: (a > b) ? 1 : 0;
-| _  | (x--f)      |f: (x = 0) ? 1 : 0; (logical NOT)
+| <  | (a b--f)    |f: if (a < b) then 1, else 0;
+| =  | (a b--f)    |f: if (a = b) then 1, else 0;
+| >  | (a b--f)    |f: if (a > b) then 1, else 0;
+| _  | (x--f)      |f: if (x = 0) then 1, else 0; (logical NOT)
 | (  | (f--)       |if (f != 0), execute code in '()', else skip to matching ')'
 | X  | (a--)       |if (a != 0), execute/call function at address a
 | G  | (a--)       |if (a != 0), go/jump to function at address a
 
 
-### FOR/NEXT LOOPS
+### FOR/NEXT LOOPING OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
-| [  | (T F--)   |FOR: start a For/Next loop. if (T < F), swap T and F
+| [  | (F T--)   |FOR: start a For/Next loop. if (T < F), swap T and F
 | I  | (--i)     |i: the index of the current FOR loop
 | p  | (i--)     |i: number to add to "I"
-| ^  | (--)      |un-loop, used with ';'. Example: rF(^;)
+| ^  | (--)      |un-loop, used with ';'. Example: rSrK>(^;)
 | ]  | (--)      |NEXT: increment index (I) and loop if (I <= T)
 
 
-### BEGIN/WHILE LOOPS
+### BEGIN/WHILE LOOPING OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
-| ^  | (--)        |un-loop, used with ';'. Example: rF(^;)
+| ^  | (--)        |un-loop, used with ';'. Example: rX0_(^;)
 | }  | (f--f?)     |WHILE: if (f != 0) jump to matching '{', else drop f and continue
 
 
-### FILES
+### FILE OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | fO | (nm md--fh)  |FILE: Open, nm: name, md: mode, fh: fileHandle
@@ -248,7 +249,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | bL | (n--)        |BLOCK: Load code from block file (Block-nnn.r4). This can be nested.
 
 
-### OTHER
+### OTHER OPERATIONS
 | OP |Stack |Description|
 |:-- |:-- |:--|
 | xIAF  | (--a)     |INFO: Address where the function vectors begin
@@ -257,11 +258,11 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xIAU  | (--a)     |INFO: Address there the USER area begins
 | xIAV  | (--a)     |INFO: Address there the VARS area begins
 | xIC   | (--n)     |INFO: CELL size
-| xIF   | (--n)     |INFO: Number of functions
+| xIF   | (--n)     |INFO: Number of functions (NUM_FUNCS)
 | xIH   | (--a)     |INFO: HERE
-| xIR   | (--n)     |INFO: Number of registers
-| xIU   | (--n)     |INFO: Size of USER area
-| xIV   | (--n)     |INFO: Size of VARS area
+| xIR   | (--n)     |INFO: Number of registers (NUM_REGS)
+| xIU   | (--n)     |INFO: Size of USER area (USER_SZ)
+| xIV   | (--n)     |INFO: Size of VARS area (VARS_SZ)
 | xLA   | (--)      |PC: Load Abort: to stop loading a block (eg - if the block has already been loaded)
 | xPI   | (p--)     |Arduino: pin input  (pinMode(p, INPUT))
 | xPU   | (p--)     |Arduino: pin pullup (pinMode(p, INPUT_PULLUP))
