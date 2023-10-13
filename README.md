@@ -97,8 +97,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 | OP |Stack |Description|
 |:-- |:-- |:--|
-| FF | (--)      |Convert TOS to float
-| FI | (--)      |Convert TOS to integer
+| FF | (i--f)    |Convert TOS from integer to float
+| FI | (f--i)    |Convert TOS from float to integer
 | F+ | (a b--n)  |Float: add
 | F- | (a b--n)  |Float: subtract
 | F* | (a b--n)  |Float: multiply
