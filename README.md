@@ -4,17 +4,19 @@ r4 is an simple, minimal, and interactive environment where the source code IS t
 
 ## What is r4?
 
-r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, and any amount of RAM.
+r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, floating point, and any amount of RAM.
 
-A register (a built-in variable) is identified by up to 3 upper-case characters, so there is a maximum of (26x26x26) = 17576 registers available. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
+A register (a built-in variable) is identified by consecutive UPPERCASE characters. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
 
-Similarly, a function is also identified by up to 3 upper-case characters, so there is a maximum of (26x26x26) = 17576 functions available. A function is defined in a Forth-like style, using ':', and you call it using 'c'. For example:
+r4 converts A-Z into a base 26 number, so A=0, Z=25, BA=26. ZZZ=17575 (26*26*26-1), and ZZZZ=456975. This value is then used as an index into an array of registers or function vectors, So it is extremely fast, but not very memory-efficient. Modern PCs have enough memory to be able to support 4 char names. A Teensy4 can support 3 char names. A UNO might only be able to handle 1 char names.
+
+Function are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
 
 - 0(CPY (N F T--): copy N bytes from F to T)
-- :CPY s2 s1 1[r1 C@ r2 C! i1 i2];
-- 123 1000 2000 cCPY 0(copy 123 bytes from 1000 to 2000)
+- :CPY s2 s1 0[r1 C@ r2 C! i1 i2];
+- 123 rF rT cCPY 0(copy 123 bytes from rF to rT)
 
-The number of registers, functions, and user memory can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 676 (26*26) registers and functions, and 24K of user RAM. In such a system, the register names would be in the range of [AA..ZZ], and function names would be in the range of [AA..ZZ]. On a Arduino Leonardo, you might configure the system to have 13 registers, 26 functions, and 1K user RAM. On a RPI Pico, you can have 676 registers and functions, with 64K RAM.
+The number of registers, functions, and user memory are configurable and can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 676 (26*26) registers and functions, and 24K of user RAM. In such a system, the register names would be in the range of [AA..ZZ], and function names would be in the range of [AA..ZZ]. On a Arduino Leonardo, you might configure the system to have 13 registers, 26 functions, and 1K user RAM. On a RPI Pico, you can have 676 registers and functions, with 64K RAM.
 
 - Example 1: "Hello World!" - the standard "hello world" program.
 - Example 2: 1 sA 2 sB 3 sC rA rB rC ++ . -would print 6.
@@ -29,7 +31,7 @@ Examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
 
 There are multiple goals for r4:
 
-- Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build and deploy r4, but at least after that, you are free of them.
+- Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build r4, but at least after that, you are free of them.
 - Many programming environments use tokens and a large SWITCH statement in a loop to execute the user's program. In those systems, the machine code (aka - byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when looking at the code that is actually being executed. Additionally there is a compiler that is needed in order to work in that environment. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the user environment, (2) the hundreds or thousands of user functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much as that as possible, and have only one thing to learn: the machine code.
 - A simple, minimal, and interactive programming environment that is easy to modify and enhance.
 - An environment that could be deployed to many different types of development boards via the Arduino IDE.
@@ -145,7 +147,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### REGISTERS OPERATIONS
 #### NOTES:
-- A register reference is 1-3 UPPERCASE characters [A..ZZZ]
+- A register reference consecutive UPPERCASE characters.
 - The number of registers is controlled by the NUM_REGS #define in "config.h"
 - Register A is the same as register AAA, B <-> AAB, Z <-> AAZ
 - r"TEST" will push the value of register AAA and then print TEST
@@ -173,10 +175,10 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### FUNCTIONS OPERATIONS
 #### NOTES:
-- A function reference is 1-3 UPPERCASE characters [A..ZZZ]
+- A function reference is consecutive UPPERCASE characters.
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h"
 - Function A is the same as function AAA, B <-> AAB, Z <-> AAZ
-- :"TEST"; will define function #0 (AAA).
+- :"TEST"; will define function #0 (A).
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
 
