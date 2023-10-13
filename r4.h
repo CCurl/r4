@@ -9,12 +9,15 @@ typedef unsigned long UCELL;
 typedef unsigned short ushort;
 typedef unsigned char byte;
 typedef byte *addr;
+typedef union { double f; CELL i; char *c; } ST_T;
 
 #define CELL_SZ    sizeof(CELL)
 #define INDEX      reg[8]
-#define TOS        dstack[dsp]
-#define A          (addr)TOS
-#define NOS        dstack[dsp-1]
+#define TOS        dstack[dsp].i
+#define NOS        dstack[dsp-1].i
+#define AOS        dstack[dsp].c
+#define FTOS       dstack[dsp].f
+#define FNOS       dstack[dsp-1].f
 #define R          rstack[dsp]
 #define L0         lstack[lsp]
 #define L1         lstack[lsp-1]
@@ -24,6 +27,7 @@ typedef byte *addr;
 #define NEXT       goto next
 #define NCASE      NEXT; case
 #define BCASE      break; case
+#define RCASE      return; case
 #define BTWI(n, x, y) (((x) <= (n)) && ((n) <= (y)))
 #define isLocal(x) (('0' <= (x)) && ((x) <= '9'))
 #define isRegChar(x) (('A' <= (x)) && ((x) <= 'Z'))
@@ -41,7 +45,7 @@ typedef struct {
 extern byte isBye;
 extern byte isError;
 extern addr HERE;
-extern CELL dstack[];
+extern ST_T dstack[];
 extern int dsp;
 extern addr func[];
 extern CELL input_fp;

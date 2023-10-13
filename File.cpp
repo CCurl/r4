@@ -33,7 +33,7 @@ void fileInit() {}
 // fh=0: File not found or error
 void fileOpen() {
     char* md = (char *)pop();
-    char* fn = (char *)TOS;
+    char* fn = AOS;
     TOS = (CELL)fopen(fn, md);
 }
 
@@ -48,7 +48,7 @@ void fileClose() {
 // nm: File name
 // n=0: End of file or file error
 void fileDelete() {
-    char* fn = (char*)TOS;
+    char* fn = AOS;
     TOS = remove(fn) == 0 ? 1 : 0;
 }
 

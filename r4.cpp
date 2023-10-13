@@ -7,29 +7,19 @@ byte ir, isBye = 0, isError = 0;
 addr pc, HERE;
 CELL n1, t1, seed = 0;
 int dsp, rsp, lsp, locStart;
-CELL   dstack[STK_SZ+1], lstack[LSTACK_SZ+1];
-CELL   reg[NUM_REGS], locals[(RSTK_SZ+1)*10];
-addr   rstack[RSTK_SZ+1]; // , func[NUM_FUNCS];
+ST_T   dstack[STK_SZ+1];
+CELL   reg[NUM_REGS], locals[(RSTK_SZ+1)*10], lstack[LSTACK_SZ+1];
+addr   rstack[RSTK_SZ+1], func[NUM_FUNCS];
 byte   user[USER_SZ], vars[VARS_SZ];
 
-void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp] = v; } }
-CELL pop() { return (dsp) ? dstack[dsp--] : 0; }
+void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp].i = v; } }
+CELL pop() { return (dsp) ? dstack[dsp--].i : 0; }
 
 void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; } }
 addr rpop() { return (rsp) ? rstack[rsp--] : 0; }
 
-static double flstack[STK_SZ+1];
-static ushort flsp = 0;
-
-#define fT flstack[flsp]
-#define fN flstack[flsp-1]
-#define fDROP1 flpop()
-#define fDROP2 flpop(); flpop();
-static void flpush(double v) { if (flsp < STK_SZ) { flstack[++flsp] = v; } }
-static double flpop() { return (flsp) ? flstack[flsp--] : 0; }
-
 void vmInit() {
-    dsp = rsp = lsp = flsp = locStart = 0;
+    dsp = rsp = lsp = locStart = 0;
     for (int i = 0; i < NUM_REGS; i++) { reg[i] = 0; }
     for (int i = 0; i < USER_SZ; i++) { user[i] = 0; }
     // for (int i = 0; i < NUM_FUNCS; i++) { func[i] = 0; }
@@ -62,7 +52,7 @@ CELL getCell(byte* from) {
 }
 
 void printStringF(const char* fmt, ...) {
-    static char buf[96];
+    static char buf[128];
     va_list args;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
@@ -73,7 +63,7 @@ void printStringF(const char* fmt, ...) {
 void dumpStack() {
     printChar('(');
     for (int i = 1; i <= dsp; i++) {
-        printStringF("%s%ld", (i > 1 ? " " : ""), (CELL)dstack[i]);
+        printStringF("%s%ld", (i > 1 ? " " : ""), (CELL)dstack[i].i);
     }
     printChar(')');
 }
@@ -106,61 +96,64 @@ int isOk(int exp, const char* msg) {
 }
 
 void doFloat() {
-    switch (*(pc++)) {
-    case '<': flpush((double)pop());                            return;
-    case '>': push((CELL)flpop());                              return;
-    case '+': fN += fT; fDROP1;                                 return;
-    case '-': fN -= fT; fDROP1;                                 return;
-    case '*': fN *= fT; fDROP1;                                 return;
-    case '/': if (isOk(fT!=0, "-0div-")) { fN /= fT; fDROP1; }  return;
-    case '.': printStringF("%g", flpop());                      return;
-    default:
-        isError = 1;
-        printString("-flt?-");
+    ir = *(pc++);
+    switch (ir) {
+        case  'F': FTOS = (double)TOS;
+        RCASE 'I': TOS = (CELL)FTOS;
+        RCASE '+': FNOS += FTOS; pop();
+        RCASE '-': FNOS -= FTOS; pop();
+        RCASE '*': FNOS *= FTOS; pop();
+        RCASE '/': if (isOk(FTOS!=0, "-0div-")) { FNOS /= FTOS; pop(); }
+        RCASE '<': FNOS = (FNOS<FTOS)  ? 1 : 0; pop();
+        RCASE '>': FNOS = (FNOS>FTOS)  ? 1 : 0; pop();
+        RCASE '=': FNOS = (FNOS==FTOS) ? 1 : 0; pop();
+        RCASE '.': printStringF("%g", FTOS); pop();
+        return; default:
+            isError = 1;
+            printStringF("-flt:%c?-", ir);
     }
 }
 
-int getRnum() {
+int getRFnum(int max) {
     CELL n = 0;
     while (isRegChar(*pc)) { n = (n * 26) + *(pc++)-'A'; }
-    if (isReg(n)) { push(n); return 1; }
-    printString("-reg#-");
+    if (BTWI(n,0,max)) { push(n); return 1; }
+    printString("-RF#-");
     return 0;
 }
 
 void doExt() {
     ir = *(pc++);
     switch (ir) {
-    case 'I': ir = *(pc++);
-        if (ir == 'A') { 
-            ir = *(pc++);
-            // if (ir == 'F') { push((CELL)&func[0]); }
-            if (ir == 'H') { push((CELL)&HERE); }
-            if (ir == 'R') { push((CELL)&reg[0]); }
-            if (ir == 'U') { push((CELL)&user[0]); }
-            if (ir == 'V') { push((CELL)&vars[0]); }
-            return;
-        };
-        if (ir == 'C') { push(CELL_SZ); }
-        //if (ir == 'F') { push(NUM_FUNCS); }
-        if (ir == 'H') { push((CELL)HERE); }
-        if (ir == 'R') { push(NUM_REGS); }
-        if (ir == 'U') { push(USER_SZ); }
-        if (ir == 'V') { push(VARS_SZ); }
-        return;
-    case 'E': doEditor();                            return;
-    case 'K': dumpStack();                           return;
-    case 'S': if (*pc == 'R') { ++pc; vmInit(); }    return;
-    case 'M': push(doMicros());                      return;
-    case 'T': push(doMillis());                      return;
-    case 'W': if (0 < TOS) { doDelay(TOS); } pop();  return;
-    case 'R': if (!seed) { seed = getSeed(); }
-            seed ^= (seed << 13);
-            seed ^= (seed >> 17);
-            seed ^= (seed << 5);
-            TOS = (TOS) ? ABS(seed) % TOS : seed;
-            return;
-    default:
+        case 'I': ir = *(pc++);
+            if (ir == 'A') { 
+                ir = *(pc++);
+                if (ir == 'F') { push((CELL)&func[0]); }
+                if (ir == 'H') { push((CELL)&HERE); }
+                if (ir == 'R') { push((CELL)&reg[0]); }
+                if (ir == 'U') { push((CELL)&user[0]); }
+                if (ir == 'V') { push((CELL)&vars[0]); }
+                return;
+            };
+            if (ir == 'C') { push(CELL_SZ); }
+            if (ir == 'F') { push(NUM_FUNCS); }
+            if (ir == 'H') { push((CELL)HERE); }
+            if (ir == 'R') { push(NUM_REGS); }
+            if (ir == 'U') { push(USER_SZ); }
+            if (ir == 'V') { push(VARS_SZ); }
+        RCASE 'E': doEditor();
+        RCASE 'K': dumpStack();
+        RCASE 'S': if (*pc == 'R') { ++pc; vmInit(); }
+        RCASE 'M': push(doMicros());
+        RCASE 'T': push(doMillis());
+        RCASE 'W': if (0 < TOS) { doDelay(TOS); } pop();
+        RCASE 'R': if (!seed) { seed = getSeed(); }
+                seed ^= (seed << 13);
+                seed ^= (seed >> 17);
+                seed ^= (seed << 5);
+                TOS = (TOS) ? ABS(seed) % TOS : seed;
+                return;
+        default:
         pc = doCustom(ir, pc);
     }
 }
@@ -193,9 +186,9 @@ next:
         NCASE '0': case '1': case '2': case '3': case '4': case  '5': case '6':
         case '7': case '8': case '9': push(ir-'0');
             while (BTWI(*pc, '0', '9')) { TOS = (TOS * 10) + *(pc++) - '0'; }
-        NCASE ':': if (!getRnum()) { NEXT; }
+            NCASE ':': if (!getRFnum(NUM_FUNCS)) { NEXT; }
             while (*(pc) == ' ') { pc++; }
-            reg[pop()] = (CELL)pc;
+            func[pop()] = (addr)pc;
             skipTo(';', 0);
             HERE = (HERE < pc) ? pc : HERE;
         NCASE ';': pc = rpop(); locStart -= (9<locStart) ? 10 : 0; if (!pc) return pc;
@@ -241,8 +234,8 @@ next:
         case '^': lsp = 3; if (lsp<0) { lsp=0; }
         NCASE '_': TOS = (TOS) ? 0 : 1;
         NCASE '`': push(TOS);
-            while ((*pc) && (*pc != ir)) { *(A++) = *(pc++); }
-            *(A++) = 0; pc++;
+            while ((*pc) && (*pc != ir)) { *(AOS++) = *(pc++); }
+            *(AOS++) = 0; pc++;
         // NCASE 'a': /*FREE*/
         NCASE 'b': ir = *(pc++);                    // BIT operations
             if (ir == '&') { NOS &= TOS; pop(); }           // AND
@@ -250,12 +243,12 @@ next:
             else if (ir == '^') { NOS ^= TOS; pop(); }      // XOR
             else if (ir == '~') { TOS = ~TOS; }             // NOT (COMPLEMENT)
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
-        NCASE 'c': if (getRnum() && reg[TOS]) {
+        NCASE 'c': if (getRFnum(NUM_FUNCS) && func[TOS]) {
             if (*pc != ';') { rpush(pc); locStart += 10; }
-            pc = (addr)reg[TOS];
+            pc = func[TOS];
         } pop();
         NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
-                  else { if (getRnum()) { --reg[pop()]; } }
+                  else { if (getRFnum(NUM_REGS)) { --reg[pop()]; } }
         // NCASE 'e': /*FREE*/
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
@@ -272,7 +265,7 @@ next:
                 TOS = (TOS * 16) + t1; ++pc;
             }
         NCASE 'i': if (isLocal(*pc)) { ++locals[*(pc++) - '0' + locStart]; }
-                  else { if (getRnum()) { ++reg[pop()]; } }
+                  else { if (getRFnum(NUM_REGS)) { ++reg[pop()]; } }
         // NCASE 'j': /*FREE*/
         // NCASE 'k': /*FREE*/
         // NCASE 'l': /*FREE*/
@@ -282,9 +275,9 @@ next:
         NCASE 'p': L0 += pop();
         // NCASE 'q': /*FREE*/
         NCASE 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); }
-                  else { if (getRnum()) { TOS = reg[TOS]; } }
+                  else { if (getRFnum(NUM_REGS)) { TOS = reg[TOS]; } }
         NCASE 's': if (isLocal(*pc)) { locals[*(pc++)-'0'+locStart] = pop(); }
-                  else { if (getRnum()) { reg[TOS] = NOS; DROP2; } }
+                  else { if (getRFnum(NUM_REGS)) { reg[TOS] = NOS; DROP2; } }
         // NCASE 't': /*FREE*/
         // NCASE 'u': /*FREE*/
         // NCASE 'v': /*FREE*/
