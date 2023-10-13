@@ -117,7 +117,7 @@ void doFloat() {
 int getRFnum(int max) {
     CELL n = 0;
     while (isRegChar(*pc)) { n = (n * 26) + *(pc++)-'A'; }
-    if (BTWI(n,0,max)) { push(n); return 1; }
+    if (BTWI(n,0,max-1)) { push(n); return 1; }
     printString("-RF#-");
     return 0;
 }
