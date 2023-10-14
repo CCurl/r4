@@ -6,27 +6,28 @@
 ; C: temp 3
 ; D: temp 4
 ; K: threshold
-; J: MB loop counter
-; M: MB loop end
+; J: calc counter
+; M: max number of calcs
 ; S: scaling factor
-; T: count of iterations
+; T: total count of calcs
 ; X: X pos
 ; Y: Y pos
 
 ; Functions:
-; Q: mandelbrot calc
-; L: main MB loop 
-; O: output
-; X: loop for X axis
-; Y: loop for Y axis
-; M: main, loop for Y axis
+: HD: Header
+; MC: mandelbrot calc
+; LP: loop for 1 char
+; WK: Do the work
+; XL: loop for X axis
+; YL: loop for Y axis
+; MB: main, loop for Y axis
 
 1 bL
-:H N"The Mandelbrot Set";
-:Q iT rA#*rS/sC rB#*rS/sD rCrD+rK>(rJsM;)rArB*100/rY+sB rCrD-rX+sA iJ;
-:L 0sA 0sB 0sJ rS sM 1{\cQ rJ rM<};
-:O cL rJ 40+ #126>(\32),;
-:X 490~ sX 1 95[  cO rX  8+ sX];
-:Y 340~ sY 1 35[N cX rY 20+ sY];
-:MB cH 0sT xT cY xT$- N rT." iterations, " . " ms";
+:HD N"The Mandelbrot Set";
+:MC rA#*rS/sC rB#*rS/sD rCrD+rK>(rJsM;)rArB*100/rY+sB rCrD-rX+sA iJ;
+:LP 0sA 0sB 0sJ rS sM 1{\cMC iT rJ rM<};
+:WK cLP rJ 40+ #126>(\32),;
+:XL 490~ sX 1 95[  cWK rX  8+ sX];
+:YL 340~ sY 1 35[N cXL rY 20+ sY];
+:MB cH 0sT xT cYL xT$- N rT." calculations, " . " ms";
 200 sS 1000000 sK cMB

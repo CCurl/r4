@@ -158,7 +158,7 @@ int readBlock(int blk, char* buf, int sz) {
     int cn = 0;
     char fn[24];
     sprintf(fn, "block-%03d.r4", blk);
-    for (int i = 0; i < sz; i++) { buf[i] = 32; }
+    for (int i = 0; i < sz; i++) { buf[i] = 0; }
     FILE* fp = fopen(fn, "rb");
     if (fp) {
         // Read in one byte at a time, to strip out CR
@@ -179,9 +179,12 @@ int readBlock(int blk, char* buf, int sz) {
 int writeBlock(int blk, char* buf, int sz) {
     char fn[24];
     sprintf(fn, "block-%03d.r4", blk);
-    FILE* fp = fopen(fn, "wb");
+    FILE *fp = fopen(fn, "wb");
     if (fp) {
-        int n = fwrite(buf, 1, sz, fp);
+        for (int i=0; i<sz; i++) {
+            if (!buf[i]) { break; }
+            fwrite(&buf[i], 1, 1, fp);
+        }
         fclose(fp);
         return 1;
     }

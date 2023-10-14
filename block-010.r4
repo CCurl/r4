@@ -16,7 +16,7 @@
 0(CLL (--): To list the colors )
 :CLL 30 37[N I s1 40 47[r1 I cSTC " ("r1.";"I.") "] cCLC];
 
-0(CLU (--): More, ugly)
+0(CLU (--): More colors, uglier)
 :CLU 90 97[N I s1 100 107[r1 I cSTC " ("r1.";"I.") "] cCLC];
 
 0(COF (--): Cursor off)
