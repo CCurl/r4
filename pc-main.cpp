@@ -75,9 +75,6 @@ void printChar(const char c) { printf("%c", c); }
 void printString(const char* str) { printf("%s", str); }
 CELL getSeed() { return doMillis(); }
 
-int getChar() { return _getch(); }
-int charAvailable() { return _kbhit(); }
-
 addr doCustom(byte ir, addr pc) {
     switch (ir) {
         case 'Q': isBye = 1;                 break;
