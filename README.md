@@ -74,7 +74,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 - The target machine/environment is controlled by the #defines in the file "config.h"
 - For Windows, There is a Visual Studio solution. Use the x86 configuration (32-bit).
 - For Development boards, I use the Arduino IDE. See the file "config.h" for board-specific settings.
-- For Linux systems, theer s a makefile. Default is 64-bit, or you can change it to 32-bit.
+- For Linux systems, there is a makefile. Default is 64-bit, or you can change it to 32-bit.
 - I do not have an Apple system, so I haven't tried to build r4 for that environment.
   - However, being such a simple and minimal C program, it should not be difficult to port r4 to any environment.
 
