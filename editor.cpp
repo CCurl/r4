@@ -13,13 +13,11 @@ void doEditor() { printString("-noEdit-"); }
 #define MAX_Y       31
 #define BLOCK_SZ    (LLEN)*(MAX_Y+1)
 #define MAX_CUR     (BLOCK_SZ-1)
-int line, off, blkNum;
-int cur, isDirty = 0, row, col;
+int blkNum, cur, isDirty, row, col;
 char theBlock[BLOCK_SZ];
 const char *msg = NULL;
 
 void edRdBlk() {
-    // for (int i=0; i<=MAX_CUR; i++) { theBlock[i]=0; }
     int r = readBlock(blkNum, theBlock, BLOCK_SZ);
     msg = (r) ? "-loaded-" : "-noFile-";
     cur = isDirty = 0;
