@@ -39,7 +39,7 @@ void Color(int fg, int bg) { printStringF("\x1B[%d;%dm", bg, fg); }
 
 void showGuide() {
     printString("\r\n    +");
-    for (int i = 0; i <= MAX_X; i++) { printChar('-'); }
+    for (int i = 1; i <= LLEN; i++) { printChar(i%5?'-':' '); }
     printChar('+');
 }
 
@@ -50,18 +50,10 @@ void showFooter() {
     printString("\r\n-> \x8");
 }
 
-void normRC() {
-    if (row < 1) { row = 0; }
-    if (col < 1) { col = 0; }
-    if (MAX_Y < row) { row = MAX_Y; }
-    if (MAX_X < col) { col = MAX_X; }
-}
+int minMax(int n, int min, int max) { return (n<min) ? min : (n>max) ? max : n; }
+void normRC() { row=minMax(row, 0, MAX_Y); col=minMax(col, 0, MAX_X); }
 void rcToCur() { normRC();  cur=row*LLEN+col; }
-
-void normCur() {
-    if (cur < 0) { cur = 0; }
-    if (MAX_CUR < cur) { cur = MAX_CUR; }
-}
+void normCur() { cur=minMax(cur, 0, MAX_CUR); }
 void curToRC() { normCur(); row=cur/LLEN; col=cur%LLEN; }
 
 void showEditor() {

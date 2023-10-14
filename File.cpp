@@ -12,6 +12,7 @@ void fileWrite() { noFile(); }
 addr codeLoad(addr x) { noFile(); return x; }
 void codeSave(addr x, addr y) { noFile(); }
 void blockLoad(CELL num) { noFile(); }
+void loadAbort() { noFile(); }
 int fileReadLine(CELL fh, char* buf) { noFile(); return -1; }
 int readBlock(int blk, char* buf, int sz) { noFile(); return 0; }
 int writeBlock(int blk, char* buf, int sz) { noFile(); return 0; }
@@ -23,7 +24,7 @@ static CELL fstack[STK_SZ + 1];
 CELL input_fp;
 
 void fpush(CELL v) { if (fdsp < STK_SZ) { fstack[++fdsp] = v; } }
-CELL fpop() { return (fdsp) ? fstack[fdsp--] : 0; }
+CELL fpop() { return (0 < fdsp) ? fstack[fdsp--] : 0; }
 // shared with __LITTLEFS__
 
 void fileInit() {}
@@ -138,6 +139,13 @@ void blockLoad(CELL num) {
     if (fp) {
         if (input_fp) { fpush(input_fp); }
         input_fp = (CELL)fp;
+    }
+}
+
+void loadAbort() {
+    if (input_fp) {
+        fclose((FILE*)input_fp);
+        input_fp = fpop();
     }
 }
 

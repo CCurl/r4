@@ -34,9 +34,9 @@ There are multiple goals for r4:
 - Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build r4, but at least after that, you are free of them.
 - Many programming environments use tokens and a large SWITCH statement in a loop to execute the user's program. In those systems, the machine code (aka - byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when looking at the code that is actually being executed. Additionally there is a compiler that is needed in order to work in that environment. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the user environment, (2) the hundreds or thousands of user functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much as that as possible, and have only one thing to learn: the machine code.
 - A simple, minimal, and interactive programming environment that is easy to modify and enhance.
-- An environment that could be deployed to many different types of development boards via the Arduino IDE.
-- The ablility to use the same environment on my personal computer as well as development boards.
-- Short commands so that there was not a lot of typing needed.
+- An environment that can be deployed to many different types of development boards via the Arduino IDE.
+- The ability to use the same environment on my personal computer as well as development boards.
+- Short commands so that there is not a lot of typing needed.
 
 ## The implementation of r4
 
@@ -67,14 +67,14 @@ Some development boards support LittleFS. For those boards, the __LITTLEFS__ dir
 
 ## A simple block editor
 
-r4 includes a simple block editor. Many thanks to Alain Theroux for his inspiration and help.
+r4 includes a simple block editor. Many thanks to Alain Theroux for his inspiration.
 
 ## Building r4
 
-- The target machine/environment is controlled by the #defined in the file "config.h"
-- For Windows, I use Microsoft's Visual Studio (Community edition). Use the x86 configuration (32-bit).
+- The target machine/environment is controlled by the #defines in the file "config.h"
+- For Windows, There is a Visual Studio solution. Use the x86 configuration (32-bit).
 - For Development boards, I use the Arduino IDE. See the file "config.h" for board-specific settings.
-- For Linux systems, I use clang. See the "make" script for more info. Default is 64-bit.
+- For Linux systems, theer s a makefile. Default is 64-bit, or you can change it to 32-bit.
 - I do not have an Apple system, so I haven't tried to build r4 for that environment.
   - However, being such a simple and minimal C program, it should not be difficult to port r4 to any environment.
 
@@ -82,7 +82,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### INTEGER OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | +  |  (a b--n)   |n: a+b - addition
 | -  |  (a b--n)   |n: a-b - subtraction
 | *  |  (a b--n)   |n: a*b - multiplication
@@ -96,7 +96,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 - r4 uses double wide (64-bit) floating point numbers
 
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | FF | (i--f)    |Convert TOS from integer to float
 | FI | (f--i)    |Convert TOS from float to integer
 | F+ | (a b--n)  |Float: add
@@ -111,7 +111,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### BIT MANIPULATION OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | b& | (a b--n)   |n: a and b
 | b| | (a b--n)   |n: a or b
 | b^ | (a b--n)   |n: a xor b
@@ -122,7 +122,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### STACK OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | #  | (a--a a)       |Duplicate TOS (DUP)
 | \  | (a b--a)       |Drop TOS (DROP)
 | $  | (a b--b a)     |Swap top 2 stack items (SWAP)
@@ -136,7 +136,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### MEMORY OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | @  | (a--n)      |Fetch CELL n from address a
 | !  | (n a--)     |Store CELL n  to  address a
 | C@ | (a--n)      |Fetch BYTE n from address a
@@ -153,7 +153,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 - r"TEST" will push the value of register AAA and then print TEST
 
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | rABC | (--v)      |v: value of register ABC.
 | sABC | (v--)      |v: store v to register ABC.
 | iABC | (--)       |Increment register ABC.
@@ -163,10 +163,11 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 ### LOCALS OPERATIONS
 #### NOTES:
 - On each function call, 10 locals [r0..r9] are allocated.
+- They are de-allocated when ';' executes.
 - Locals are NOT initialized.
 
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | rN | (--v)  |v: value of local #N.|
 | sN | (v--)  |v: store v to local #N.|
 | iN | (--)   |Increment local N.|
@@ -183,7 +184,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
   - Use '^' to unwind the loop stack first.
 
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
 | ;     | (--)   |Return: PC = rpop()
@@ -191,7 +192,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
  
 ### INPUT/OUTPUT OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | .     | (N--)    |Output N as a decimal number
 | ,     | (N--)    |Output N as a character (EMIT)
 | "str" | (--)     |Output characters until the next '"'
@@ -210,7 +211,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### LOGICAL/CONDITIONS/FLOW CONTROL OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | <  | (a b--f)    |f: if (a < b) then 1, else 0;
 | =  | (a b--f)    |f: if (a = b) then 1, else 0;
 | >  | (a b--f)    |f: if (a > b) then 1, else 0;
@@ -222,17 +223,17 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### FOR/NEXT LOOPING OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | [  | (F T--)   |FOR: start a For/Next loop. if (T < F), swap T and F
 | I  | (--i)     |i: the index of the current FOR loop
 | p  | (i--)     |i: number to add to "I"
 | ^  | (--)      |un-loop, used with ';'. Example: rSrK>(^;)
-| ]  | (--)      |NEXT: increment index (I) and loop if (I <= T)
+| ]  | (--)      |NEXT: increment index (I) and loop if (I < T)
 
 
 ### BEGIN/WHILE LOOPING OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
 | ^  | (--)        |un-loop, used with ';'. Example: rX0_(^;)
 | }  | (f--f?)     |WHILE: if (f != 0) jump to matching '{', else drop f and continue
@@ -240,20 +241,22 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### FILE OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
-| fO | (nm md--fh)  |FILE: Open, nm: name, md: mode, fh: fileHandle
-| fC | (fh--)       |FILE: Close, fh: fileHandle
-| fD | (nm--)       |FILE: Delete
-| fR | (fh--c n)    |FILE: Read, fh: fileHandle, c: char, n: num
-| fW | (c fh--n)    |FILE: Write, fh: fileHandle, c: char, n: num
-| fS | (--)         |FILE: Save Code
-| fL | (--)         |FILE: Load Code
-| bL | (n--)        |BLOCK: Load code from block file (Block-nnn.r4). This can be nested.
+|:-- |:--   |:--|
+| fO  | (nm md--fh)  |FILE: Open, nm: name, md: mode, fh: fileHandle
+| fC  | (fh--)       |FILE: Close, fh: fileHandle
+| fD  | (nm--)       |FILE: Delete
+| fR  | (fh--c n)    |FILE: Read, fh: fileHandle, c: char, n: num
+| fW  | (c fh--n)    |FILE: Write, fh: fileHandle, c: char, n: num
+| fS  | (--)         |FILE: Save Code
+| fL  | (--)         |FILE: Load Code
+| bL  | (n--)        |BLOCK: Load code from block file (block-nnn.r4). This can be nested.
+| bA  | (--)         |BLOCK: Load Abort - stop loading the current block (for use if already loaded)
+| bE  | (n--)        |BLOCK: Edit block N (file name is block-nnn.r4)
 
 
 ### OTHER OPERATIONS
 | OP |Stack |Description|
-|:-- |:-- |:--|
+|:-- |:--   |:--|
 | xIAF  | (--a)     |INFO: Address where the function vectors begin
 | xIAH  | (--a)     |INFO: Address of the HERE variable
 | xIAR  | (--a)     |INFO: Address where the registers begin
@@ -265,7 +268,6 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xIR   | (--n)     |INFO: Number of registers (NUM_REGS)
 | xIU   | (--n)     |INFO: Size of USER area (USER_SZ)
 | xIV   | (--n)     |INFO: Size of VARS area (VARS_SZ)
-| xLA   | (--)      |PC: Load Abort: to stop loading a block (eg - if the block has already been loaded)
 | xPI   | (p--)     |Arduino: pin input  (pinMode(p, INPUT))
 | xPU   | (p--)     |Arduino: pin pullup (pinMode(p, INPUT_PULLUP))
 | xPO   | (p--)     |Arduino: pin output (pinMode(p, OUTPUT)
@@ -273,11 +275,11 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xPRD  | (p--n)    |Arduino: pin read digital (n = digitalRead(p))
 | xPWA  | (n p--)   |Arduino: pin write analog  (analogWrite(p, n))
 | xPWD  | (n p--)   |Arduino: pin write digital (digitalWrite(p, n))
-| xSR   | (--)      |R4 System Reset
 | xs    | (a--)     |PC: call "system(a)"
+| xSR   | (--)      |R4 System Reset
 | xT    | (--n)     |Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
 | xM    | (--n)     |Time in microseconds (Arduino: micros())
 | xW    | (n--)     |Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    |r: a random number between 0 and n
-|       |           |NOTE: when n=0, r is the entire 32-bit number
+|       |           |NOTE: when n=0, r is the entire CELL-sized number
 | xQ    | (--)      |PC: Exit R4

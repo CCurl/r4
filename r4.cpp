@@ -141,7 +141,6 @@ void doExt() {
             if (ir == 'R') { push(NUM_REGS); }
             if (ir == 'U') { push(USER_SZ); }
             if (ir == 'V') { push(VARS_SZ); }
-        RCASE 'E': doEditor();
         RCASE 'K': dumpStack();
         RCASE 'S': if (*pc == 'R') { ++pc; vmInit(); }
         RCASE 'M': push(doMicros());
@@ -219,8 +218,7 @@ next:
         NCASE 'P': ++TOS;
         // NCASE 'Q': /*FREE*/
         NCASE 'R': t1 = pop(); TOS = (TOS >> t1);
-        NCASE 'S': if (TOS) { t1 = TOS; TOS = NOS % t1; NOS /= t1; }
-                  else { isError = 1; printString("-0div-"); }
+        NCASE 'S': if (isOk(TOS, "-0div-")) { t1 = TOS; TOS = NOS % t1; NOS /= t1; }
         // NCASE 'T': /*FREE*/
         NCASE 'U': TOS += (CELL)&user[0];
         NCASE 'V': TOS += (CELL)&vars[0];
@@ -243,6 +241,8 @@ next:
             else if (ir == '^') { NOS ^= TOS; pop(); }      // XOR
             else if (ir == '~') { TOS = ~TOS; }             // NOT (COMPLEMENT)
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
+            else if (ir == 'A') { loadAbort(); }            // Block Load Abort
+            else if (ir == 'E') { doEditor(); }             // Block Edit
         NCASE 'c': if (getRFnum(NUM_FUNCS) && func[TOS]) {
             if (*pc != ';') { rpush(pc); locStart += 10; }
             pc = func[TOS];
@@ -292,7 +292,7 @@ next:
         NCASE '}': if (TOS) { pc=(addr)L2; } else { pop(); lsp = (2<lsp) ? lsp-3 : 0; }
         NCASE '~': TOS = -TOS;
         NEXT;
-        default: printStringF("-[ir:%d:%c?]-", ir, ir); NEXT;
+        default: printStringF("-[ir:%d?]-", ir); NEXT;
     }
     return pc;
 }
