@@ -8,7 +8,7 @@ r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions
 
 A register (a built-in variable) is identified by consecutive UPPERCASE characters. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
 
-r4 converts A-Z into a base 26 number, so A=0, Z=25, BA=26. ZZZ=17575 (26*26*26-1), and ZZZZ=456975. This value is then used as an index into an array of registers or function vectors, So it is extremely fast, but not very memory-efficient. Modern PCs have enough memory to be able to support 4 char names. A Teensy4 can support 3 char names. A UNO might only be able to handle 1 char names.
+r4 converts A-Z into a base 26 number, so A=0, Z=25, BA=26. ZZZ=17575 (26^3-1), and ZZZZ=456975. This value is then used as an index into an array of registers or function vectors, So it is extremely fast, but not very memory-efficient. Modern PCs have enough memory to be able to support 4 char names. A Teensy4 can support 3 char names. A UNO might only be able to handle 1 char names.
 
 Function are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
 
