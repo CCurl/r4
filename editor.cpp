@@ -13,14 +13,16 @@ void doEditor() { printString("-noEdit-"); }
 #define MAX_Y       31
 #define BLOCK_SZ    (LLEN)*(MAX_Y+1)
 #define MAX_CUR     (BLOCK_SZ-1)
-int blkNum, cur, isDirty, row, col;
+#define REDRAW      redraw=1
+#define DIRTY       isDirty=1; REDRAW
+int blkNum, cur, isDirty, row, col, redraw;
 char theBlock[BLOCK_SZ];
 const char *msg = NULL;
 
 void edRdBlk() {
     int r = readBlock(blkNum, theBlock, BLOCK_SZ);
     msg = (r) ? "-loaded-" : "-noFile-";
-    cur = isDirty = 0;
+    cur = isDirty = 0; REDRAW;
 }
 
 void edSvBlk() {
@@ -31,14 +33,30 @@ void edSvBlk() {
 
 void GotoXY(int x, int y) { printStringF("\x1B[%d;%dH", y, x); }
 void CLS() { printString("\x1B[2J"); GotoXY(1, 1); }
-void CursorOn() { printString("\x1B[?25h"); }
 void CursorOff() { printString("\x1B[?25l"); }
+void CursorOn()  { printString("\x1B[?25h"); }
 void Color(int fg, int bg) { printStringF("\x1B[%d;%dm", bg, fg); }
 
 void showGuide() {
     printString("\r\n    +");
     for (int i = 1; i <= LLEN; i++) { printChar(i%5?'-':' '); }
     printChar('+');
+}
+
+int edChar(int x) {
+    if (x == 13) { return 174; }
+    if (x == 10) { return 241; }
+    if (x ==  9) { return 242; }
+    if (x <  32) { return  32; }
+    return x;
+}
+int charAt(int x) { return edChar(theBlock[x]); }
+
+void showHeader() {
+    GotoXY(1, 1);
+    printString("   Block Editor v0.1 - ");
+    printStringF("Block# %03d %c", blkNum, isDirty ? '*' : ' ');
+    printStringF(" %-20s", msg ? msg : "");
 }
 
 void showFooter() {
@@ -49,79 +67,93 @@ void showFooter() {
 }
 
 int minMax(int n, int min, int max) { return (n<min) ? min : (n>max) ? max : n; }
-void normRC() { row=minMax(row, 0, MAX_Y); col=minMax(col, 0, MAX_X); }
-void rcToCur() { normRC();  cur=row*LLEN+col; }
 void normCur() { cur=minMax(cur, 0, MAX_CUR); }
+void normRC() { row=minMax(row, 0, MAX_Y); col=minMax(col, 0, MAX_X); }
 void curToRC() { normCur(); row=cur/LLEN; col=cur%LLEN; }
+void rcToCur() { normRC();  cur=row*LLEN+col; }
 
 void showEditor() {
+    if (!redraw) { return; }
     int cp = 0;
-    CursorOff();
-    GotoXY(1, 1);
-    printString("   Block Editor v0.1 - ");
-    printStringF("Block# %03d %c", blkNum, isDirty ? '*' : ' ');
-    printStringF(" %-20s", msg ? msg : "");
-    msg = NULL;
+    redraw = 0;
+    showHeader();
     showGuide();
     for (int i = 0; i <= MAX_Y; i++) {
         printStringF("\r\n %2d |", i+1);
         for (int j = 0; j <= MAX_X; j++) {
-            int isCur = (cur==cp) ? 1 : 0;
-            unsigned char c = theBlock[cp++];
-            if (c == 13) { c = 174; }
-            if (c == 10) { c = 241; }
-            if (c ==  9) { c = 242; }
-            if (c <  32) { c =  32; }
-            if (isCur) { Color(30, 46); }
+            unsigned char c = charAt(cp++);
             printChar((char)c);
-            if (isCur) { Color(0, 0); }
         }
         printString("| ");
     }
     showGuide();
-    CursorOn();
 }
 
 void deleteChar() {
     for (int i = cur; i < MAX_CUR; i++) { theBlock[i] = theBlock[i+1]; }
     theBlock[MAX_CUR] = 0;
-    isDirty = 1;
+    DIRTY;
 }
 
 void insertChar(char c) {
     for (int i = MAX_CUR; cur < i; i--) { theBlock[i] = theBlock[i - 1]; }
     theBlock[cur] = c;
-    isDirty = 1;
+    DIRTY;
+}
+
+void showCur() {
+    showHeader();
+    char c = charAt(cur);
+    GotoXY(col+6, row+3);
+    Color(30, 46);
+    printChar(c); 
+    Color(0, 0);
+}
+
+void unShowCur() {
+    char c = charAt(cur);
+    GotoXY(col+6, row+3);
+    Color(0, 0);
+    printChar(c);
+    printChar(8);
+    msg = NULL;
+}
+
+int edKey() {
+        showCur();
+        int c = key();
+        unShowCur();
+        return c;
 }
 
 void doType(int isInsert) {
-    CursorOff();
     while (1) {
-        char c= key();
+        char c = edKey();
         if (c == 27) { --cur;  return; }
+        if (c == 13) { c = 10; }
         int isBS = ((c == 127) || (c == 8));
         if (isBS) {
             if (cur) {
                 theBlock[--cur] = ' ';
+                curToRC();
                 if (isInsert) { deleteChar(); }
                 showEditor();
             }
             continue;
         }
         if (isInsert) { insertChar(' '); }
-        if (c == 13) { c = 10; }
+        else { printChar(edChar(c)); }
         theBlock[cur++] = c;
-        isDirty = 1;
-        if (MAX_CUR < cur) { cur = MAX_CUR; }
-        showEditor();
-        CursorOff();
+        curToRC();
+        if (isInsert) { showEditor(); }
     }
 }
 
 int processEditorChar(char c) {
-    printChar(c);
+    // printChar(c);
     curToRC();
     switch (c) {
+        // Movement
         case  'Q': return 0;
         BCASE 'a': --col; rcToCur();
         BCASE 'd': ++col; rcToCur();
@@ -130,16 +162,19 @@ int processEditorChar(char c) {
         BCASE 'q': col=0; rcToCur();
         BCASE 'e': col=MAX_X; rcToCur();
         BCASE 't': row=col=0; rcToCur();
-        BCASE 'b': row=MAX_Y; rcToCur();
-        BCASE 'r': theBlock[cur++] = key(); isDirty = 1;
-        BCASE 'I': doType(1);
-        BCASE 'R': doType(0);
-        BCASE 'n': theBlock[cur++] = 10; isDirty = 1;
-        BCASE 'x': deleteChar();
-        BCASE 'X': if (cur) { cur -= cur ? 1 : 0; deleteChar(); }
-        BCASE 'i': insertChar(' ');
+        BCASE 'b': row=MAX_Y; col=0; rcToCur();
         BCASE  9 : col += 8; rcToCur();
         BCASE 13 : ++row; col=0; rcToCur();
+        // Actions
+        BCASE 'r': c=edKey(); if (c==13) { c=10; }
+                theBlock[cur++]=c;
+                printChar(edChar(c));
+        BCASE 'R': doType(0);
+        BCASE 'i': insertChar(' ');
+        BCASE 'I': doType(1);
+        BCASE 'n': theBlock[cur++]=10;  printChar(edChar(10));
+        BCASE 'x': deleteChar();
+        BCASE 'X': if (cur) { cur -= cur ? 1 : 0; deleteChar(); }
         BCASE 'L': edRdBlk();
         BCASE 'W': edSvBlk();
         BCASE '+': if (isDirty) { edSvBlk(); } ++blkNum; edRdBlk();
@@ -152,15 +187,20 @@ int processEditorChar(char c) {
 }
 
 void doEditor() {
+    int ok = 1;
     blkNum = pop();
     blkNum = (0 <= blkNum) ? blkNum : 0;
     CLS();
+    CursorOff();
     edRdBlk();
-    showEditor();
-    showFooter();
-    while (processEditorChar(key())) {
-        showEditor();
-        showFooter();
+    showEditor(); showFooter();
+    while (ok) {
+        char c = edKey();
+        ok = processEditorChar(c);
+        curToRC();
+        if (redraw) { showEditor(); showFooter(); }
     }
+    CLS();
+    CursorOn();
 }
-#endif
+#endif //  __EDITOR__
