@@ -1,6 +1,6 @@
 # r4 - A stack-based VM/CPU with human-readable machine language
 
-r4 is an simple, minimal, and interactive environment where the source code IS the machine code. There is no compilation in r4.
+r4 is an interactive environment where the source code IS the machine code. There is no compilation in r4.
 
 ## What is r4?
 
@@ -8,7 +8,7 @@ r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions
 
 A register (a built-in variable) is identified by consecutive UPPERCASE characters. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
 
-r4 converts A-Z into a base 26 number, so A=0, Z=25, BA=26. ZZZ=17575 (26^3-1), and ZZZZ=456975. This value is then used as an index into an array of registers or function vectors, So it is extremely fast, but not very memory-efficient. Modern PCs have enough memory to be able to support 4 char names. A Teensy4 can support 3 char names. A UNO might only be able to handle 1 char names.
+r4 converts A-Z into a base 26 number, so A=0, AAAA=0, Z=25, BA=26. ZZZ=17575 (26^3-1), and ZZZZ=456975. This value is then used as an index into an array of registers or function vectors, So it is extremely fast, but not very memory-efficient. Modern PCs have enough memory to be able to support 4 char names. A Teensy4 can support 3 char names. A UNO might only be able to handle 1 char names.
 
 Function are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
 
@@ -32,10 +32,11 @@ Examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
 There are multiple goals for r4:
 
 - Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build r4, but at least after that, you are free of them.
-- Many programming environments use tokens and a large SWITCH statement in a loop to execute the user's program. In those systems, the machine code (aka - byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when looking at the code that is actually being executed. Additionally there is a compiler that is needed in order to work in that environment. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the user environment, (2) the hundreds or thousands of user functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much as that as possible, and have only one thing to learn: the machine code.
-- A simple, minimal, and interactive programming environment that is easy to modify and enhance.
-- An environment that can be deployed to many different types of development boards via the Arduino IDE.
+- Many programming environments use tokens and a large SWITCH statement in a loop to execute the user's program. In those systems, the machine code (aka - the byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when inspecting the code that is actually being executed. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the user environment, (2) the hundreds or thousands of user functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much of that as possible, and have only one thing to learn: the machine code.
+- A minimal implementation that is "intuitively obvious upon casual inspection" and easy to extend as necessary.
+- An interactive programming environment.
 - The ability to use the same environment on my personal computer as well as development boards.
+- An environment that can be deployed to many different types of development boards via the Arduino IDE.
 - Short commands so that there is not a lot of typing needed.
 
 ## The implementation of r4
@@ -49,8 +50,8 @@ There are multiple goals for r4:
 There are 2 memory areas in r4:
 - USER: r4 function code goes in this area. Default size is 128K.
 - VARS: use with 'V' opcode. Default size is 256K.
-  - The USER area can also be used for data. See the 'U' opcode.
-  - The VARS area is not used by the r4 system at all, 100% free.
+- The USER area can also be used for data. See the 'U' opcode.
+- The VARS area is not used by the r4 system at all, 100% free.
 
 ## Locals
 
@@ -63,7 +64,7 @@ Note that those boards usually also have watchdogs that need to be enabled via t
 
 ## LittleFS support
 
-Some development boards support LittleFS. For those boards, the __LITTLEFS__ directive can be #defined to save and load the defined code to the board, so that any user-defined words can be reloaded across boots.
+Some development boards support LittleFS. For those boards, the __LITTLEFS__ directive can be #defined persist data to the board, including supporting automatically loading blocks on boot.
 
 ## A simple block editor
 
@@ -280,6 +281,6 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xT    | (--n)     |Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
 | xM    | (--n)     |Time in microseconds (Arduino: micros())
 | xW    | (n--)     |Wait (Arduino: delay(),  Windows: Sleep())
-| xR    | (n--r)    |r: a random number between 0 and n
+| xR    | (n--r)    |r: a pseudo-random number between 0 and n (uses XOR-shift)
 |       |           |NOTE: when n=0, r is the entire CELL-sized number
 | xQ    | (--)      |PC: Exit R4
