@@ -114,7 +114,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | b& | (a b--n)   |n: a and b
-| b| | (a b--n)   |n: a or b
+| b\| | (a b--n)   |n: a or b
 | b^ | (a b--n)   |n: a xor b
 | b~ | (a--b)     |b: not a      (e.g - 1011 => 0100)
 | L  | (a n--b)   |b: a << n     (Left-Shift)
