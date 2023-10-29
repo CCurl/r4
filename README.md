@@ -25,7 +25,8 @@ int getRFnum(int max) {
         hash = ((hash << 5) + hash) + *(pc++);
     }
     return hash & max;
-}```
+}
+```
 
 Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
 
