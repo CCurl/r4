@@ -15,7 +15,17 @@ r4 hashes register and function names and uses the hashed value as the index int
 This is very fast, but poses some limitations:
 - The number of registers and functions need to be powers of 2.
 - r4 does NOT detect hash collisions as it does not keep key values.
-- - My tests have indicated that hash collisions are not common.
+- - My tests have indicated that for a large enough nmber of buckets, collisions are not common.
+
+Here is the hashing function:
+```
+int getRFnum(int max) {
+    UCELL hash = 5381;
+    while (BTWI(*pc, 'A', 'Z')) {
+        hash = ((hash << 5) + hash) + *(pc++);
+    }
+    return hash & max;
+}```
 
 Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
 
