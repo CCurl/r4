@@ -6,20 +6,34 @@ r4 is an interactive environment where the source code IS the machine code. Ther
 
 r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, floating point, and any amount of RAM.
 
-A register (a built-in variable) is identified by any number of consecutive UPPERCASE characters. They can be retrieved, set, incremented, or decremented in a single operation (r,s,i,d).
+The number of registers, functions, and memory are configurable and can be scaled as necessary to fit into a system of any size.
 
-A function is also identified by any number of consecutive UPPERCASE characters.
+For example, one might configure things like this:
+- On a Leonardo, 1-char register length,    32 functions,  1K of USER RAM, no  VARS RAM.
+- On an ESP8266, 2-char register length,   512 functions, 12K of USER RAM, 12K VARS RAM.
+- On a RPI Pico, 3-char register length, 32768 functions, 64K of USER RAM, 64K VARS RAM.
+- On a PC,       4-char register length, 65536 functions,  4M of USER RAM,  8M VARS RAM.
 
-r4 hashes register and function names and uses the hashed value as the index into the array of values or addresses.
+### Registers
+- A register (a built-in variable) is identified by a number of UPPERCASE characters.
+- The number of registers is specified by identifying the length of a register name.
+- REG_LEN 1: 26, 2: 576 (26*26), 3: 17576 (26*26*26), 4: 456976 (26*26*26*26)
+- A register can be retrieved, set, incremented, or decremented in a single operation (r,s,i,d).
+
+### Functions
+A function is identified by any number of UPPERCASE characters.
+
+r4 hashes function names and uses the hashed value as the index into the array of values or addresses.
 
 This is very fast, but poses some limitations:
 - The number of registers and functions need to be powers of 2.
 - r4 does NOT detect hash collisions as it does not keep key values.
-- - My tests have indicated that for a large enough nmber of buckets, collisions are not common.
+  - My tests have indicated that for a large enough nmber of buckets, collisions are not common.
+  - As a notice that a collision may have occurred r3 prints "-redef-" when a function is re-defined.
 
 Here is the hashing function:
 ```
-int getRFnum(int max) {
+int getFnum(int max) {
     UCELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
         hash = ((hash << 5) + hash) + *(pc++);
@@ -30,11 +44,9 @@ int getRFnum(int max) {
 
 Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
 
-- 0(CPY (N F T--): copy N bytes from F to T)
-- :CPY s2 s1 0[r1 C@ r2 C! i1 i2];
-- 123 rF rT cCPY 0(copy 123 bytes from rF to rT)
-
-The number of registers, functions, and user memory are configurable and can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 512 registers and functions, and 24K of user RAM. On a Arduino Leonardo, you might configure the system to have 16 registers, 32 functions, and 1K user RAM. On a RPI Pico, you can have 512 registers and functions, with 64K RAM.
+- 0(COPY (N F T--): copy N bytes from F to T)
+- :COPY s2 s1 0[r1 C@ r2 C! i1 i2];
+- 123 rF rT cCOPY 0(copy 123 bytes from rF to rT)
 
 - Example 1: "Hello World!" - the standard "hello world" program.
 - Example 2: 1 sA 2 sB 3 sC rA rB rC ++ . -would print 6.
@@ -126,6 +138,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | F= | (a b--f)  |f: if (a = b), else 0
 | F> | (a b--f)  |f: if (a > b), else 0
 | F. | (n--)     |Float: print top of fload stack
+| F~ | (a--b)    |b: -a
 
 
 ### BIT MANIPULATION OPERATIONS
@@ -193,7 +206,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### FUNCTIONS OPERATIONS
 #### NOTES:
-- A function reference is consecutive UPPERCASE characters.
+- A function reference is any number of consecutive UPPERCASE characters.
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h"
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
@@ -201,6 +214,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
+|       |        | - The function name id 
+|       |        | - If the slot for the 
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
 | ;     | (--)   |Return: PC = rpop()
 
@@ -208,14 +223,15 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 ### INPUT/OUTPUT OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| .     | (N--)    |Output N as a decimal number
+| .     | (N--)    |Output N as a decimal number.
 | ,     | (N--)    |Output N as a character (EMIT)
 | "str" | (--)     |Output characters until the next '"'
 | B     | (--)     |Output a single SPACE (32,)
 | N     | (--)     |Output a single NEWLINE (13,10,)
 | K?    | (--f)    |f: non-zero if char is ready to be read, else 0.
 | K@    | (--n)    |n: Key char, wait if no char is available.
-| 0..9  | (--N)    |Scan DECIMAL number N until non digit
+| <N>   | (--N)    |Scan DECIMAL number N until non digit
+| <N.N> | (--F)    |- Use NNN.NNN (eg - 3.14) to enter a floating point number F
 |       |          |- to specify multiple values, separate them by space (4711 3333)
 |       |          |- to enter a negative number, use "negate" (eg - 490~)
 |hXXX   | (--N)    |Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
@@ -264,6 +280,11 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | fW  | (c fh--n)    |FILE: Write, fh: fileHandle, c: char, n: num
 | fS  | (--)         |FILE: Save Code
 | fL  | (--)         |FILE: Load Code
+
+
+### BLOCK OPERATIONS
+| OP |Stack |Description|
+|:-- |:--   |:--|
 | bL  | (n--)        |BLOCK: Load code from block file (block-nnn.r4). This can be nested.
 | bA  | (--)         |BLOCK: Load Abort - stop loading the current block (for use if already loaded)
 | bE  | (n--)        |BLOCK: Edit block N (file name is block-nnn.r4)
