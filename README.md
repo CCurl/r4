@@ -6,17 +6,24 @@ r4 is an interactive environment where the source code IS the machine code. Ther
 
 r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, floating point, and any amount of RAM.
 
-A register (a built-in variable) is identified by consecutive UPPERCASE characters. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
+A register (a built-in variable) is identified by any number of consecutive UPPERCASE characters. They can be retrieved, set, incremented, or decremented in a single operation (r,s,i,d).
 
-r4 converts A-Z into a base 26 number, so A=0, AAAA=0, Z=25, BA=26. ZZZ=17575 (26^3-1), and ZZZZ=456975. This value is then used as an index into an array of registers or function vectors, So it is extremely fast, but not very memory-efficient. Modern PCs have enough memory to be able to support 4 char names. A Teensy4 can support 3 char names. A UNO might only be able to handle 1 char names.
+A function is also identified by any number of consecutive UPPERCASE characters.
 
-Function are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
+r4 hashes register and function names and uses the hashed value as the index into the array of values or addresses.
+
+This is very fast, but poses some limitations:
+- The number of registers and functions need to be powers of 2.
+- r4 does NOT detect hash collisions as it does not keep key values.
+- - My tests have indicated that hash collisions are not common.
+
+Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
 
 - 0(CPY (N F T--): copy N bytes from F to T)
 - :CPY s2 s1 0[r1 C@ r2 C! i1 i2];
 - 123 rF rT cCPY 0(copy 123 bytes from rF to rT)
 
-The number of registers, functions, and user memory are configurable and can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 676 (26*26) registers and functions, and 24K of user RAM. In such a system, the register names would be in the range of [AA..ZZ], and function names would be in the range of [AA..ZZ]. On a Arduino Leonardo, you might configure the system to have 13 registers, 26 functions, and 1K user RAM. On a RPI Pico, you can have 676 registers and functions, with 64K RAM.
+The number of registers, functions, and user memory are configurable and can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 512 registers and functions, and 24K of user RAM. On a Arduino Leonardo, you might configure the system to have 16 registers, 32 functions, and 1K user RAM. On a RPI Pico, you can have 512 registers and functions, with 64K RAM.
 
 - Example 1: "Hello World!" - the standard "hello world" program.
 - Example 2: 1 sA 2 sB 3 sC rA rB rC ++ . -would print 6.
@@ -148,10 +155,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### REGISTERS OPERATIONS
 #### NOTES:
-- A register reference consecutive UPPERCASE characters.
+- A register reference is consecutive UPPERCASE characters.
 - The number of registers is controlled by the NUM_REGS #define in "config.h"
-- Register A is the same as register AAA, B <-> AAB, Z <-> AAZ
-- r"TEST" will push the value of register AAA and then print TEST
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
@@ -179,8 +184,6 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 #### NOTES:
 - A function reference is consecutive UPPERCASE characters.
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h"
-- Function A is the same as function AAA, B <-> AAB, Z <-> AAZ
-- :"TEST"; will define function #0 (A).
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
 
