@@ -18,7 +18,6 @@ typedef union { double f; CELL i; char *c; } ST_T;
 #define AOS        dstack[dsp].c
 #define FTOS       dstack[dsp].f
 #define FNOS       dstack[dsp-1].f
-#define R          rstack[dsp]
 #define L0         lstack[lsp]
 #define L1         lstack[lsp-1]
 #define L2         lstack[lsp-2]
@@ -28,12 +27,12 @@ typedef union { double f; CELL i; char *c; } ST_T;
 #define NCASE      NEXT; case
 #define BCASE      break; case
 #define RCASE      return; case
-#define BTWI(n, x, y) (((x) <= (n)) && ((n) <= (y)))
-#define isLocal(x) (('0' <= (x)) && ((x) <= '9'))
-#define isRegChar(x) (('A' <= (x)) && ((x) <= 'Z'))
-#define isReg(n) ((0 <= (n)) && ((n) < NUM_REGS))
-#define isFunc(n) ((0 <= (n)) && ((n) < NUM_FUNCS))
-#define ABS(x) ((x < 0) ? -x : x)
+#define BTWI(n,x,y)   (((x) <= (n)) && ((n) <= (y)))
+#define isLocal(x)    BTWI(x,'0','9')
+#define isRegChar(x)  BTWI(x,'A','Z')
+#define isReg(n)      ((0 <= (n)) && ((n) < NUM_REGS))
+#define isFunc(n)     ((0 <= (n)) && ((n) < NUM_FUNCS))
+#define ABS(x)        ((x < 0) ? -x : x)
 
 typedef struct {
     addr start;

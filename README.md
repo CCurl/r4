@@ -26,7 +26,7 @@ A function is identified by any number of UPPERCASE characters.
 r4 hashes function names and uses the hashed value as the index into the array of values or addresses.
 
 This is very fast, but poses some limitations:
-- The number of registers and functions need to be powers of 2.
+- The number of functions need to be powers of 2.
 - r4 does NOT detect hash collisions as it does not keep key values.
   - My tests have indicated that for a large enough nmber of buckets, collisions are not common.
   - As a notice that a collision may have occurred r3 prints "-redef-" when a function is re-defined.
@@ -36,7 +36,7 @@ Here is the hashing function:
 int getFnum(int max) {
     UCELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
-        hash = ((hash << 5) + hash) + *(pc++);
+        hash = ((hash * 31) + *(pc++);
     }
     return hash & max;
 }
@@ -49,9 +49,10 @@ Functions are defined in a Forth-like style, using ':', and you call them using 
 - 123 rF rT cCOPY 0(copy 123 bytes from rF to rT)
 
 - Example 1: "Hello World!" - the standard "hello world" program.
-- Example 2: 1 sA 2 sB 3 sC rA rB rC ++ . -would print 6.
+- Example 2: :MIN %%>($)\; :MAX %%<($)\;
+- Example 3: :BTW s3 s2 s1 r1 r2 > r1 r3 < b&;
 - Example 4: 32 126\[13,10,I#." - ",\] - would print the ASCII table
-- Example 3: The typical Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
+- Example 5: The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
     1000 sS 13 xPO 1{\ 0 1[I 13 xPWD rS xW] K? 0=} K@ \
 
@@ -85,11 +86,12 @@ There are 2 memory areas in r4:
 
 ## Locals
 
-r4 allocates 10 local variables (0-9) per function call. They are referred to, and have the same operations, like registers (r,s,i,d). For example, i4 increments local #4.
+r4 allocates 10 local variables (0-9) per function call. They are referred to like registers and have the same operations (r,s,i,d). For example, i4 increments local #4.
 
 ## WiFi support
 
-Some boards, for example the ESP8266, support WiFi. For those boards, the __WIFI__ directive can be #defined to enable the boards WiFi.
+Some boards, (eg - the ESP8266), support WiFi. For those boards, the __WIFI__ directive can be #defined to enable the boards WiFi. This adds additional opcodes.
+
 Note that those boards usually also have watchdogs that need to be enabled via the __WATCHDOG__ #define.
 
 ## LittleFS support
@@ -138,7 +140,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | F= | (a b--f)  |f: if (a = b), else 0
 | F> | (a b--f)  |f: if (a > b), else 0
 | F. | (n--)     |Float: print top of fload stack
-| F~ | (a--b)    |b: -a
+| F_ | (a--b)    |b: -a
 
 
 ### BIT MANIPULATION OPERATIONS
@@ -159,7 +161,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | \  | (a b--a)       |Drop TOS (DROP)
 | $  | (a b--b a)     |Swap top 2 stack items (SWAP)
 | %  | (a b--a b a)   |Push 2nd (OVER)
-| ~  | (a--b)         |b: -a (NEGATE)
+| _  | (a--b)         |b: -a (NEGATE)
 | D  | (a--b)         |b: a-1 (1-)
 | P  | (a--b)         |b: a+1 (1+)
 | A  | (a--b)         |b: absolute value of a (ABS)
@@ -233,9 +235,9 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | <N>   | (--N)    |Scan DECIMAL number N until non digit
 | <N.N> | (--F)    |- Use NNN.NNN (eg - 3.14) to enter a floating point number F
 |       |          |- to specify multiple values, separate them by space (4711 3333)
-|       |          |- to enter a negative number, use "negate" (eg - 490~)
+|       |          |- to enter a negative number, use "negate" (eg - 490_)
 |hXXX   | (--N)    |Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
-| 'C    | (n)      |n: the ASCII value of C
+| 'C    | (--n)    |n: the ASCII value of C
 | `x`   | (a--a b) |Copy following chars until closing '`' to (a++).
 |       |          |- a: address, b next byte after trailing NULL.
 
@@ -246,7 +248,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | <  | (a b--f)    |f: if (a < b) then 1, else 0;
 | =  | (a b--f)    |f: if (a = b) then 1, else 0;
 | >  | (a b--f)    |f: if (a > b) then 1, else 0;
-| _  | (x--f)      |f: if (x = 0) then 1, else 0; (logical NOT)
+| ~  | (x--f)      |f: if (x = 0) then 1, else 0; (logical NOT)
 | (  | (f--)       |if (f != 0), execute code in '()', else skip to matching ')'
 | X  | (a--)       |if (a != 0), execute/call function at address a
 | G  | (a--)       |if (a != 0), go/jump to function at address a
@@ -258,7 +260,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | [  | (F T--)   |FOR: start a For/Next loop. if (T < F), swap T and F
 | I  | (--i)     |i: the index of the current FOR loop
 | p  | (i--)     |i: number to add to "I"
-| ^  | (--)      |un-loop, used with ';'. Example: rSrK>(^;)
+| ^  | (--)      |un-loop, use with ';'. Example: rSrK>(^;)
 | ]  | (--)      |NEXT: increment index (I) and loop if (I < T)
 
 
@@ -266,7 +268,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
-| ^  | (--)        |un-loop, used with ';'. Example: rX0_(^;)
+| ^  | (--)        |un-loop, used with ';'. Example: rX0=(^;)
 | }  | (f--f?)     |WHILE: if (f != 0) jump to matching '{', else drop f and continue
 
 
@@ -286,7 +288,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | bL  | (n--)        |BLOCK: Load code from block file (block-nnn.r4). This can be nested.
-| bA  | (--)         |BLOCK: Load Abort - stop loading the current block (for use if already loaded)
+| bA  | (--)         |BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
 | bE  | (n--)        |BLOCK: Edit block N (file name is block-nnn.r4)
 
 

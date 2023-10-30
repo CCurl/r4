@@ -107,7 +107,7 @@ void doFloat() {
         RCASE '<': FNOS = (FNOS<FTOS)  ? 1 : 0; pop();
         RCASE '>': FNOS = (FNOS>FTOS)  ? 1 : 0; pop();
         RCASE '=': FNOS = (FNOS==FTOS) ? 1 : 0; pop();
-        RCASE '~': FTOS = -FTOS;
+        RCASE '_': FTOS = -FTOS;
         RCASE '.': printStringF("%g", FTOS); pop();
         return; default:
             isError = 1;
@@ -237,7 +237,7 @@ next:
         NCASE '\\': pop();
         NCASE ']': if ((++L0)<L1) { pc=(addr)L2; NEXT; } /* fall through */
         case '^': lsp = 3; if (lsp<0) { lsp=0; }
-        NCASE '_': TOS = (TOS) ? 0 : 1;
+        NCASE '_': TOS = -TOS;
         NCASE '`': push(TOS);
             while ((*pc) && (*pc != ir)) { *(AOS++) = *(pc++); }
             *(AOS++) = 0; pc++;
@@ -281,7 +281,7 @@ next:
                 L0 = 0; L1 = 1; L2 = (CELL)pc;
         // NCASE '|':  /*FREE*/
         NCASE '}': if (TOS) { pc=(addr)L2; } else { pop(); lsp = (2<lsp) ? lsp-3 : 0; }
-        NCASE '~': TOS = -TOS;
+        NCASE '~': TOS = (TOS) ? 0 : 1;
         NEXT;
         default: printStringF("-[ir:%d?]-", ir); NEXT;
     }

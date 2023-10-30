@@ -10,7 +10,7 @@
 
 1 bL
 :CPH "Count of primes";
-:Q%%S_(\=;)%<(\;)PPcQ;
+:Q%%S~(\=;)%<(\;)PPcQ;
 :CP 4 s1 11[I 3 cQ (i1) 1p]r1;
 :EL xT$- " (" . " ms)";
 :CPB N"# primes in "#." ... " xT$ cCP . cEL;
