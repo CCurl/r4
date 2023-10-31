@@ -139,8 +139,8 @@ int main(int argc, char** argv) {
     vmInit();
     if (1 < argc) { input_fp = (CELL)fopen(argv[1], "rt"); }
     if (!input_fp) {
-        loadCode(":CODE 0U xIH1U[I C@#,59=(I P C@ 58=(N))];");
-        loadCode("0 bL");
+        loadCode(":C 0UxIH[IC@#,';=(IPC@':=(N))];");
+        loadCode("0bL");
     }
     while (!isBye) { loop(); }
     return 0;

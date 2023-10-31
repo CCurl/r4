@@ -20,9 +20,9 @@ addr rpop() { return (rsp) ? rstack[rsp--] : 0; }
 
 void vmInit() {
     dsp = rsp = lsp = locStart = 0;
-    for (int i = 0; i < NUM_REGS; i++) { reg[i] = 0; }
-    for (int i = 0; i < USER_SZ; i++) { user[i] = 0; }
+    for (int i = 0; i < NUM_REGS;  i++) { reg[i]  = 0; }
     for (int i = 0; i < NUM_FUNCS; i++) { func[i] = 0; }
+    for (int i = 0; i < USER_SZ;   i++) { user[i] = 0; }
     HERE = &user[0];
 }
 
@@ -230,7 +230,7 @@ next:
         NCASE '[': doFor();
         NCASE '\\': pop();
         NCASE ']': if ((++L0)<L1) { pc=(addr)L2; NEXT; } /* fall through */
-        case '^': lsp = 3; if (lsp<0) { lsp=0; }
+        case '^': lsp -= 3; if (lsp<0) { lsp=0; }
         NCASE '_': TOS = -TOS;
         NCASE '`': push(TOS);
             while ((*pc) && (*pc != ir)) { *(AOS++) = *(pc++); }
