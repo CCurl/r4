@@ -100,21 +100,23 @@ void rtrim(char* cp) {
 }
 
 void loadCode(const char* src) {
-    addr here = (addr)HERE;
-    addr tib = here;
+    addr in = HERE;
     while (*src) {
-        *(tib++) = *(src++);
+        char c = *(src++);
+        *(in++) = (c<32) ? 32 : c;
     }
-    *tib = 0;
-    run(here);
+    *in = 0;
+    run(HERE);
 }
 
 void doHistory(char* str) {
+#ifdef __HISTORY__
     FILE* fp = fopen("history.txt", "at");
     if (fp) {
         fputs(str, fp);
         fclose(fp);
     }
+#endif
 }
 
 void loop() {
@@ -137,7 +139,7 @@ int main(int argc, char** argv) {
     vmInit();
     if (1 < argc) { input_fp = (CELL)fopen(argv[1], "rt"); }
     if (!input_fp) {
-        loadCode(":C 0U xIH D[I C@#,59=(I P C@ 58=(N))];");
+        loadCode(":CODE 0U xIH1U[I C@#,59=(I P C@ 58=(N))];");
         loadCode("0 bL");
     }
     while (!isBye) { loop(); }

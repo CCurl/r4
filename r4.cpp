@@ -115,20 +115,12 @@ void doFloat() {
     }
 }
 
-int getFnum(int max) {
+int getRFNum(int max) {
     UCELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
         hash = (hash * 31) + *(pc++);
     }
     return hash & max;
-}
-
-int getRnum(int len) {
-    int x = 0;
-    while (BTWI(*pc, 'A', 'Z') && (len)) {
-        x = (x*26)+(*(pc++)-'A'); --len;
-    }
-    return x;
 }
 
 void doExt() {
@@ -174,14 +166,16 @@ next:
     if (isError) { return pc; }
     ir = *(pc++);
     switch (ir) {
-        case 0:  return pc;
-        NCASE ' ': while (*(pc) == ' ') { pc++; }
+        case  0:  return pc;
+        case ' ': while (*(pc) == ' ') { pc++; }
         NCASE '!': setCell((byte*)TOS, NOS); DROP2;
         NCASE '"': while (*(pc)!=ir) { printChar(*(pc++)); }; ++pc;
         NCASE '#': push(TOS);
         NCASE '$': t1 = TOS; TOS = NOS; NOS = t1;
         NCASE '%': push(NOS);
-        // NCASE '&': /*FREE*/
+        NCASE '&': t1 = getRFNum(MAX_REG);
+            if (reg[t1]) { printStringF("-redef-r:[%ld]-",t1); }
+            reg[t1] = pop();
         NCASE '\'': push(*(pc++));
         NCASE '(': if (!TOS) { skipTo(')', 0); } pop();
         NCASE ')': /* nothing to do here */
@@ -199,9 +193,9 @@ next:
                 FTOS=(double)TOS; ++pc;
                 while (BTWI(*pc, '0', '9')) { FTOS += (*pc-'0')/x; x*=10; ++pc; }
             }
-        NCASE ':': t1 = getFnum(MAX_FUNC);
+        NCASE ':': t1 = getRFNum(MAX_FUNC);
             while (*(pc) == ' ') { pc++; }
-            if (func[t1]) { printStringF("-redef:[%ld]-",t1); }
+            if (func[t1]) { printStringF("-redef-f:[%ld]-",t1); }
             func[t1] = (addr)pc;
             skipTo(';', 0);
             HERE = (HERE < pc) ? pc : HERE;
@@ -249,12 +243,12 @@ next:
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
             else if (ir == 'A') { loadAbort(); }            // Block Load Abort
             else if (ir == 'E') { doEditor(); }             // Block Edit
-        NCASE 'c': t1=getFnum(MAX_FUNC); if (func[t1]) {
+        NCASE 'c': t1=getRFNum(MAX_FUNC); if (func[t1]) {
             if (*pc != ';') { rpush(pc); locStart += 10; }
             pc = func[t1];
         }
         NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
-                  else { --reg[getRnum(REG_LEN)]; }
+                  else { --reg[getRFNum(MAX_REG)]; }
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
             else if (ir == 'C') { fileClose(); }
@@ -269,12 +263,12 @@ next:
                 TOS = (TOS * 16) + t1; ++pc;
             }
         NCASE 'i': if (isLocal(*pc)) { ++locals[*(pc++) - '0' + locStart]; }
-                  else { ++reg[getRnum(REG_LEN)]; }
+                  else { ++reg[getRFNum(MAX_REG)]; }
         NCASE 'p': L0 += pop();
         NCASE 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); }
-                  else { push(reg[getRnum(REG_LEN)]); }
+                  else { push(reg[getRFNum(MAX_REG)]); }
         NCASE 's': if (isLocal(*pc)) { locals[*(pc++)-'0'+locStart] = pop(); }
-                  else { reg[getRnum(REG_LEN)] = pop(); }
+                  else { reg[getRFNum(MAX_REG)] = pop(); }
         NCASE 'x': doExt();
         NCASE '{': if (!TOS) { skipTo('}', 0); NEXT; }
                 lsp += ((lsp+2) < LSTACK_SZ) ? 3 : 0;

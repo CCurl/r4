@@ -9,31 +9,30 @@ r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions
 The number of registers, functions, and memory are configurable and can be scaled as necessary to fit into a system of any size.
 
 For example, one might configure things like this:
-- On a Leonardo, 1-char register length,    32 functions,  1K of USER RAM, no  VARS RAM.
-- On an ESP8266, 2-char register length,   512 functions, 12K of USER RAM, 12K VARS RAM.
-- On a RPI Pico, 3-char register length, 32768 functions, 64K of USER RAM, 64K VARS RAM.
-- On a PC,       4-char register length, 65536 functions,  4M of USER RAM,  8M VARS RAM.
+- On a Leonardo,  32 registers,  32 functions,  1K of USER RAM, no  VARS RAM.
+- On an ESP8266, 512 registers, 512 functions, 12K of USER RAM, 12K VARS RAM.
+- On a RPI Pico, 16K registers, 16K functions, 64K of USER RAM, 64K VARS RAM.
+- On a PC,       64K registers, 64K functions, 96K of USER RAM,  2M VARS RAM.
 
 ### Registers
-- A register (a built-in variable) is identified by a number of UPPERCASE characters.
-- The number of registers is specified by identifying the length of a register name.
-- REG_LEN 1: 26, 2: 576 (26*26), 3: 17576 (26*26*26), 4: 456976 (26*26*26*26)
+- A register (a built-in variable) is identified by a sequence of UPPERCASE characters.
 - A register can be retrieved, set, incremented, or decremented in a single operation (r,s,i,d).
 
-### Functions
-A function is identified by any number of UPPERCASE characters.
+### Registers and Functions
+Registers and functions are identified by a sequence of UPPERCASE characters.
 
-r4 hashes function names and uses the hashed value as the index into the array of values or addresses.
+r4 hashes the name and uses the hashed value as the index into the array of values or addresses.
 
 This is very fast, but poses some limitations:
 - The number of functions need to be powers of 2.
 - r4 does NOT detect hash collisions as it does not keep key values.
   - My tests have indicated that for a large enough nmber of buckets, collisions are not common.
-  - As a notice that a collision may have occurred r3 prints "-redef-" when a function is re-defined.
+  - ':' prints "-redef-f[hash]-" when a function is re-defined.
+  - '&' prints "-redef-r[hash]-" when a register is re-defined.
 
 Here is the hashing function:
 ```
-int getFnum(int max) {
+int getRFnum(int max) {
     UCELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
         hash = ((hash * 31) + *(pc++);
@@ -186,10 +185,12 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| rABC | (--v)      |v: value of register ABC.
-| sABC | (v--)      |v: store v to register ABC.
-| iABC | (--)       |Increment register ABC.
-| dABC | (--)       |Decrement register ABC.
+| &ABC | (N--)  |Define register rABC with initial value of N.
+|      |        |If register rABC has a value <> 0, print "-redef-r[hash]-".
+| rABC | (--v)  |v: value of register ABC.
+| sABC | (v--)  |v: store v to register ABC.
+| iABC | (--)   |Increment register ABC.
+| dABC | (--)   |Decrement register ABC.
 
 
 ### LOCALS OPERATIONS
@@ -216,8 +217,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
-|       |        | - The function name id 
-|       |        | - If the slot for the 
+|       |        |If func rABC has a value <> 0, print "-redef-f[hash]-".
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
 | ;     | (--)   |Return: PC = rpop()
 

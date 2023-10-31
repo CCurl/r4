@@ -1,7 +1,7 @@
 xSR
 0(C:code, R:registers, U:Used bytes)
 0V sV
-:C 0U xIH D[I C@#,59=(I P C@ 58=(N))];
+:C 0U xIH[I C@#,59=(I P C@ 58=(N))];
 :R 0 xIR[I xIC*xIAR+@#s1(I 26S$26S$26S$ 'A+,'A+,'A+,'A+,": "r1.N)];
 :U xIH 0U-;
 :HLP 999 bL;
