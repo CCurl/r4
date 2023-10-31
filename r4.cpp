@@ -115,10 +115,10 @@ void doFloat() {
     }
 }
 
-int getRFNum(int max) {
-    UCELL hash = 5381;
+CELL getRFNum(CELL max) {
+    CELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
-        hash = (hash * 31) + *(pc++);
+        hash = (hash * 33) + *(pc++);
     }
     return hash & max;
 }
@@ -142,8 +142,10 @@ void doExt() {
             if (ir == 'R') { push(NUM_REGS); }
             if (ir == 'U') { push(USER_SZ); }
             if (ir == 'V') { push(VARS_SZ); }
+        RCASE 'h': t1=getRFNum(-1);
+            printStringF("-hash:%ld,reg:%ld,func:%ld-", t1, reg[t1&MAX_REG], func[t1&MAX_FUNC]);
         RCASE 'K': dumpStack();
-        RCASE 'S': if (*pc == 'R') { ++pc; vmInit(); }
+        RCASE 'S': if (*pc == 'R') { vmInit(); }
         RCASE 'M': push(doMicros());
         RCASE 'T': push(doMillis());
         RCASE 'W': if (0 < TOS) { doDelay(TOS); } pop();

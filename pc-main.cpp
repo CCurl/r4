@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
     vmInit();
     if (1 < argc) { input_fp = (CELL)fopen(argv[1], "rt"); }
     if (!input_fp) {
-        loadCode(":C 0UxIH[IC@#,';=(IPC@':=(N))];");
+        loadCode(":CD 0UxIH[IC@#,';=(IPC@':=(N))];");
         loadCode("0bL");
     }
     while (!isBye) { loop(); }

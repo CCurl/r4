@@ -24,18 +24,19 @@ Registers and functions are identified by a sequence of UPPERCASE characters.
 r4 hashes the name and uses the hashed value as the index into the array of values or addresses.
 
 This is very fast, but poses some limitations:
-- The number of functions need to be powers of 2.
+- The number of registers and functions need to be powers of 2.
 - r4 does NOT detect hash collisions as it does not keep key values.
-  - My tests have indicated that for a large enough nmber of buckets, collisions are not common.
-  - ':' prints "-redef-f[hash]-" when a function is re-defined.
-  - '&' prints "-redef-r[hash]-" when a register is re-defined.
+  - My tests have indicated that for a large enough number of buckets, collisions are not common.
+  - ':' prints "-redef-f[hash]-" when a function is redefined (a possible collision).
+  - '&' prints "-redef-r[hash]-" when a register is redefined (a possible collision).
+  - Use xh[NAME] to see info about [NAME].
 
-Here is the hashing function:
+Here is the hashing function (the djb2 hash function):
 ```
 int getRFnum(int max) {
     UCELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
-        hash = ((hash * 31) + *(pc++);
+        hash = (hash * 33) + *(pc++);
     }
     return hash & max;
 }
@@ -217,7 +218,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
-|       |        |If func rABC has a value <> 0, print "-redef-f[hash]-".
+|       |        |If function ABC has a value <> 0, print "-redef-f[hash]-".
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
 | ;     | (--)   |Return: PC = rpop()
 
@@ -316,6 +317,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xs    | (a--)     |PC: call "system(a)"
 | xSR   | (--)      |R4 System Reset
 | xT    | (--n)     |Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
+| xh[S] | (--)      |Print hash, reg, and func value for [S] (eg - xhALLOT or xhVH)
 | xM    | (--n)     |Time in microseconds (Arduino: micros())
 | xW    | (n--)     |Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    |r: a pseudo-random number between 0 and n (uses XOR-shift)

@@ -1,6 +1,5 @@
 xSR
-0(C:code, R:registers, U:Used bytes)
+0(CD:code, VH:vhere)
 0V sVH
-:C 0U xIH[IC@#,';=(IPC@':=(N))];
-:U xIH 0U-;
-:HLP 999 bL;
+:CD 0U xIH[IC@#,';=(IPC@':=(N))];
+:ALLOT rVH+sVH;
