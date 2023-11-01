@@ -68,6 +68,14 @@ void dumpStack() {
     printChar(')');
 }
 
+CELL doHash(CELL max) {
+    CELL hash = 5381;
+    while (BTWI(*pc, 'A', 'Z')) {
+        hash = (hash * 33) ^ *(pc++);
+    }
+    return hash & max;
+}
+
 void skipTo(byte to, int isCreate) {
     while (*pc) {
         ir = *(pc++);
@@ -115,14 +123,6 @@ void doFloat() {
     }
 }
 
-CELL getRFNum(CELL max) {
-    CELL hash = 5381;
-    while (BTWI(*pc, 'A', 'Z')) {
-        hash = (hash * 33) + *(pc++);
-    }
-    return hash & max;
-}
-
 void doExt() {
     ir = *(pc++);
     switch (ir) {
@@ -142,7 +142,7 @@ void doExt() {
             if (ir == 'R') { push(NUM_REGS); }
             if (ir == 'U') { push(USER_SZ); }
             if (ir == 'V') { push(VARS_SZ); }
-        RCASE 'h': t1=getRFNum(-1);
+        RCASE 'h': t1=doHash(-1);
             printStringF("-hash:%ld,reg:%ld,func:%ld-", t1, reg[t1&MAX_REG], func[t1&MAX_FUNC]);
         RCASE 'K': dumpStack();
         RCASE 'S': if (*pc == 'R') { vmInit(); }
@@ -175,7 +175,7 @@ next:
         NCASE '#': push(TOS);
         NCASE '$': t1 = TOS; TOS = NOS; NOS = t1;
         NCASE '%': push(NOS);
-        NCASE '&': t1 = getRFNum(MAX_REG);
+        NCASE '&': t1 = doHash(MAX_REG);
             if (reg[t1]) { printStringF("-redef-r:[%ld]-",t1); }
             reg[t1] = pop();
         NCASE '\'': push(*(pc++));
@@ -195,7 +195,7 @@ next:
                 FTOS=(double)TOS; ++pc;
                 while (BTWI(*pc, '0', '9')) { FTOS += (*pc-'0')/x; x*=10; ++pc; }
             }
-        NCASE ':': t1 = getRFNum(MAX_FUNC);
+        NCASE ':': t1 = doHash(MAX_FUNC);
             while (*(pc) == ' ') { pc++; }
             if (func[t1]) { printStringF("-redef-f:[%ld]-",t1); }
             func[t1] = (addr)pc;
@@ -245,12 +245,12 @@ next:
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
             else if (ir == 'A') { loadAbort(); }            // Block Load Abort
             else if (ir == 'E') { doEditor(); }             // Block Edit
-        NCASE 'c': t1=getRFNum(MAX_FUNC); if (func[t1]) {
+        NCASE 'c': t1=doHash(MAX_FUNC); if (func[t1]) {
             if (*pc != ';') { rpush(pc); locStart += 10; }
             pc = func[t1];
         }
         NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
-                  else { --reg[getRFNum(MAX_REG)]; }
+                  else { --reg[doHash(MAX_REG)]; }
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
             else if (ir == 'C') { fileClose(); }
@@ -265,12 +265,12 @@ next:
                 TOS = (TOS * 16) + t1; ++pc;
             }
         NCASE 'i': if (isLocal(*pc)) { ++locals[*(pc++) - '0' + locStart]; }
-                  else { ++reg[getRFNum(MAX_REG)]; }
+                  else { ++reg[doHash(MAX_REG)]; }
         NCASE 'p': L0 += pop();
         NCASE 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); }
-                  else { push(reg[getRFNum(MAX_REG)]); }
+                  else { push(reg[doHash(MAX_REG)]); }
         NCASE 's': if (isLocal(*pc)) { locals[*(pc++)-'0'+locStart] = pop(); }
-                  else { reg[getRFNum(MAX_REG)] = pop(); }
+                  else { reg[doHash(MAX_REG)] = pop(); }
         NCASE 'x': doExt();
         NCASE '{': if (!TOS) { skipTo('}', 0); NEXT; }
                 lsp += ((lsp+2) < LSTACK_SZ) ? 3 : 0;

@@ -31,12 +31,12 @@ This is very fast, but poses some limitations:
   - '&' prints "-redef-r[hash]-" when a register is redefined (a possible collision).
   - Use xh[NAME] to see info about [NAME].
 
-Here is the hashing function (the djb2 hash function):
+Here is the hashing function (the djb2a hash function using XOR):
 ```
 int getRFnum(int max) {
     UCELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
-        hash = (hash * 33) + *(pc++);
+        hash = (hash * 33) ^ *(pc++);
     }
     return hash & max;
 }
