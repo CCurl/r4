@@ -6,22 +6,53 @@ r4 is an interactive environment where the source code IS the machine code. Ther
 
 r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, floating point, and any amount of RAM.
 
-A register (a built-in variable) is identified by consecutive UPPERCASE characters. They can be retrieved, set, increment, or decremented in a single operation (r,s,i,d).
+The number of registers, functions, and memory are configurable and can be scaled as necessary to fit into a system of any size.
 
-r4 converts A-Z into a base 26 number, so A=0, AAAA=0, Z=25, BA=26. ZZZ=17575 (26^3-1), and ZZZZ=456975. This value is then used as an index into an array of registers or function vectors, So it is extremely fast, but not very memory-efficient. Modern PCs have enough memory to be able to support 4 char names. A Teensy4 can support 3 char names. A UNO might only be able to handle 1 char names.
+For example, one might configure things like this:
+- On a Leonardo,  32 registers,  32 functions,  1K of USER RAM, no  VARS RAM.
+- On an ESP8266, 512 registers, 512 functions, 12K of USER RAM, 12K VARS RAM.
+- On a RPI Pico, 16K registers, 16K functions, 64K of USER RAM, 64K VARS RAM.
+- On a PC,       64K registers, 64K functions, 96K of USER RAM,  2M VARS RAM.
 
-Function are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
+### Registers
+- A register (a built-in variable) is identified by a sequence of UPPERCASE characters.
+- A register can be retrieved, set, incremented, or decremented in a single operation (r,s,i,d).
 
-- 0(CPY (N F T--): copy N bytes from F to T)
-- :CPY s2 s1 0[r1 C@ r2 C! i1 i2];
-- 123 rF rT cCPY 0(copy 123 bytes from rF to rT)
+### Registers and Functions
+Registers and functions are identified by a sequence of UPPERCASE characters.
 
-The number of registers, functions, and user memory are configurable and can be scaled as necessary to fit into a system of any size. For example, on an ESP8266 board, a typical configuration might be 676 (26*26) registers and functions, and 24K of user RAM. In such a system, the register names would be in the range of [AA..ZZ], and function names would be in the range of [AA..ZZ]. On a Arduino Leonardo, you might configure the system to have 13 registers, 26 functions, and 1K user RAM. On a RPI Pico, you can have 676 registers and functions, with 64K RAM.
+r4 hashes the name and uses the hashed value as the index into the array of values or addresses.
+
+This is very fast, but poses some limitations:
+- The number of registers and functions need to be powers of 2.
+- r4 does NOT detect hash collisions as it does not keep key values.
+  - My tests have indicated that for a large enough number of buckets, collisions are not common.
+  - ':' prints "-redef-f[hash]-" when a function is redefined (a possible collision).
+  - '&' prints "-redef-r[hash]-" when a register is redefined (a possible collision).
+  - Use xh[NAME] to see info about [NAME].
+
+Here is the hashing function (the djb2a hash function using XOR):
+```
+int getRFnum(int max) {
+    UCELL hash = 5381;
+    while (BTWI(*pc, 'A', 'Z')) {
+        hash = (hash * 33) ^ *(pc++);
+    }
+    return hash & max;
+}
+```
+
+Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
+
+- 0(COPY (N F T--): copy N bytes from F to T)
+- :COPY s2 s1 0[r1 C@ r2 C! i1 i2];
+- 123 rF rT cCOPY 0(copy 123 bytes from rF to rT)
 
 - Example 1: "Hello World!" - the standard "hello world" program.
-- Example 2: 1 sA 2 sB 3 sC rA rB rC ++ . -would print 6.
+- Example 2: :MIN %%>($)\; :MAX %%<($)\;
+- Example 3: :BTW s3 s2 s1 r1 r2 > r1 r3 < b&;
 - Example 4: 32 126\[13,10,I#." - ",\] - would print the ASCII table
-- Example 3: The typical Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
+- Example 5: The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
     1000 sS 13 xPO 1{\ 0 1[I 13 xPWD rS xW] K? 0=} K@ \
 
@@ -55,11 +86,12 @@ There are 2 memory areas in r4:
 
 ## Locals
 
-r4 allocates 10 local variables (0-9) per function call. They are referred to, and have the same operations, like registers (r,s,i,d). For example, i4 increments local #4.
+r4 allocates 10 local variables (0-9) per function call. They are referred to like registers and have the same operations (r,s,i,d). For example, i4 increments local #4.
 
 ## WiFi support
 
-Some boards, for example the ESP8266, support WiFi. For those boards, the __WIFI__ directive can be #defined to enable the boards WiFi.
+Some boards, (eg - the ESP8266), support WiFi. For those boards, the __WIFI__ directive can be #defined to enable the boards WiFi. This adds additional opcodes.
+
 Note that those boards usually also have watchdogs that need to be enabled via the __WATCHDOG__ #define.
 
 ## LittleFS support
@@ -108,6 +140,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | F= | (a b--f)  |f: if (a = b), else 0
 | F> | (a b--f)  |f: if (a > b), else 0
 | F. | (n--)     |Float: print top of fload stack
+| F_ | (a--b)    |b: -a
 
 
 ### BIT MANIPULATION OPERATIONS
@@ -128,7 +161,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | \  | (a b--a)       |Drop TOS (DROP)
 | $  | (a b--b a)     |Swap top 2 stack items (SWAP)
 | %  | (a b--a b a)   |Push 2nd (OVER)
-| ~  | (a--b)         |b: -a (NEGATE)
+| _  | (a--b)         |b: -a (NEGATE)
 | D  | (a--b)         |b: a-1 (1-)
 | P  | (a--b)         |b: a+1 (1+)
 | A  | (a--b)         |b: absolute value of a (ABS)
@@ -148,17 +181,17 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### REGISTERS OPERATIONS
 #### NOTES:
-- A register reference consecutive UPPERCASE characters.
+- A register reference is consecutive UPPERCASE characters.
 - The number of registers is controlled by the NUM_REGS #define in "config.h"
-- Register A is the same as register AAA, B <-> AAB, Z <-> AAZ
-- r"TEST" will push the value of register AAA and then print TEST
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| rABC | (--v)      |v: value of register ABC.
-| sABC | (v--)      |v: store v to register ABC.
-| iABC | (--)       |Increment register ABC.
-| dABC | (--)       |Decrement register ABC.
+| &ABC | (N--)  |Define register rABC with initial value of N.
+|      |        |If register rABC has a value <> 0, print "-redef-r[hash]-".
+| rABC | (--v)  |v: value of register ABC.
+| sABC | (v--)  |v: store v to register ABC.
+| iABC | (--)   |Increment register ABC.
+| dABC | (--)   |Decrement register ABC.
 
 
 ### LOCALS OPERATIONS
@@ -177,16 +210,15 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### FUNCTIONS OPERATIONS
 #### NOTES:
-- A function reference is consecutive UPPERCASE characters.
+- A function reference is any number of consecutive UPPERCASE characters.
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h"
-- Function A is the same as function AAA, B <-> AAB, Z <-> AAZ
-- :"TEST"; will define function #0 (A).
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
+|       |        |If function ABC has a value <> 0, print "-redef-f[hash]-".
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
 | ;     | (--)   |Return: PC = rpop()
 
@@ -194,18 +226,19 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 ### INPUT/OUTPUT OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| .     | (N--)    |Output N as a decimal number
+| .     | (N--)    |Output N as a decimal number.
 | ,     | (N--)    |Output N as a character (EMIT)
 | "str" | (--)     |Output characters until the next '"'
 | B     | (--)     |Output a single SPACE (32,)
 | N     | (--)     |Output a single NEWLINE (13,10,)
 | K?    | (--f)    |f: non-zero if char is ready to be read, else 0.
 | K@    | (--n)    |n: Key char, wait if no char is available.
-| 0..9  | (--N)    |Scan DECIMAL number N until non digit
+| <N>   | (--N)    |Scan DECIMAL number N until non digit
+| <N.N> | (--F)    |- Use NNN.NNN (eg - 3.14) to enter a floating point number F
 |       |          |- to specify multiple values, separate them by space (4711 3333)
-|       |          |- to enter a negative number, use "negate" (eg - 490~)
+|       |          |- to enter a negative number, use "negate" (eg - 490_)
 |hXXX   | (--N)    |Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
-| 'C    | (n)      |n: the ASCII value of C
+| 'C    | (--n)    |n: the ASCII value of C
 | `x`   | (a--a b) |Copy following chars until closing '`' to (a++).
 |       |          |- a: address, b next byte after trailing NULL.
 
@@ -216,7 +249,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | <  | (a b--f)    |f: if (a < b) then 1, else 0;
 | =  | (a b--f)    |f: if (a = b) then 1, else 0;
 | >  | (a b--f)    |f: if (a > b) then 1, else 0;
-| _  | (x--f)      |f: if (x = 0) then 1, else 0; (logical NOT)
+| ~  | (x--f)      |f: if (x = 0) then 1, else 0; (logical NOT)
 | (  | (f--)       |if (f != 0), execute code in '()', else skip to matching ')'
 | X  | (a--)       |if (a != 0), execute/call function at address a
 | G  | (a--)       |if (a != 0), go/jump to function at address a
@@ -228,7 +261,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | [  | (F T--)   |FOR: start a For/Next loop. if (T < F), swap T and F
 | I  | (--i)     |i: the index of the current FOR loop
 | p  | (i--)     |i: number to add to "I"
-| ^  | (--)      |un-loop, used with ';'. Example: rSrK>(^;)
+| ^  | (--)      |un-loop, use with ';'. Example: rSrK>(^;)
 | ]  | (--)      |NEXT: increment index (I) and loop if (I < T)
 
 
@@ -236,7 +269,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
-| ^  | (--)        |un-loop, used with ';'. Example: rX0_(^;)
+| ^  | (--)        |un-loop, used with ';'. Example: rX0=(^;)
 | }  | (f--f?)     |WHILE: if (f != 0) jump to matching '{', else drop f and continue
 
 
@@ -250,8 +283,13 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | fW  | (c fh--n)    |FILE: Write, fh: fileHandle, c: char, n: num
 | fS  | (--)         |FILE: Save Code
 | fL  | (--)         |FILE: Load Code
+
+
+### BLOCK OPERATIONS
+| OP |Stack |Description|
+|:-- |:--   |:--|
 | bL  | (n--)        |BLOCK: Load code from block file (block-nnn.r4). This can be nested.
-| bA  | (--)         |BLOCK: Load Abort - stop loading the current block (for use if already loaded)
+| bA  | (--)         |BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
 | bE  | (n--)        |BLOCK: Edit block N (file name is block-nnn.r4)
 
 
@@ -279,6 +317,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xs    | (a--)     |PC: call "system(a)"
 | xSR   | (--)      |R4 System Reset
 | xT    | (--n)     |Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
+| xh[S] | (--)      |Print hash, reg, and func value for [S] (eg - xhALLOT or xhVH)
 | xM    | (--n)     |Time in microseconds (Arduino: micros())
 | xW    | (n--)     |Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    |r: a pseudo-random number between 0 and n (uses XOR-shift)

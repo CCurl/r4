@@ -24,10 +24,11 @@
 
 1 bL
 :HD N"The Mandelbrot Set";
-:MC rA#*rS/sC rB#*rS/sD rCrD+rK>(rJsM;)rArB*100/rY+sB rCrD-rX+sA iJ;
-:LP 0sA 0sB 0sJ rS sM 1{\cMC iT rJ rM<};
+:MC iT rA#*rS/sC rB#*rS/sD rCrD+rK>(rSp;)rArB*100/rY+sB rCrD-rX+sAiJ;
+:LP 0sA 0sB 0sJ 0 rS[cMC];
 :WK cLP rJ 40+ #126>(\32),;
-:XL 490~ sX 1 95[  cWK rX  8+ sX];
-:YL 340~ sY 1 35[N cXL rY 20+ sY];
+:XL 490_ sX 1 95[  cWK rX  8+ sX];
+:YL 340_ sY 1 35[N cXL rY 20+ sY];
 :MB cH 0sT xT cYL xT$- N rT." calculations, " . " ms";
-200 sS 1000000 sK cMB
+:RR 888bL;
+200 &S 1000000 &K cMB

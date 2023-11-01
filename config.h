@@ -22,8 +22,8 @@
   #define LSTACK_SZ       30
   #define USER_SZ        (128*1024)
   #define VARS_SZ        (256*1024)
-  #define NUM_REGS       (26*26*26*26)
-  #define NUM_FUNCS      (26*26*26*26)
+  #define NUM_REGS        0x10000
+  #define NUM_FUNCS       0x10000
   #define __FILES__
   #define __BOARD__      PC
   #define __EDITOR__
@@ -34,13 +34,16 @@
   #define LSTACK_SZ       30
   #define USER_SZ        ( 64*1024)
   #define VARS_SZ        (128*1024)
-  #define NUM_REGS       (26*26*26)
-  #define NUM_FUNCS      (26*26*26)
+  #define NUM_REGS        0x8000
+  #define NUM_FUNCS       0x8000
   #define __LITTLEFS__
   #define __BOARD__      TEEENSY4
   #define __EDITOR__
   #define __SERIAL__      1
   #define mySerial        Serial
 #endif
+
+#define MAX_FUNC         (NUM_FUNCS-1)
+#define MAX_REG          (NUM_REGS-1)
 
 #endif
