@@ -48,6 +48,8 @@ Functions are defined in a Forth-like style, using ':', and you call them using 
 - :COPY s2 s1 0[r1 C@ r2 C! i1 i2];
 - 123 rF rT cCOPY 0(copy 123 bytes from rF to rT)
 
+### Other Examples
+``
 - Example 1: "Hello World!" - the standard "hello world" program.
 - Example 2: :MIN %%>($)\; :MAX %%<($)\;
 - Example 3: :BTW s3 s2 s1 r1 r2 > r1 r3 < b&;
@@ -55,8 +57,8 @@ Functions are defined in a Forth-like style, using ':', and you call them using 
 - Example 5: The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
     1000 sS 13 xPO 1{\ 0 1[I 13 xPWD rS xW] K? 0=} K@ \
-
-Examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
+```
+More examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
 
 ## Why did I create r4?
 
