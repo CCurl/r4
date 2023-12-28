@@ -53,7 +53,7 @@ Functions are defined in a Forth-like style, using ':', and you call them using 
 - Example 1: "Hello World!" - the standard "hello world" program.
 - Example 2: :MIN %%>($)\; :MAX %%<($)\;
 - Example 3: :BTW s3 s2 s1 r1 r2 > r1 r3 < b&;
-- Example 4: 32 126\[13,10,I#." - ",\] - would print the ASCII table
+- Example 4: 32 127[I#"%n%d: [%c]"] - would print the ASCII table
 - Example 5: The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
     1000 sS 13 xPO 1{\ 0 1[I 13 xPWD rS xW] K? 0=} K@ \
