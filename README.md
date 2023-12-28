@@ -230,7 +230,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 |:-- |:--   |:--|
 | .     | (N--)    |Output N as a decimal number.
 | ,     | (N--)    |Output N as a character (EMIT)
-| "str" | (--)     |Output characters until the next '"'
+| "str" | (--)     |Output formatted characters until the next '"' see (1)
 | B     | (--)     |Output a single SPACE (32,)
 | N     | (--)     |Output a single NEWLINE (13,10,)
 | K?    | (--f)    |f: non-zero if char is ready to be read, else 0.
@@ -244,6 +244,20 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | `x`   | (a--a b) |Copy following chars until closing '`' to (a++).
 |       |          |- a: address, b next byte after trailing NULL.
 
+(1) Output formatting:
+- Similar to 'C' formatting, the '%' char additional processing.
+  - %c - Output TOS as a char
+  - %b - Output TOS as a number in base 2
+  - %d - Output TOS as a number in base 10
+  - %x - Output TOS as a number in base 16
+  - %B - Output NOS as a number in base TOS
+  - %s - Output TOS as a string
+  - %e - Output an escape (27)
+  - %q - Output a quote (34)
+  - %n - Output a CR/LF (13,10)
+  - %f - Output TOS as a float using "%f"
+  - %g - Output TOS as a float using "%g"
+  - any other char after the % is output as is (eg "%%" outputs a single '%')
 
 ### LOGICAL/CONDITIONS/FLOW CONTROL OPERATIONS
 | OP |Stack |Description|

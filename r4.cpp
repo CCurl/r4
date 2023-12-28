@@ -83,9 +83,9 @@ addr dotQ(addr str) {
             else if (c == 'n') { printChar(13); printChar(10); }
             else if (c == 'q') { printChar('"'); }
             else if (c == 's') { printString((char*)pop()); }
-            else if (c == 'B') { int t = (int)pop(); printBase(pop(), t); }
             else if (c == 'b') { printBase(pop(), 2); }
             else if (c == 'x') { printBase(pop(), 16); }
+            else if (c == 'B') { int t = (int)pop(); printBase(pop(), t); }
             else { printChar(c); }
         }
         else { printChar(c); }
