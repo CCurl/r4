@@ -245,7 +245,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 |       |          |- a: address, b next byte after trailing NULL.
 
 (1) Output formatting:
-- Similar to 'C' formatting, the '%' char additional processing.
+- Similar to 'C' formatting, the '%' char identifies additional processing.
   - %c - Output TOS as a char
   - %b - Output TOS as a number in base 2
   - %d - Output TOS as a number in base 10
