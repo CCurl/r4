@@ -34,13 +34,6 @@ typedef union { double f; CELL i; char *c; } ST_T;
 #define isFunc(n)     ((0 <= (n)) && ((n) < NUM_FUNCS))
 #define ABS(x)        ((x < 0) ? -x : x)
 
-typedef struct {
-    addr start;
-    CELL from;
-    CELL to;
-    addr end;
-} LOOP_ENTRY_T;
-
 extern byte isBye;
 extern byte isError;
 extern addr HERE;
