@@ -13,7 +13,6 @@ typedef byte *addr;
 typedef union { double f; CELL i; char *c; } ST_T;
 
 #define CELL_SZ    sizeof(CELL)
-#define INDEX      reg[8]
 #define TOS        dstack[dsp].i
 #define NOS        dstack[dsp-1].i
 #define AOS        dstack[dsp].c
@@ -22,7 +21,6 @@ typedef union { double f; CELL i; char *c; } ST_T;
 #define L0         lstack[lsp]
 #define L1         lstack[lsp-1]
 #define L2         lstack[lsp-2]
-#define DROP1      pop()
 #define DROP2      pop(); pop()
 #define NEXT       goto next
 #define NCASE      NEXT; case
@@ -30,7 +28,6 @@ typedef union { double f; CELL i; char *c; } ST_T;
 #define RCASE      return; case
 #define BTWI(n,x,y)   (((x) <= (n)) && ((n) <= (y)))
 #define isLocal(x)    BTWI(x,'0','9')
-#define isRegChar(x)  BTWI(x,'A','Z')
 #define isReg(n)      ((0 <= (n)) && ((n) < NUM_REGS))
 #define isFunc(n)     ((0 <= (n)) && ((n) < NUM_FUNCS))
 #define ABS(x)        ((x < 0) ? -x : x)
