@@ -60,6 +60,40 @@ void printStringF(const char* fmt, ...) {
     printString(buf);
 }
 
+void printBase(CELL v, int b) {
+    char x[65], *c=&x[64], n=((v<0) && (b==10))?1:0;
+    UCELL u=(n)?-v:v;
+    *(c) = 0;
+    do { *(--c)=(u%b)+'0'; if (*c>'9') *c+=7; u/=b; } while (u);
+    if (n) { *(--c)='-'; }
+    printString(c);
+}
+
+addr dotQ(addr str) {
+    addr y = str ? str : pc;
+    while (*y && (*y != '"')) {
+        char c = *(y++);
+        if (c == '%') {
+            c = *(y++);
+            if (c == 'd') { printBase(pop(), 10); }
+            else if (c == 'c') { printChar((int)pop()); }
+            else if (c == 'e') { printChar(27); }
+            else if (c == 'f') { printStringF("%f", FTOS); dsp--; }
+            else if (c == 'g') { printStringF("%g", FTOS); dsp--; }
+            else if (c == 'n') { printChar(13); printChar(10); }
+            else if (c == 'q') { printChar('"'); }
+            // else if (c == 's') { printString((char*)&pop()); }
+            else if (c == 'B') { int t = pop(); printBase(pop(), t); }
+            else if (c == 'b') { printBase(pop(), 2); }
+            else if (c == 'x') { printBase(pop(), 16); }
+            else { printChar(c); }
+        }
+        else { printChar(c); }
+    }
+    return y;
+}
+
+
 void dumpStack() {
     printChar('(');
     for (int i = 1; i <= dsp; i++) {
@@ -171,7 +205,7 @@ next:
         case  0:  return pc;
         case ' ': while (*(pc) == ' ') { pc++; }
         NCASE '!': setCell((byte*)TOS, NOS); DROP2;
-        NCASE '"': while (*(pc)!=ir) { printChar(*(pc++)); }; ++pc;
+        NCASE '"': pc = dotQ(pc); if (*pc == ir) { ++pc; }
         NCASE '#': push(TOS);
         NCASE '$': t1 = TOS; TOS = NOS; NOS = t1;
         NCASE '%': push(NOS);
