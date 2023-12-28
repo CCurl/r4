@@ -3,11 +3,12 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
 
-typedef long CELL;
-typedef unsigned long UCELL;
-typedef unsigned short ushort;
-typedef unsigned char byte;
+typedef int32_t CELL;
+typedef uint32_t UCELL;
+typedef uint16_t ushort;
+typedef uint8_t byte;
 typedef byte *addr;
 typedef union { double f; CELL i; char *c; } ST_T;
 

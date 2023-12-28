@@ -83,7 +83,7 @@ addr dotQ(addr str) {
             else if (c == 'n') { printChar(13); printChar(10); }
             else if (c == 'q') { printChar('"'); }
             else if (c == 's') { printString((char*)pop()); }
-            else if (c == 'B') { int t = pop(); printBase(pop(), t); }
+            else if (c == 'B') { int t = (int)pop(); printBase(pop(), t); }
             else if (c == 'b') { printBase(pop(), 2); }
             else if (c == 'x') { printBase(pop(), 16); }
             else { printChar(c); }
@@ -132,7 +132,7 @@ void doFor() {
     L0 = (f<t)?f:t; L1 = (t>f)?t:f; L2 = (CELL)pc;
 }
 
-int isOk(int exp, const char* msg) {
+int isOk(CELL exp, const char* msg) {
     isError = (exp == 0); if (isError) { printString(msg); }
     return (isError == 0);
 }

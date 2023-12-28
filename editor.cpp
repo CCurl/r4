@@ -188,7 +188,7 @@ int processEditorChar(char c) {
 
 void doEditor() {
     int ok = 1;
-    blkNum = pop();
+    blkNum = (int)pop();
     blkNum = (0 <= blkNum) ? blkNum : 0;
     CLS();
     CursorOff();

@@ -8,7 +8,7 @@
 #ifdef __WINDOWS__
 CELL doMillis() { return (CELL)GetTickCount(); }
 CELL doMicros() { return (CELL)doMillis()*1000; }
-void doDelay(CELL ms) { Sleep(ms); }
+void doDelay(CELL ms) { Sleep((DWORD)ms); }
 int qkey() { return _kbhit(); }
 int key() { return _getch(); }
 #else

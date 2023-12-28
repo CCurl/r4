@@ -74,7 +74,7 @@ int fileReadLine(CELL fh, char *buf) {
     byte c, len = 0;
     while (1) {
         *(buf) = 0;
-        int n = fread(&c, 1, 1, (FILE *)fh);
+        CELL n = fread(&c, 1, 1, (FILE *)fh);
         if (n == 0) { return -1; }
         if (c == 10) { break; }
         if (c == 13) { break; }
@@ -104,7 +104,7 @@ addr codeLoad(addr user, addr here) {
     FILE *fh = fopen("code.r4", "rt");
     if (fh) {
         vmInit();
-        int num = fread(user, 1, USER_SZ, fh);
+        CELL num = fread(user, 1, USER_SZ, fh);
         fclose(fh);
         here = user + num;
         run(user);
@@ -120,7 +120,7 @@ addr codeLoad(addr user, addr here) {
 void codeSave(addr user, addr here) {
     FILE* fh = fopen("code.r4", "wt");
     if (fh) {
-        int count = here - user;
+        int count = (int)(here - user);
         fwrite(user, 1, count, fh);
         fclose(fh);
         printStringF("-saved (%d)-", count);
@@ -134,7 +134,7 @@ void codeSave(addr user, addr here) {
 // Loads a block file
 void blockLoad(CELL num) {
     char buf[24];
-    sprintf(buf, "block-%03ld.r4", num);
+    sprintf(buf, "block-%03d.r4", (int)num);
     FILE* fp = fopen(buf, "rb");
     if (fp) {
         if (input_fp) { fpush(input_fp); }
@@ -154,7 +154,7 @@ int saveBlock(int blk, char* buf, int sz) {
     sprintf(fn, "block-%03d.r4", blk);
     FILE* fp = fopen(fn, "wb");
     if (fp) {
-        int n = fwrite(buf, 1, sz, fp);
+        fwrite(buf, 1, sz, fp);
         fclose(fp);
         return 1;
     } else {
@@ -171,7 +171,7 @@ int readBlock(int blk, char* buf, int sz) {
     if (fp) {
         // Read in one byte at a time, to strip out CR
         while (cn < sz) {
-            int n = fread(fn, 1, 1, fp);
+            CELL n = fread(fn, 1, 1, fp);
             if (n == 0) { break; }
             if (fn[0] == 13) { continue; }
             buf[cn++] = fn[0];
