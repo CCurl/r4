@@ -5,8 +5,8 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-typedef int32_t CELL;
-typedef uint32_t UCELL;
+typedef long CELL;
+typedef unsigned long UCELL;
 typedef uint16_t ushort;
 typedef uint8_t byte;
 typedef byte *addr;
