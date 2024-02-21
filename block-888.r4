@@ -31,4 +31,5 @@
 :YL 340_ sY 1 35[N cXL rY 20+ sY];
 :MB cH 0sT xT cYL xT$- N rT." calculations, " . " ms";
 :RR 888bL;
-200 &S 1000000 &K cMB
+:ED 888bE;
+200 &S 1000000000 &K cMB

@@ -93,7 +93,6 @@ addr dotQ(addr str) {
     return y;
 }
 
-
 void dumpStack() {
     printChar('(');
     for (int i = 1; i <= dsp; i++) {

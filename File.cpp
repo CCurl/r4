@@ -149,25 +149,12 @@ void loadAbort() {
     }
 }
 
-int saveBlock(int blk, char* buf, int sz) {
-    char fn[24];
-    sprintf(fn, "block-%03d.r4", blk);
-    FILE* fp = fopen(fn, "wb");
-    if (fp) {
-        fwrite(buf, 1, sz, fp);
-        fclose(fp);
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-int readBlock(int blk, char* buf, int sz) {
+int readBlock(int blk, char *buf, int sz) {
     int cn = 0;
     char fn[24];
     sprintf(fn, "block-%03d.r4", blk);
     for (int i = 0; i < sz; i++) { buf[i] = 0; }
-    FILE* fp = fopen(fn, "rb");
+    FILE *fp = fopen(fn, "rb");
     if (fp) {
         // Read in one byte at a time, to strip out CR
         while (cn < sz) {
@@ -177,28 +164,19 @@ int readBlock(int blk, char* buf, int sz) {
             buf[cn++] = fn[0];
         }
         fclose(fp);
-        return 1;
     }
-    else {
-        return 0;
-    }
+    return fp ? 1 : 0;
 }
 
-int writeBlock(int blk, char* buf, int sz) {
+int writeBlock(int blk, char *buf, int sz) {
     char fn[24];
     sprintf(fn, "block-%03d.r4", blk);
     FILE *fp = fopen(fn, "wb");
     if (fp) {
-        for (int i=0; i<sz; i++) {
-            if (!buf[i]) { break; }
-            fwrite(&buf[i], 1, 1, fp);
-        }
+        fwrite(buf, 1, sz, fp);
         fclose(fp);
-        return 1;
     }
-    else {
-        return 0;
-    }
+    return fp ? 1 : 0;
 }
 
 #endif // __FILES__
