@@ -283,7 +283,7 @@ next:
             pc = func[t1];
         }
         NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
-                  else { --reg[doHash(MAX_REG)]; }
+                   else { --reg[doHash(MAX_REG)]; }
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
             else if (ir == 'C') { fileClose(); }
@@ -298,12 +298,12 @@ next:
                 TOS = (TOS * 16) + t1; ++pc;
             }
         NCASE 'i': if (isLocal(*pc)) { ++locals[*(pc++) - '0' + locStart]; }
-                  else { ++reg[doHash(MAX_REG)]; }
+                   else { ++reg[doHash(MAX_REG)]; }
         NCASE 'p': L0 += pop();
         NCASE 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); }
-                  else { push(reg[doHash(MAX_REG)]); }
+                   else { push(reg[doHash(MAX_REG)]); }
         NCASE 's': if (isLocal(*pc)) { locals[*(pc++)-'0'+locStart] = pop(); }
-                  else { reg[doHash(MAX_REG)] = pop(); }
+                   else { reg[doHash(MAX_REG)] = pop(); }
         NCASE 'x': doExt();
         NCASE '{': if (!TOS) { skipTo('}', 0); NEXT; }
                 lsp += ((lsp+2) < LSTACK_SZ) ? 3 : 0;
