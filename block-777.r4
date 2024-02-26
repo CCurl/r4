@@ -16,11 +16,14 @@
 :CPB N"# primes in "#." ... " xT$ cCP . cEL;
 :CPL 500 s1 1[r1 cCPB r1#+s1]\;
 :MIL 1000#**;
+:FIB #2<(\1;)1-#cFIB$1-cFIB+;
 :BB 8 cMIL cCPB;
 
 :DBM N"Decrement loop, "#." iterations ... "xT${D}cEL;
 :EFL N"Empty for loop, "#." iterations ... "xT$0[]cEL;
+:FIBBM #" %nFIB for %d ... " xT$ cFIB . cEL;
 
 cCPH 13 cCPL
 250 cMIL cDBM
 250 cMIL cEFL
+35 cFIBBM

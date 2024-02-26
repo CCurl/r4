@@ -19,7 +19,7 @@ int writeBlock(int blk, char* buf, int sz) { noFile(); return 0; }
 #endif // __LITTLEFS__
 #else
 // shared with __LITTLEFS__
-static byte fdsp = 0;
+static int fdsp = 0;
 static CELL fstack[STK_SZ + 1];
 CELL input_fp;
 
