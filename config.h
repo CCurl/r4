@@ -17,9 +17,9 @@
 #endif
 
 #ifdef __PC__
-  #define STK_SZ          32
-  #define RSTK_SZ         16
-  #define LSTACK_SZ       30
+  #define STK_SZ         256
+  #define RSTK_SZ        256
+  #define LSTACK_SZ       60
   #define USER_SZ        (128*1024)
   #define VARS_SZ        (256*1024)
   #define NUM_REGS        0x10000
@@ -30,7 +30,7 @@
 #else
   /* Dev Board */
   #define STK_SZ          32
-  #define RSTK_SZ         16
+  #define RSTK_SZ         32
   #define LSTACK_SZ       30
   #define USER_SZ        ( 64*1024)
   #define VARS_SZ        (128*1024)

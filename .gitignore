@@ -400,3 +400,4 @@ FodyWeavers.xsd
 # r4 ignore files
 history.txt
 r4
+.r4.cpp.kate-swp
