@@ -1,4 +1,4 @@
-// MINT - A Minimal Interpreter - for details, see https://github.com/monsonite/MINT
+// r4 - A minimal human-readable interpreter
 
 #include "r4.h"
 #include <stdlib.h>
@@ -12,6 +12,7 @@ void doDelay(CELL ms) { Sleep((DWORD)ms); }
 int qkey() { return _kbhit(); }
 int key() { return _getch(); }
 #else
+// Support for Linux
 CELL doMillis() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -28,10 +29,8 @@ void doDelay(CELL ms) {
     ts.tv_nsec = (ms % 1000) * 1000000;
     nanosleep(&ts, NULL); 
 }
-// Support for Linux
 #include <unistd.h>
 #include <termios.h>
-#define isPC
 static struct termios normT, rawT;
 static int isTtyInit = 0;
 void ttyInit() {
@@ -93,7 +92,7 @@ void ok() {
 }
 
 void rtrim(char* cp) {
-    char* x = cp;
+    char *x = cp;
     while (*x) { ++x; }
     --x;
     while (*x && (*x < 32) && (cp <= x)) { *(x--) = 0; }

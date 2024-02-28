@@ -1,4 +1,4 @@
-// R4 - A Minimal Interpreter
+// r4 - A minimal human-readable interpreter
 
 #include "r4.h"
 #include "config.h"
@@ -93,7 +93,6 @@ addr dotQ(addr str) {
     return y;
 }
 
-
 void dumpStack() {
     printChar('(');
     for (int i = 1; i <= dsp; i++) {
@@ -127,7 +126,7 @@ void skipTo(byte to, int isCreate) {
 }
 
 void doFor() {
-    CELL f = pop(), t=pop();
+    CELL f = pop(), t = pop();
     lsp += 3; if (LSTACK_SZ < lsp) { printString("-[lsp]-"); lsp=LSTACK_SZ; }
     L0 = (f<t)?f:t; L1 = (t>f)?t:f; L2 = (CELL)pc;
 }
