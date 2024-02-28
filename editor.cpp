@@ -20,8 +20,8 @@ void doEditor() { printString("-noEdit-"); }
 #define EDCH(l,o)     EDCHAR(scrTop+l,o)
 #define SHOW(l,v)     lineShow[(scrTop+l)]=v
 #define DIRTY(l)      isDirty=1; SHOW(l,1)
-#define max(a,b) (a)>(b)?(a):(b)
-#define min(a,b) (a)<(b)?(a):(b)
+#define MAX(a,b) (a)>(b)?(a):(b)
+#define MIN(a,b) (a)<(b)?(a):(b)
 
 #define strEq(a,b)  (strcmp(a,b)==0)
 #define strCpy(a,b) strcpy(a,b)
@@ -49,9 +49,9 @@ int edKey() { return key(); }
 void fill(char *x, int c, int n) { while (0 < n--) { *(x++)=c; } }
 
 void NormLO() {
-    line = min(max(line, 0), SCR_LINES-1);
-    off = min(max(off, 0), LLEN-1);
-    scrTop = min(max(scrTop, 0), MAX_LINES-SCR_LINES);
+    line = MIN(MAX(line, 0), SCR_LINES-1);
+    off = MIN(MAX(off, 0), LLEN-1);
+    scrTop = MIN(MAX(scrTop, 0), MAX_LINES-SCR_LINES);
 }
 
 void showAll() {
@@ -68,7 +68,7 @@ void showCursor() {
     char c = EDCH(line, off);
     GotoXY(off + 1, line + 1);
     Color(0, 47);
-    printChar(max(c,32));
+    printChar(MAX(c,32));
     Color(7, 0);
 }
 
@@ -157,7 +157,6 @@ void toBuf() {
 }
 
 void edRdBlk(int force) {
-    char fn[32];
     fill(theBlock, 0, BLOCK_SZ);
     readBlock(blkNum, theBlock, BLOCK_SZ);
     toBuf();
@@ -337,7 +336,7 @@ int processEditorChar(int c) {
         BCASE 'p': mv(1,-99); insertLine(); strCpy(&EDCH(line,0), yanked);
         BCASE 'P': mv(0,-99); insertLine(); strCpy(&EDCH(line,0), yanked);
         BCASE '+': edSvBlk(0); ++blkNum; edRdBlk(0); line=off=0;
-        BCASE '-': edSvBlk(0); blkNum = max(0, blkNum-1); edRdBlk(0); line=off=0;
+        BCASE '-': edSvBlk(0); blkNum = MAX(0, blkNum-1); edRdBlk(0); line=off=0;
         BCASE ':': edCommand();
     }
     return 1;
@@ -345,7 +344,7 @@ int processEditorChar(int c) {
 
 void doEditor() {
     blkNum = pop();
-    blkNum = max(blkNum, 0);
+    blkNum = MAX(blkNum, 0);
     line = off = scrTop = 0;
     msg = NULL;
     CLS();
