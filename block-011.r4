@@ -1,19 +1,8 @@
-0(HEX output)
-:HD hF b& #9>(7+)'0+,;
-:HB h10 S$ cHD cHD;
-:HW h100 S$ cHB cHB;
-:HX h10000 S$ cHW cHW;
-
-0(Binary output)
-:BD hFF b& h80 8 1[$%S$.$1R]\\;
-:BW h100 S$ cBD cBD;
-:BL h10000 S$ cBW cBW;
-
-:-(a--n): Read Word-;
+:-(a--n): Read 16-bit Word-;
 :RWD @ hFFFF b&;
 
-:-(n a--): Write Word-;
+:-(n a--): Write 16-bit Word-;
 :WWD % 8 R % P C! C!;
 
 0(rV `block-999.r4` `rt` \ cCAT)
-:CAT 0(n m--) fO #s1 fR{\, r1 fR}\ r1 fC;
+:CAT 0(name mode--) fO #s1 fR{\, r1 fR}\ r1 fC;

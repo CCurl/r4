@@ -145,7 +145,6 @@
     <ClCompile Include="LittleFS.cpp" />
     <ClCompile Include="pc-main.cpp" />
     <ClCompile Include="r4.cpp" />
-    <Text Include="history.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="block-000.r4" />
@@ -164,7 +163,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="examples.txt" />
-    <Text Include="reference.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />

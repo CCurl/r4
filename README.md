@@ -90,12 +90,6 @@ There are 2 memory areas in r4:
 
 r4 allocates 10 local variables (0-9) per function call. They are referred to like registers and have the same operations (r,s,i,d). For example, i4 increments local #4.
 
-## WiFi support
-
-Some boards, (eg - the ESP8266), support WiFi. For those boards, the __WIFI__ directive can be #defined to enable the boards WiFi. This adds additional opcodes.
-
-Note that those boards usually also have watchdogs that need to be enabled via the __WATCHDOG__ #define.
-
 ## LittleFS support
 
 Some development boards support LittleFS. For those boards, the __LITTLEFS__ directive can be #defined persist data to the board, including supporting automatically loading blocks on boot.
