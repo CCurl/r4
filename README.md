@@ -9,10 +9,10 @@ r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions
 The number of registers, functions, and memory are configurable and can be scaled as necessary to fit into a system of any size.
 
 For example, one might configure things like this:
-- On a Leonardo,  32 registers,  32 functions,  1K of USER RAM, no  VARS RAM.
-- On an ESP8266, 512 registers, 512 functions, 12K of USER RAM, 12K VARS RAM.
-- On a RPI Pico, 16K registers, 16K functions, 64K of USER RAM, 64K VARS RAM.
-- On a PC,       64K registers, 64K functions, 96K of USER RAM,  2M VARS RAM.
+- On a Leonardo,  32 registers,  32 functions,  1K of CODE RAM, no  VARS RAM.
+- On an ESP8266, 512 registers, 512 functions, 12K of CODE RAM, 12K VARS RAM.
+- On a RPI Pico, 16K registers, 16K functions, 64K of CODE RAM, 64K VARS RAM.
+- On a PC,       64K registers, 64K functions, 96K of CODE RAM,  2M VARS RAM.
 
 ### Registers
 - A register (a built-in variable) is identified by a sequence of UPPERCASE characters.
@@ -65,7 +65,7 @@ More examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.tx
 There are multiple goals for r4:
 
 - Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build r4, but at least after that, you are free of them.
-- Many programming environments use tokens and a large SWITCH statement in a loop to execute the user's program. In those systems, the machine code (aka - the byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when inspecting the code that is actually being executed. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the user environment, (2) the hundreds or thousands of user functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much of that as possible, and have only one thing to learn: the machine code.
+- Many programming environments use tokens and a large SWITCH statement in a loop to execute the code's program. In those systems, the machine code (aka - the byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when inspecting the code that is actually being executed. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the code environment, (2) the hundreds or thousands of code functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much of that as possible, and have only one thing to learn: the machine code.
 - A minimal implementation that is "intuitively obvious upon casual inspection" and easy to extend as necessary.
 - An interactive programming environment.
 - The ability to use the same environment on my personal computer as well as development boards.
@@ -81,10 +81,10 @@ There are multiple goals for r4:
 
 ## Memory areas
 There are 2 memory areas in r4:
-- USER: r4 function code goes in this area. Default size is 128K.
+- CODE: r4 function code goes in this area. Default size is 128K.
 - VARS: use with 'V' opcode. Default size is 256K.
-- The USER area can also be used for data. See the 'U' opcode.
-- The VARS area is not used by the r4 system at all, 100% free.
+- The CODE area can also be used for data. See the 'U' opcode.
+- The VARS area is not used by the r4 system at all, it is 100% free.
 
 ## Locals
 
@@ -102,7 +102,7 @@ Some development boards support LittleFS. For those boards, the __LITTLEFS__ dir
 
 ## A simple block editor
 
-r4 includes a simple block editor. Many thanks to Alain Theroux for his inspiration.
+r4 includes a simple block editor. It has a VI-like feel to it.
 
 ## Building r4
 
@@ -147,13 +147,13 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 
 ### BIT MANIPULATION OPERATIONS
 | OP |Stack |Description|
-|:-- |:--   |:--|
-| b& | (a b--n)   |n: a and b
+|:--  |:--   |:--|
+| b&  | (a b--n)   |n: a and b
 | b\| | (a b--n)   |n: a or b
-| b^ | (a b--n)   |n: a xor b
-| b~ | (a--b)     |b: not a      (e.g - 1011 => 0100)
-| L  | (a n--b)   |b: a << n     (Left-Shift)
-| R  | (a n--b)   |b: a >> n     (Right-Shift)
+| b^  | (a b--n)   |n: a xor b
+| b~  | (a--b)     |b: not a      (e.g - 1011 => 0100)
+| L   | (a n--b)   |b: a << n     (Left-Shift)
+| R   | (a n--b)   |b: a >> n     (Right-Shift)
 
 
 ### STACK OPERATIONS
@@ -177,19 +177,20 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | !  | (n a--)     |Store CELL n  to  address a
 | C@ | (a--n)      |Fetch BYTE n from address a
 | C! | (n a--)     |Store BYTE n  to  address a
-| U  | (n--a)      |a: address of byte n in the USER area.
+| U  | (n--a)      |a: address of byte n in the CODE area.
 | V  | (n--a)      |a: address of byte n in the VARS area.
 
 
 ### REGISTERS OPERATIONS
 #### NOTES:
-- A register reference is consecutive UPPERCASE characters.
-- The number of registers is controlled by the NUM_REGS #define in "config.h"
+- A register reference is any number of consecutive UPPERCASE characters.
+- The number of registers is controlled by the NUM_REGS #define in "config.h".
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | &ABC | (N--)  |Define register rABC with initial value of N.
-|      |        |If register rABC has a value <> 0, print "-redef-r[hash]-".
+|      |        |*** NOTE: If register rABC has a value <> 0, r4 prints "-redef-r[hash]-".
+|      |        |    This can be used to check if there is a hashing collision.
 | rABC | (--v)  |v: value of register ABC.
 | sABC | (v--)  |v: store v to register ABC.
 | iABC | (--)   |Increment register ABC.
@@ -222,6 +223,7 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
 |       |        |If function ABC has a value <> 0, print "-redef-f[hash]-".
 | cABC  | (--)   |Call function ABC. Handles "tail call optimization".
+|       |        | *** NOTE: this allocates 10 local variables, which are freed on ';'
 | ;     | (--)   |Return: PC = rpop()
 
  
@@ -274,7 +276,8 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 ### FOR/NEXT LOOPING OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| [  | (F T--)   |FOR: start a For/Next loop. if (T < F), swap T and F
+| [  | (F T--)   |FOR: start a For/Next loop. 
+|    |           | *** NOTE: if (F > T), F and T are swapped
 | I  | (--i)     |i: the index of the current FOR loop
 | p  | (i--)     |i: number to add to "I"
 | ^  | (--)      |un-loop, use with ';'. Example: rSrK>(^;)
@@ -284,9 +287,9 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 ### BEGIN/WHILE LOOPING OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| {  | (f--f)      |BEGIN: if (f == 0) skip to matching '}'
+| {  | (f--f)      |BEGIN: if (f == 0) skip to ending '}'
 | ^  | (--)        |un-loop, used with ';'. Example: rX0=(^;)
-| }  | (f--f?)     |WHILE: if (f != 0) jump to matching '{', else drop f and continue
+| }  | (f--f?)     |WHILE: if (f != 0) jump to starting '{', else drop f and continue
 
 
 ### FILE OPERATIONS
@@ -315,13 +318,13 @@ r4 includes a simple block editor. Many thanks to Alain Theroux for his inspirat
 | xIAF  | (--a)     |INFO: Address where the function vectors begin
 | xIAH  | (--a)     |INFO: Address of the HERE variable
 | xIAR  | (--a)     |INFO: Address where the registers begin
-| xIAU  | (--a)     |INFO: Address there the USER area begins
+| xIAU  | (--a)     |INFO: Address there the CODE area begins
 | xIAV  | (--a)     |INFO: Address there the VARS area begins
 | xIC   | (--n)     |INFO: CELL size
 | xIF   | (--n)     |INFO: Number of functions (NUM_FUNCS)
 | xIH   | (--a)     |INFO: HERE
 | xIR   | (--n)     |INFO: Number of registers (NUM_REGS)
-| xIU   | (--n)     |INFO: Size of USER area (USER_SZ)
+| xIU   | (--n)     |INFO: Size of CODE area (CODE_SZ)
 | xIV   | (--n)     |INFO: Size of VARS area (VARS_SZ)
 | xPI   | (p--)     |Arduino: pin input  (pinMode(p, INPUT))
 | xPU   | (p--)     |Arduino: pin pullup (pinMode(p, INPUT_PULLUP))

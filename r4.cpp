@@ -10,7 +10,7 @@ int dsp, rsp, lsp, locStart;
 ST_T   dstack[STK_SZ+1];
 CELL   reg[NUM_REGS], locals[(RSTK_SZ+1)*10], lstack[LSTACK_SZ+1];
 addr   rstack[RSTK_SZ+1], func[NUM_FUNCS];
-byte   user[USER_SZ], vars[VARS_SZ];
+byte   code[CODE_SZ], vars[VARS_SZ];
 
 void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp].i = v; } }
 CELL pop() { return (dsp) ? dstack[dsp--].i : 0; }
@@ -22,8 +22,8 @@ void vmInit() {
     dsp = rsp = lsp = locStart = 0;
     for (int i = 0; i < NUM_REGS;  i++) { reg[i]  = 0; }
     for (int i = 0; i < NUM_FUNCS; i++) { func[i] = 0; }
-    for (int i = 0; i < USER_SZ;   i++) { user[i] = 0; }
-    HERE = &user[0];
+    for (int i = 0; i < CODE_SZ;   i++) { code[i] = 0; }
+    HERE = &code[0];
 }
 
 void setCell(byte* to, CELL val) {
@@ -165,7 +165,7 @@ void doExt() {
                 if (ir == 'F') { push((CELL)&func[0]); }
                 if (ir == 'H') { push((CELL)&HERE); }
                 if (ir == 'R') { push((CELL)&reg[0]); }
-                if (ir == 'U') { push((CELL)&user[0]); }
+                if (ir == 'U') { push((CELL)&code[0]); }
                 if (ir == 'V') { push((CELL)&vars[0]); }
                 return;
             };
@@ -173,7 +173,7 @@ void doExt() {
             if (ir == 'F') { push(NUM_FUNCS); }
             if (ir == 'H') { push((CELL)HERE); }
             if (ir == 'R') { push(NUM_REGS); }
-            if (ir == 'U') { push(USER_SZ); }
+            if (ir == 'U') { push(CODE_SZ); }
             if (ir == 'V') { push(VARS_SZ); }
         RCASE 'h': t1=doHash(-1);
             printStringF("-hash:%ld,reg:%ld,func:%ld-", t1, reg[t1&MAX_REG], func[t1&MAX_FUNC]);
@@ -258,7 +258,7 @@ next:
         NCASE 'P': ++TOS;
         NCASE 'R': t1 = pop(); TOS = (TOS >> t1);
         NCASE 'S': if (isOk(TOS, "-0div-")) { t1 = TOS; TOS = NOS % t1; NOS /= t1; }
-        NCASE 'U': TOS += (CELL)&user[0];
+        NCASE 'U': TOS += (CELL)&code[0];
         NCASE 'V': TOS += (CELL)&vars[0];
         NCASE 'X': if (TOS) { rpush(pc); pc = (addr)TOS; } pop();
         NCASE 'Z': printString((char*)pop());
@@ -289,8 +289,8 @@ next:
             else if (ir == 'C') { fileClose(); }
             else if (ir == 'R') { fileRead(); }
             else if (ir == 'W') { fileWrite(); }
-            else if (ir == 'S') { codeSave(user, HERE); }
-            else if (ir == 'L') { HERE = codeLoad(user, HERE); }
+            else if (ir == 'S') { codeSave(code, HERE); }
+            else if (ir == 'L') { HERE = codeLoad(code, HERE); }
         NCASE 'h': push(0); while (1) {
                 t1 = BTWI(*pc,'0','9') ? (*pc)-'0' : -1;
                 t1 = BTWI(*pc,'A','F') ? (*pc)-'A'+10 : t1;

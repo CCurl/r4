@@ -100,14 +100,14 @@ void fileWrite() {
 }
 
 // fL (--) - File Load code
-addr codeLoad(addr user, addr here) {
+addr codeLoad(addr code, addr here) {
     FILE *fh = fopen("code.r4", "rt");
     if (fh) {
         vmInit();
-        CELL num = fread(user, 1, USER_SZ, fh);
+        CELL num = fread(code, 1, CODE_SZ, fh);
         fclose(fh);
-        here = user + num;
-        run(user);
+        here = code + num;
+        run(code);
         printStringF("-loaded, (%d bytes)-", num);
     }
     else {
@@ -117,11 +117,11 @@ addr codeLoad(addr user, addr here) {
 }
 
 // fS (--) - File Save code
-void codeSave(addr user, addr here) {
+void codeSave(addr code, addr here) {
     FILE* fh = fopen("code.r4", "wt");
     if (fh) {
-        int count = (int)(here - user);
-        fwrite(user, 1, count, fh);
+        int count = (int)(here - code);
+        fwrite(code, 1, count, fh);
         fclose(fh);
         printStringF("-saved (%d)-", count);
     }

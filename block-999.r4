@@ -1,5 +1,5 @@
 "r4 - v0.0.1 - by Chris Curl"
-N"System info: "xIR." registers, "xIF." functions, "xIU." bytes user memory."
+N"System info: "xIR." registers, "xIF." functions, "xIU." bytes code memory."
 N"GitHub repo: https://github.com/CCurl/r4"N
 
 N"Block#    Description"

@@ -64,7 +64,7 @@ void loadCode(const char* src) {
     X(1000, ":C xIAU xIH1-[rI C@#,59=(rI1+C@58=(N))];") \
     X(1010, ":R 0xIR1-[rI4*xIAR+@#s1(rI26S$26S$'A+,'A+,'A+,':,Br1.N)];") \
     X(1040, ":U xIH xIAU-;") \
-    X(1045, ":SI N\"System: \"xIR.\" registers, \"xIF.\" functions: \"xIU.\" bytes user memory.\";") \
+    X(1045, ":SI N\"System: \"xIR.\" registers, \"xIF.\" functions: \"xIU.\" bytes code memory.\";") \
     X(2000, ":Q iT rA#*rS/sC rB#*rS/sD rCrD+rK>(rJsM;)rArB*100/rY+sB rCrD-rX+sA iJ;") \
     X(2010, ":L 0sA 0sB 0sJ rS sM 1{\\cQ rJ rM<};") \
     X(2020, ":O cL rJ 40+# 126>(\\32),;") \

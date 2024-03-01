@@ -119,7 +119,7 @@ addr codeLoad(addr u, addr h) {
     File f = LittleFS.open("/Code.R4", "r");
     if (f) {
         vmInit();
-        int num = f.read(u, USER_SZ);
+        int num = f.read(u, CODE_SZ);
         f.close();
         h = u + num;
         run(u);
