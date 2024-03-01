@@ -17,4 +17,4 @@ clean:
 	rm -f $(app)
 
 bin: $(app)
-	cp -u -p $(app) ~/.local/bin/
+	cp -u -p $(app) ~/bin/
