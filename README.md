@@ -231,13 +231,13 @@ r4 includes a simple block editor. It has a VI-like feel to it.
 | N     | (--)     |Output a single NEWLINE (13,10,)
 | K?    | (--f)    |f: non-zero if char is ready to be read, else 0.
 | K@    | (--n)    |n: Key char, wait if no char is available.
-| <N>   | (--N)    |Scan DECIMAL number N until non digit
-| <N.N> | (--F)    |- Use NNN.NNN (eg - 3.14) to enter a floating point number F
+| 0-9   | (--N)    |Scan DECIMAL number N until non digit
+| N.N   | (--F)    |- Use NNN.NNN (eg - 3.14) to enter a floating point number F
 |       |          |- to specify multiple values, separate them by space (4711 3333)
 |       |          |- to enter a negative number, use "negate" (eg - 490_)
 |hXXX   | (--N)    |Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
 | 'C    | (--n)    |n: the ASCII value of C
-| `x`   | (a--a b) |Copy following chars until closing '`' to (a++).
+| \`x\` | (a--a b) |Copy following chars until closing '`' to (a++).
 |       |          |- a: address, b next byte after trailing NULL.
 
 (1) Output formatting:
