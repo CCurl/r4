@@ -1,16 +1,16 @@
 #include "r4.h"
 
 #if __SERIAL__
-    int charAvailable() { return mySerial.available(); }
-    int getChar() { 
-        while (!charAvailable()) {}
+    int qkey() { return mySerial.available(); }
+    int key() {
+        while (!qkey()) {}
         return mySerial.read();
     }
     void printChar(char c) { mySerial.print(c); }
     void printString(const char* str) { mySerial.print(str); }
 #else
-    int charAvailable() { return 0; }
-    int getChar() { return 0; }
+    int qkey() { return 0; }
+    int key() { return 0; }
     void printString(const char* str) { }
     void printChar(char c) { }
 #endif
@@ -137,7 +137,7 @@ void setup() {
 #ifdef __SERIAL__
     while (!mySerial) {}
     mySerial.begin(19200);
-    while (mySerial.available()) { char c = mySerial.read(); }
+    while (mySerial.available()) { mySerial.read(); }
 #endif
     vmInit();
     fileInit();
@@ -145,12 +145,18 @@ void setup() {
     ok();
 }
 
+void autoRun() {
+    pc = (addr)"AUTORUN";
+    CELL h = doHash(MAX_FUNC);
+    if (func[h]) { run(func[h]); }
+}
+
 void loop() {
     static int iLed = 0;
     static long nextBlink = 0;
     static int ledState = LOW;
     long curTm = millis();
-    
+
     if (iLed == 0) {
         iLed = LED_BUILTIN;
         pinMode(iLed, OUTPUT);
@@ -170,11 +176,9 @@ void loop() {
         if (input_fp == 0) { ok(); }
         return;
     } else {
-        while ( charAvailable() ) {
-            handleInput(getChar());
+        while ( qkey() ) {
+            handleInput(key());
         }
     }
-
-    addr a = func[NUM_FUNCS-1];
-    if (a) { run(a); }
+    autoRun();
 }

@@ -259,7 +259,7 @@ int edReadLine(char *buf, int sz) {
         char c = key();
         if (c==27) { len=0; break; }
         if (c==13) { break; }
-        if ((c==127) || (c==8) && (len)) { --len; printStringF("%c %c",8,8); }
+        if ((c==127) || ((c==8) && (len))) { --len; printStringF("%c %c",8,8); }
         if (BTWI(c,32,126)) { buf[len++]=c; printChar(c); }
     }
     CursorOff();

@@ -58,8 +58,8 @@ void fileDelete() {
 // n=0: End of file or file error
 void fileRead() {
     FILE* fh = (FILE*)TOS;
-    NOS = TOS = 0;
     push(0);
+    NOS = TOS = 0;
     if (fh) {
         char c;
         TOS = fread(&c, 1, 1, fh);
