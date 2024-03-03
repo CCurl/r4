@@ -16,5 +16,7 @@ $(app): $(srcfiles) $(incfiles)
 clean:
 	rm -f $(app)
 
+rebuild: clean all
+
 bin: $(app)
 	cp -u -p $(app) ~/bin/
