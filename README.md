@@ -75,7 +75,7 @@ There are multiple goals for r4:
 ## The implementation of r4
 
 - The entire system is implemented in a few files, primarily: config.h, r4.h, r4.cpp, pc-main.cpp, and r4.ino.
-  - There are a few additional files to support optional functionality (e.g.-WiFi and File access).
+  - There are a few additional files to support optional functionality (e.g.-File access).
 - The same code runs on Windows, Linux, and multiple development boards (via the Arduino IDE).
 - See the file "config.h" for system configuration settings.
 
@@ -92,7 +92,7 @@ r4 allocates 10 local variables (0-9) per function call. They are referred to li
 
 ## LittleFS support
 
-Some development boards support LittleFS. For those boards, the __LITTLEFS__ directive can be #defined persist data to the board, including supporting automatically loading blocks on boot.
+Some development boards support LittleFS. For those boards, the __LITTLEFS__ directive can be #defined to persist data to the board, including supporting automatically loading blocks on boot.
 
 ## A simple block editor
 
