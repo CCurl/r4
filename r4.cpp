@@ -220,8 +220,8 @@ next:
         NCASE '-': t1 = pop(); TOS -= t1;
         NCASE '.': printStringF("%ld", (CELL)pop());
         NCASE '/': if (isOk(TOS, "-0div-")) { NOS /= TOS; pop(); }
-        NCASE '0': case '1': case '2': case '3': case '4': case  '5': case '6':
-        case '7': case '8': case '9': push(ir-'0');
+        NCASE '0': case '1': case '2': case '3': case '4':
+        case  '5': case '6': case '7': case '8': case '9': push(ir-'0');
             while (BTWI(*pc, '0', '9')) { TOS = (TOS * 10) + *(pc++) - '0'; }
             if (*pc=='.') {
                 double x=10;
@@ -230,7 +230,7 @@ next:
             }
         NCASE ':': t1 = doHash(MAX_FUNC);
             while (*(pc) == ' ') { pc++; }
-            if (func[t1]) { printStringF("-redef-f:[%ld]-",t1); }
+            if (func[t1] && (t1 != 5381)) { printStringF("-redef-f:[%ld]-",t1); }
             func[t1] = (addr)pc;
             skipTo(';', 0);
             HERE = (HERE < pc) ? pc : HERE;
@@ -270,7 +270,7 @@ next:
         NCASE '`': push(TOS);
             while ((*pc) && (*pc != ir)) { *(AOS++) = *(pc++); }
             *(AOS++) = 0; pc++;
-        NCASE 'b': ir = *(pc++);                    // BIT operations
+        NCASE 'b': ir = *(pc++);                    // BIT and Block operations
             if (ir == '&') { NOS &= TOS; pop(); }           // AND
             else if (ir == '|') { NOS |= TOS; pop(); }      // OR
             else if (ir == '^') { NOS ^= TOS; pop(); }      // XOR
