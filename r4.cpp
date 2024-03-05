@@ -78,8 +78,8 @@ addr dotQ(addr str) {
             if (c == 'd') { printBase(pop(), 10); }
             else if (c == 'c') { printChar((int)pop()); }
             else if (c == 'e') { printChar(27); }
-            else if (c == 'f') { printStringF("%f", FTOS); dsp--; }
-            else if (c == 'g') { printStringF("%g", FTOS); dsp--; }
+            else if (c == 'f') { printStringF("%f", FTOS); pop(); }
+            else if (c == 'g') { printStringF("%g", FTOS); pop(); }
             else if (c == 'n') { printChar(13); printChar(10); }
             else if (c == 'q') { printChar('"'); }
             else if (c == 's') { printString((char*)pop()); }
