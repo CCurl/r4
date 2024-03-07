@@ -15,7 +15,7 @@ byte   code[CODE_SZ], vars[VARS_SZ];
 void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp].i = v; } }
 CELL pop() { return (dsp) ? dstack[dsp--].i : 0; }
 
-void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; } }
+void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; locStart += 10; } }
 addr rpop() { return (rsp) ? rstack[rsp--] : 0; }
 
 void vmInit() {
@@ -234,7 +234,7 @@ next:
             func[t1] = (addr)pc;
             skipTo(';', 0);
             HERE = (HERE < pc) ? pc : HERE;
-        NCASE ';': pc = rpop(); locStart -= (9<locStart) ? 10 : 0; if (!pc) return pc;
+        NCASE ';': pc = rpop(); locStart = rsp * 10; if (!pc) return pc;
         NCASE '<': t1 = pop(); TOS = (TOS <  t1) ? 1 : 0;
         NCASE '=': t1 = pop(); TOS = (TOS == t1) ? 1 : 0;
         NCASE '>': t1 = pop(); TOS = (TOS >  t1) ? 1 : 0;
@@ -279,7 +279,7 @@ next:
             else if (ir == 'A') { loadAbort(); }            // Block Load Abort
             else if (ir == 'E') { doEditor(); }             // Block Edit
         NCASE 'c': t1=doHash(MAX_FUNC); if (func[t1]) {
-            if (*pc != ';') { rpush(pc); locStart += 10; }
+            if (*pc != ';') { rpush(pc); }
             pc = func[t1];
         }
         NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
