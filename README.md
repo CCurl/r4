@@ -1,9 +1,7 @@
 # r4 - A stack-based VM/CPU with a human-readable machine language
-
 r4 is an interactive environment where the source code IS the machine code. There is no compilation in r4.
 
 ## What is r4?
-
 r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions, locals, floating point, and any amount of RAM.
 
 The number of registers, functions, and memory are configurable and can be scaled as necessary to fit into a system of any size.
@@ -14,24 +12,76 @@ For example, one might configure things like this:
 - On a RPI Pico, 16K registers, 16K functions, 64K of CODE RAM, 64K VARS RAM.
 - On a PC,       64K registers, 64K functions, 96K of CODE RAM,  2M VARS RAM.
 
+## Why did I create r4?
+There are multiple reasons why I created r4, including:
+
+- Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build r4, but at least after that, you are free of them.
+- Many interpreters use tokens and a large SWITCH statement in a loop to execute the program. In those systems, there needs to be a compiler to parse the input text and generate the machine code that the VM executes. Additionally, the VM's opcodes (the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when inspecting the code that is actually being executed. I wanted to avoid as much of that as possible, and have only one thing to learn: the VM's opcodes.
+- A minimal implementation that is "intuitively obvious upon casual inspection" and easy to extend as necessary.
+- An interactive programming environment.
+- The ability to use the same environment on my personal computer as well as development boards.
+- An environment that can be deployed to many different types of development boards via the Arduino IDE.
+- Short commands so that there is not a lot of typing needed.
+
+### Functions
+A function is identified by any number of UPPERCASE characters.
+
 ### Registers
-- A register (a built-in variable) is identified by a sequence of UPPERCASE characters.
-- A register can be retrieved, set, incremented, or decremented in a single operation (r,s,i,d).
+A register (a built-in variable) is identified by any number of UPPERCASE characters.
+- They can be retrieved, set, incremented, or decremented in a single operation (r[REG],s[REG],i[REG],d[REG]).
+- E.G. - `1234 sABC iABC rABC .` will print `1235`.
 
-### Registers and Functions
-Registers and functions are identified by a sequence of UPPERCASE characters.
+## Temporary registers (aka - LOCALS)
+A temporary register is identified by a single decimal digit (0-9).
+- They are allocated and freed in groups of 10.
+- `T+` allocates 10 temporary registers (r0-r9).
+- `T-` frees the most recently allocated set.
+- They are referred to like other registers. E.G. - `r7` retrieves the value of register #7.
+- They have the same operations (r,s,i,d). E.G. - `i4` increments register #4.
+- They can be used across functions, or as local variables inside a function.
 
-r4 hashes the name and uses the hashed value as the index into the array of values or addresses.
+Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. 
+### For example:
+```
+- 0(COPY (F T N--): copy N bytes from F to T)
+- :COPY T+ s3 s2 s1 r3 0[r1 C@ r2 C! i1 i2] T-;
+- rFROM rTO rNUMBER cCOPY
+```
+### Some more Examples
+- Example 1: `"Hello World!"` - the standard "hello world" program.
+- Example 2: `:MIN %%>($)\;` `:MAX %%<($)\;`
+- Example 3: `:BTW T+ s3 s2 s1 r1 r2 > r1 r3 < b& T-;`
+- Example 4: `32 127[I#"%n%d: [%c]"]` - print the ASCII table
+- Example 5: The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
-This is very fast, but poses some limitations:
-- The number of registers and functions need to be powers of 2.
-- r4 does NOT detect hash collisions as it does not keep key values.
-  - My tests have indicated that for a large enough number of buckets, collisions are not common.
-  - ':' prints "-redef-f[hash]-" when a function is redefined (a possible collision).
-  - '&' prints "-redef-r[hash]-" when a register is redefined (a possible collision).
-  - Use xh[NAME] to see info about [NAME].
+    `1000 sDELAY 13 sLED rLED xPO 1{\ 0 2[I rLED xPWD rDELAY xW] K? 0=} K@ \`
 
-Here is the hashing function (the djb2a hash function using XOR):
+There are more examples here: https://github.com/CCurl/r4/blob/main/examples.txt
+
+## Memory areas
+There are 2 memory areas in r4:
+- CODE: r4 function code goes in this area. Default size is 128K.
+- VARS: use with 'V' opcode. Default size is 256K.
+- `xIH` (Info: HERE) returns the first unused address in the CODE area.
+- The CODE area can also be used for data. See the 'U' opcode.
+- The VARS area is not used by the r4 system at all, it is 100% free.
+
+## LittleFS support
+Some development boards support LittleFS. For those boards, the __LITTLEFS__ directive can be #defined to persist data to the board, including supporting automatically loading blocks on boot.
+
+## A simple block editor
+r4 includes a simple block editor. It has a VI-like feel to it.
+
+## The implementation of r4
+
+- The entire system is implemented in a few files, primarily: config.h, r4.h, r4.cpp, pc-main.cpp, and r4.ino.
+  - There are a few additional files to support optional functionality (e.g.-File access).
+- The same code runs on Windows, Linux, and multiple development boards (via the Arduino IDE).
+- See the file "config.h" for system configuration settings.
+
+r4 hashes register and function names and uses the hashed value as the index into the array of values or addresses.
+
+Here is the hashing function (the DJB2a hash function using XOR):
 ```
 int getRFnum(int max) {
     UCELL hash = 5381;
@@ -42,73 +92,23 @@ int getRFnum(int max) {
 }
 ```
 
-Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. For example:
-
-- 0(COPY (N F T--): copy N bytes from F to T)
-- :COPY s2 s1 0[r1 C@ r2 C! i1 i2];
-- 123 rF rT cCOPY 0(copy 123 bytes from rF to rT)
-
-### Other Examples
-```
-- Example 1: "Hello World!" - the standard "hello world" program.
-- Example 2: :MIN %%>($)\; :MAX %%<($)\;
-- Example 3: :BTW s3 s2 s1 r1 r2 > r1 r3 < b&;
-- Example 4: 32 127[I#"%n%d: [%c]"] - would print the ASCII table
-- Example 5: The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
-
-    1000 sS 13 xPO 1{\ 0 1[I 13 xPWD rS xW] K? 0=} K@ \
-```
-More examples for r4 are here: https://github.com/CCurl/r4/blob/main/examples.txt
-
-## Why did I create r4?
-
-There are multiple goals for r4:
-
-- Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build r4, but at least after that, you are free of them.
-- Many programming environments use tokens and a large SWITCH statement in a loop to execute the code's program. In those systems, the machine code (aka - the byte-code ... the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when inspecting the code that is actually being executed. In these enviromnents, there is a steep learning curve; the programmer needs to learn: (1) the code environment, (2) the hundreds or thousands of code functions (or "words" in Forth), and (3) how they work together. I wanted to avoid as much of that as possible, and have only one thing to learn: the machine code.
-- A minimal implementation that is "intuitively obvious upon casual inspection" and easy to extend as necessary.
-- An interactive programming environment.
-- The ability to use the same environment on my personal computer as well as development boards.
-- An environment that can be deployed to many different types of development boards via the Arduino IDE.
-- Short commands so that there is not a lot of typing needed.
-
-## The implementation of r4
-
-- The entire system is implemented in a few files, primarily: config.h, r4.h, r4.cpp, pc-main.cpp, and r4.ino.
-  - There are a few additional files to support optional functionality (e.g.-File access).
-- The same code runs on Windows, Linux, and multiple development boards (via the Arduino IDE).
-- See the file "config.h" for system configuration settings.
-
-## Memory areas
-There are 2 memory areas in r4:
-- CODE: r4 function code goes in this area. Default size is 128K.
-- VARS: use with 'V' opcode. Default size is 256K.
-- The CODE area can also be used for data. See the 'U' opcode.
-- The VARS area is not used by the r4 system at all, it is 100% free.
-
-## Temporary registers
-
-In r4, `T+` allocates 10 temporary registers (r0-r9). They are referred to like other registers and have the same operations (r,s,i,d). For example, i4 increments temporary register #4. `T-` frees the last allocated set.
-
-## LittleFS support
-
-Some development boards support LittleFS. For those boards, the __LITTLEFS__ directive can be #defined to persist data to the board, including supporting automatically loading blocks on boot.
-
-## A simple block editor
-
-r4 includes a simple block editor. It has a VI-like feel to it.
+This is very fast, but poses some limitations:
+- The maximum number of registers and functions need to be powers of 2.
+- r4 does NOT detect hash collisions as it does not keep key values.
+  - My tests have indicated that for a large enough number of buckets, collisions are not common.
+  - ':' prints "-redef-f[hash]-" when the given function name already has a value (a possible collision).
+  - '&' prints "-redef-r[hash]-" when a the given register name already has a value (a possible collision).
+  - Use `xh[NAME]` to see info about [NAME]. eg - `xhTEST`
 
 ## Building r4
-
 - The target machine/environment is controlled by the #defines in the file "config.h"
 - For Windows, There is a Visual Studio solution. Use the x86 configuration (32-bit).
 - For Development boards, I use the Arduino IDE. See the file "config.h" for board-specific settings.
 - For Linux systems, there is a makefile. Default is 64-bit, or you can change it to 32-bit.
 - I do not have an Apple system, so I haven't tried to build r4 for that environment.
-  - However, being such a simple and minimal C program, it should not be difficult to port r4 to any environment.
+  - However, being such a minimal C program, it should not be difficult to port r4 to any environment.
 
 ##  r4 Reference
-
 ### INTEGER OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
@@ -309,7 +309,7 @@ r4 includes a simple block editor. It has a VI-like feel to it.
 ### OTHER OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| xV    | (--n)     |r4 version number
+| xV    | (--n)     |r4 version number (YYYYMMDD)
 | xIAF  | (--a)     |INFO: Address where the function vectors begin
 | xIAH  | (--a)     |INFO: Address of the HERE variable
 | xIAR  | (--a)     |INFO: Address where the registers begin
@@ -317,7 +317,7 @@ r4 includes a simple block editor. It has a VI-like feel to it.
 | xIAV  | (--a)     |INFO: Address there the VARS area begins
 | xIC   | (--n)     |INFO: CELL size
 | xIF   | (--n)     |INFO: Number of functions (NUM_FUNCS)
-| xIH   | (--a)     |INFO: HERE
+| xIH   | (--a)     |INFO: Current HERE value
 | xIR   | (--n)     |INFO: Number of registers (NUM_REGS)
 | xIU   | (--n)     |INFO: Size of CODE area (CODE_SZ)
 | xIV   | (--n)     |INFO: Size of VARS area (VARS_SZ)

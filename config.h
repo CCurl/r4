@@ -47,6 +47,6 @@
 
 #define MAX_FUNC         (NUM_FUNCS-1)
 #define MAX_REG          (NUM_REGS-1)
-#define VERSION          20240307
+#define VERSION          20240308
 
 #endif
