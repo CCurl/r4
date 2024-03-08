@@ -13,7 +13,7 @@ For example, one might configure things like this:
 - On a PC,       64K registers, 64K functions, 96K of CODE RAM,  2M VARS RAM.
 
 ## Why did I create r4?
-There are multiple reasons why I created r4, including:
+There are multiple reasons for creating r4, including:
 
 - Freedom from the need for a multiple gigabyte tool chain and the edit/compile/run/debug loop for developing everyday programs. Of course, you need one of these monsters to build r4, but at least after that, you are free of them.
 - Many interpreters use tokens and a large SWITCH statement in a loop to execute the program. In those systems, there needs to be a compiler to parse the input text and generate the machine code that the VM executes. Additionally, the VM's opcodes (the cases in the SWITCH statement) are often arbitrarily assigned and are not human-readable, so they have no meaning to the programmer when inspecting the code that is actually being executed. I wanted to avoid as much of that as possible, and have only one thing to learn: the VM's opcodes.
