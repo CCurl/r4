@@ -14,9 +14,9 @@
 :CP 4 s1 11[I 3 cQ (i1) 1p]r1;
 :EL xT$- " (" . " ms)";
 :CPB N"# primes in "#." ... " xT$ cCP . cEL;
-:CPL 500 s1 1[r1 cCPB r1#+s1]\;
+:CPL 500 sN 1[rN cCPB rN#+sN]\;
 :MIL 1000#**;
-:FIB #2<(\1;)1-#cFIB$1-cFIB+;
+:FIB #2<(\1;)D#cFIB$DcFIB+;
 :BB 8 cMIL cCPB;
 
 :DBM N"Decrement loop, "#." iterations ... "xT${D}cEL;

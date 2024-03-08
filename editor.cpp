@@ -20,8 +20,6 @@ void doEditor() { printString("-noEdit-"); }
 #define EDCH(l,o)     EDCHAR(scrTop+l,o)
 #define SHOW(l,v)     lineShow[(scrTop+l)]=v
 #define DIRTY(l)      isDirty=1; SHOW(l,1)
-#define MAX(a,b) (a)>(b)?(a):(b)
-#define MIN(a,b) (a)<(b)?(a):(b)
 
 #define strEq(a,b)  (strcmp(a,b)==0)
 #define strCpy(a,b) strcpy(a,b)

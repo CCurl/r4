@@ -86,9 +86,9 @@ There are 2 memory areas in r4:
 - The CODE area can also be used for data. See the 'U' opcode.
 - The VARS area is not used by the r4 system at all, it is 100% free.
 
-## Locals
+## Temporary registers
 
-r4 allocates 10 local variables (0-9) per function call. They are referred to like registers and have the same operations (r,s,i,d). For example, i4 increments local #4.
+In r4, `T+` allocates 10 temporary registers (r0-r9). They are referred to like other registers and have the same operations (r,s,i,d). For example, i4 increments temporary register #4. `T-` frees the last allocated set.
 
 ## LittleFS support
 
@@ -191,18 +191,18 @@ r4 includes a simple block editor. It has a VI-like feel to it.
 | dABC | (--)   |Decrement register ABC.
 
 
-### LOCALS OPERATIONS
+### TEMPORARY REGISTERS OPERATIONS
 #### NOTES:
-- On each function call, 10 locals [r0..r9] are allocated.
-- They are de-allocated when ';' executes.
-- Locals are NOT initialized.
+- A temporary register reference is a single decimal digit (0-9).
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
+| T+ | (--)   |Allocate 10 temporary registers|
 | rN | (--v)  |v: value of local #N.|
 | sN | (v--)  |v: store v to local #N.|
 | iN | (--)   |Increment local N.|
 | dN | (--)   |Decrement local n.|
+| T- | (--)   |Free the most recently allocated temporary registers|
 
 
 ### FUNCTIONS OPERATIONS
@@ -309,6 +309,7 @@ r4 includes a simple block editor. It has a VI-like feel to it.
 ### OTHER OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
+| xV    | (--n)     |r4 version number
 | xIAF  | (--a)     |INFO: Address where the function vectors begin
 | xIAH  | (--a)     |INFO: Address of the HERE variable
 | xIAR  | (--a)     |INFO: Address where the registers begin

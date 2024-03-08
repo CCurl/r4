@@ -6,20 +6,20 @@
 byte ir, isBye = 0, isError = 0;
 addr pc, HERE;
 CELL n1, t1, seed = 0;
-int dsp, rsp, lsp, locStart;
+int dsp, rsp, lsp, locBase;
 ST_T   dstack[STK_SZ+1];
-CELL   reg[NUM_REGS], locals[(RSTK_SZ+1)*10], lstack[LSTACK_SZ+1];
+CELL   reg[NUM_REGS], locs[NUM_LOCALS], lstack[LSTACK_SZ+1];
 addr   rstack[RSTK_SZ+1], func[NUM_FUNCS];
 byte   code[CODE_SZ], vars[VARS_SZ];
 
 void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp].i = v; } }
 CELL pop() { return (dsp) ? dstack[dsp--].i : 0; }
 
-void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; locStart += 10; } }
+void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; } }
 addr rpop() { return (rsp) ? rstack[rsp--] : 0; }
 
 void vmInit() {
-    dsp = rsp = lsp = locStart = 0;
+    dsp = rsp = lsp = locBase = 0;
     for (int i = 0; i < NUM_REGS;  i++) { reg[i]  = 0; }
     for (int i = 0; i < NUM_FUNCS; i++) { func[i] = 0; }
     for (int i = 0; i < CODE_SZ;   i++) { code[i] = 0; }
@@ -172,6 +172,7 @@ void doExt() {
             if (ir == 'C') { push(CELL_SZ); }
             if (ir == 'F') { push(NUM_FUNCS); }
             if (ir == 'H') { push((CELL)HERE); }
+            if (ir == 'L') { push(NUM_LOCALS); }
             if (ir == 'R') { push(NUM_REGS); }
             if (ir == 'U') { push(CODE_SZ); }
             if (ir == 'V') { push(VARS_SZ); }
@@ -187,16 +188,15 @@ void doExt() {
                 seed ^= (seed >> 17);
                 seed ^= (seed << 5);
                 TOS = (TOS) ? ABS(seed) % TOS : seed;
-                return;
-        default:
-        pc = doCustom(ir, pc);
+        RCASE 'V': push(VERSION);
+        return; default: pc = doCustom(ir, pc);
     }
 }
 
 addr run(addr start) {
     pc = start;
     isError = 0;
-    rsp = lsp = locStart = 0;
+    rsp = lsp = 0;
 next:
     if (isError) { return pc; }
     ir = *(pc++);
@@ -234,7 +234,7 @@ next:
             func[t1] = (addr)pc;
             skipTo(';', 0);
             HERE = (HERE < pc) ? pc : HERE;
-        NCASE ';': pc = rpop(); locStart = rsp * 10; if (!pc) return pc;
+        NCASE ';': pc = rpop(); if (!pc) return pc;
         NCASE '<': t1 = pop(); TOS = (TOS <  t1) ? 1 : 0;
         NCASE '=': t1 = pop(); TOS = (TOS == t1) ? 1 : 0;
         NCASE '>': t1 = pop(); TOS = (TOS >  t1) ? 1 : 0;
@@ -258,6 +258,9 @@ next:
         NCASE 'P': ++TOS;
         NCASE 'R': t1 = pop(); TOS = (TOS >> t1);
         NCASE 'S': if (isOk(TOS, "-0div-")) { t1 = TOS; TOS = NOS % t1; NOS /= t1; }
+        NCASE 'T': ir = *(pc++);
+            if (ir == '+') { locBase = MIN(locBase+10, NUM_LOCALS-10); }
+            else if (ir == '-') { locBase = MAX(locBase-10, 0); }
         NCASE 'U': TOS += (CELL)&code[0];
         NCASE 'V': TOS += (CELL)&vars[0];
         NCASE 'X': if (TOS) { rpush(pc); pc = (addr)TOS; } pop();
@@ -282,7 +285,7 @@ next:
             if (*pc != ';') { rpush(pc); }
             pc = func[t1];
         }
-        NCASE 'd': if (isLocal(*pc)) { --locals[*(pc++) - '0' + locStart]; }
+        NCASE 'd': if (isLocal(*pc)) { --locs[*(pc++)-'0'+locBase]; }
                    else { --reg[doHash(MAX_REG)]; }
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
@@ -295,14 +298,14 @@ next:
                 t1 = BTWI(*pc,'0','9') ? (*pc)-'0' : -1;
                 t1 = BTWI(*pc,'A','F') ? (*pc)-'A'+10 : t1;
                 if (t1 < 0) { NEXT; }
-                TOS = (TOS * 16) + t1; ++pc;
+                TOS = (TOS*16) + t1; ++pc;
             }
-        NCASE 'i': if (isLocal(*pc)) { ++locals[*(pc++) - '0' + locStart]; }
+        NCASE 'i': if (isLocal(*pc)) { ++locs[*(pc++)-'0'+locBase]; }
                    else { ++reg[doHash(MAX_REG)]; }
         NCASE 'p': L0 += pop();
-        NCASE 'r': if (isLocal(*pc)) { push(locals[*(pc++)-'0'+locStart]); }
+        NCASE 'r': if (isLocal(*pc)) { push(locs[*(pc++)-'0'+locBase]); }
                    else { push(reg[doHash(MAX_REG)]); }
-        NCASE 's': if (isLocal(*pc)) { locals[*(pc++)-'0'+locStart] = pop(); }
+        NCASE 's': if (isLocal(*pc)) { locs[*(pc++)-'0'+locBase] = pop(); }
                    else { reg[doHash(MAX_REG)] = pop(); }
         NCASE 'x': doExt();
         NCASE '{': if (!TOS) { skipTo('}', 0); NEXT; }

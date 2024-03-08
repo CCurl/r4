@@ -20,6 +20,7 @@
   #define STK_SZ         256
   #define RSTK_SZ        256
   #define LSTACK_SZ       60
+  #define NUM_LOCALS     100
   #define CODE_SZ        (128*1024)
   #define VARS_SZ        (256*1024)
   #define NUM_REGS        0x10000
@@ -32,6 +33,7 @@
   #define STK_SZ          64
   #define RSTK_SZ         64
   #define LSTACK_SZ       30
+  #define NUM_LOCALS      50
   #define CODE_SZ        ( 64*1024)
   #define VARS_SZ        (128*1024)
   #define NUM_REGS        0x4000
@@ -45,5 +47,6 @@
 
 #define MAX_FUNC         (NUM_FUNCS-1)
 #define MAX_REG          (NUM_REGS-1)
+#define VERSION          20240307
 
 #endif

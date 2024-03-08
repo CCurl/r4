@@ -31,6 +31,8 @@ typedef union { double f; CELL i; char *c; } ST_T;
 #define isReg(n)      ((0 <= (n)) && ((n) < NUM_REGS))
 #define isFunc(n)     ((0 <= (n)) && ((n) < NUM_FUNCS))
 #define ABS(x)        ((x < 0) ? -x : x)
+#define MIN(x,y)      ((x)<(y)) ? (x) : (y)
+#define MAX(x,y)      ((x)>(y)) ? (x) : (y)
 
 extern byte isBye;
 extern byte isError;
