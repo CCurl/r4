@@ -7,10 +7,10 @@ r4 is a stack-based, RPN, virtual CPU/VM that supports many registers, functions
 The number of registers, functions, and memory are configurable and can be scaled as necessary to fit into a system of any size.
 
 For example, one might configure things like this:
-- On a Leonardo,  32 registers,  32 functions,  1K of CODE RAM, no  VARS RAM.
-- On an ESP8266, 512 registers, 512 functions, 12K of CODE RAM, 12K VARS RAM.
-- On a RPI Pico, 16K registers, 16K functions, 64K of CODE RAM, 64K VARS RAM.
-- On a PC,       64K registers, 64K functions, 96K of CODE RAM,  2M VARS RAM.
+- On a Leonardo,  16 registers,  32 functions,   1K of CODE RAM,  no  VARS RAM.
+- On an ESP8266, 512 registers, 512 functions,  12K of CODE RAM,  12K VARS RAM.
+- On a RPI Pico, 16K registers, 16K functions,  64K of CODE RAM,  64K VARS RAM.
+- On a PC,       64K registers, 64K functions, 128K of CODE RAM, 256K VARS RAM.
 
 ## Why did I create r4?
 There are multiple reasons for creating r4, including:
@@ -83,7 +83,7 @@ r4 hashes register and function names and uses the hashed value as the index int
 
 Here is the hashing function (the DJB2a hash function using XOR):
 ```
-int getRFnum(int max) {
+int doHash(int max) {
     UCELL hash = 5381;
     while (BTWI(*pc, 'A', 'Z')) {
         hash = (hash * 33) ^ *(pc++);

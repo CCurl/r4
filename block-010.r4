@@ -1,17 +1,22 @@
 0(Screen Stuff)
-:CSI 27,"[";
 
-0(GXY (x y--); GotoXY)
-:GXY cCSI.";"."H";
+:- GXY (x y--): GotoXY;
+:GXY "%e[%d;%dH";
 
-0(CLS (--): Clear Screen)
-:CLS cCSI"2J"1#cGXY;
+:- CLS (--): Clear Screen;
+:CLS "%e[2J%e[1;1H";
 
-0(STC (fg bg--): Set Color)
-:STC cCSI.";"."m";
+:- STC (fg bg--): Set Color;
+:STC "%e[%d;%dm";
 
-0(CLC (--): Clear Color)
+:- CLC (--): Clear Color;
 :CLC 37 40cSTC;
+
+:- COFF (--): Cursor off;
+:COFF "%e[?25l";
+
+:- CON (--): Cursor on;
+:CON "%e[?25h";
 
 0(CLL (--): To list the colors )
 :CLL 30 38[N I s1 40 48[r1 I cSTC " ("r1.";"I.") "] cCLC];
@@ -19,11 +24,6 @@
 0(CLU (--): More colors, uglier)
 :CLU 90 98[N I s1 100 108[r1 I cSTC " ("r1.";"I.") "] cCLC];
 
-0(COF (--): Cursor off)
-:COF cCSI"?25l";
-
-0(CON (--): Cursor on)
-:CON cCSI"?25h";
-
 0(DMO (--): A little demo of using these)
-:DMO 0sT cCLS cCOF rX 0=(150sX) rY 0=(35sY)1{\iT 8xR 30+ 40 cSTC rX xR 1+ rY xR 1+ cGXY "*" K? 0=} K@ \ cCLC cCON;
+:DLOOP 1{\iT 8xR 30+ 40 cSTC rX xR 1+ rY xR 1+ cGXY "*" K? 0=}K@\;
+:DMO 0sT cCLS cCOFF rX 0=(150sX) rY 0=(35sY) cDLOOP cCLC cCON rX rY cGXY;
