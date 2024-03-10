@@ -215,12 +215,12 @@ This is very fast, but poses some limitations:
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| T+ | (--)   | Allocate 10 temporary registers|
-| rN | (--v)  | v: value of local #N.|
-| sN | (v--)  | v: store v to local #N.|
-| iN | (--)   | Increment local N.|
-| dN | (--)   | Decrement local n.|
-| T- | (--)   | Free the most recently allocated temporary registers|
+| T+ | (--)   | Allocate 10 temporary registers
+| rN | (--v)  | v: value of register #N.
+| sN | (v--)  | v: store v to register #N.
+| iN | (--)   | Increment register #N.
+| dN | (--)   | Decrement register #N.
+| T- | (--)   | Free the most recently allocated temporary registers
 
 
 ### FUNCTIONS OPERATIONS
@@ -231,7 +231,7 @@ This is very fast, but poses some limitations:
   - Use '^' to unwind the loop stack first.
 
 | OP |Stack |Description|
-|:-- |:--   |:--|
+| :--   |:--     |:--|
 | :ABC  | (--)   | Define function ABC. Copy chars to (HERE++) until closing ';'.
 |       |        | If function ABC has a value <> 0, print "-redef-f[hash]-".
 | cABC  | (--)   | Call function ABC. Handles "tail call optimization".
