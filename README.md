@@ -23,10 +23,7 @@ There are multiple reasons for creating r4, including:
 - An environment that can be deployed to many different types of development boards via the Arduino IDE.
 - Short commands so that there is not a lot of typing needed.
 
-### Functions
-A function is identified by any number of UPPERCASE characters.
-
-### Registers
+## Registers
 A register (a built-in variable) is identified by any number of UPPERCASE characters.
 - They can be retrieved, set, incremented, or decremented in a single operation (r[REG],s[REG],i[REG],d[REG]).
 - E.G. - `1234 sABC iABC rABC .` will print `1235`.
@@ -40,21 +37,29 @@ A temporary register is identified by a single decimal digit (0-9).
 - They have the same operations (r,s,i,d). E.G. - `i4` increments register #4.
 - They can be used across functions, or as local variables inside a function.
 
-Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. 
-### For example:
-```
-- 0(COPY (F T N--): copy N bytes from F to T)
-- :COPY T+ s3 s2 s1 r3 0[r1 C@ r2 C! i1 i2] T-;
-- rFROM rTO rNUMBER cCOPY
-```
-### Some more Examples
-- Example 1: `"Hello World!"` - the standard "hello world" program.
-- Example 2: `:MIN %%>($)\;` `:MAX %%<($)\;`
-- Example 3: `:BTW T+ s3 s2 s1 r1 r2 > r1 r3 < b& T-;`
-- Example 4: `32 127[I#"%n%d: [%c]"]` - print the ASCII table
-- Example 5: The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
+## Functions
+A function is identified by any number of UPPERCASE characters.
 
-    `1000 sDELAY 13 sLED rLED xPO 1{\ 0 2[I rLED xPWD rDELAY xW] K? 0=} K@ \`
+Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. 
+
+## For example:
+```
+0(COPY (F T N--): copy N bytes from F to T)
+:COPY T+ s3 s2 s1 r3 0[r1 C@ r2 C! i1 i2] T-;
+rFROM rTO rNUMBER cCOPY
+```
+## Some more Examples
+
+| Code | Description |
+|:--|:--|
+| "Hello World!"                          | The standard "hello world" program.
+| :MIN %%>($)\;                           | Define function MIN
+| :BTW T+ s3 s2 s1 r1 r2 > r1 r3 < b& T-; | Using temporary registers
+| 32 127[I###"%n[%c] - %d, %x, %b"]       | Loop to print the ASCII table
+
+The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
+
+`1000 sDELAY 13 sLED rLED xPO 1{\ 0 2[I rLED xPWD rDELAY xW] K? 0=} K@ \`
 
   Explanation of the blink program:
   | Code| Description|
@@ -125,12 +130,12 @@ This is very fast, but poses some limitations:
 ### INTEGER OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| +  |  (a b--n)   |n: a+b - addition
-| -  |  (a b--n)   |n: a-b - subtraction
-| *  |  (a b--n)   |n: a*b - multiplication
-| /  |  (a b--q)   |q: a/b - division
-| M  |  (a b--r)   |r: a%b - modulo
-| S  |  (a b--q r) |q: div(a,b), r: modulo(a,b)  (SLASH-MOD)
+| +  |  (a b--n)   | n: a+b - addition
+| -  |  (a b--n)   | n: a-b - subtraction
+| *  |  (a b--n)   | n: a*b - multiplication
+| /  |  (a b--q)   | q: a/b - division
+| M  |  (a b--r)   | r: a%b - modulo
+| S  |  (a b--q r) | q: div(a,b), r: modulo(a,b)  (SLASH-MOD)
 
 
 ### FLOATING POINT OPERATIONS
@@ -139,53 +144,53 @@ This is very fast, but poses some limitations:
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| FF | (i--f)    |Convert TOS from integer to float
-| FI | (f--i)    |Convert TOS from float to integer
-| F+ | (a b--n)  |Float: add
-| F- | (a b--n)  |Float: subtract
-| F* | (a b--n)  |Float: multiply
-| F/ | (a b--n)  |Float: divide
-| F< | (a b--f)  |f: if (a < b), else 0
-| F= | (a b--f)  |f: if (a = b), else 0
-| F> | (a b--f)  |f: if (a > b), else 0
-| F. | (n--)     |Float: print top of fload stack
-| F_ | (a--b)    |b: -a
+| FF | (i--f)    | Convert TOS from integer to float
+| FI | (f--i)    | Convert TOS from float to integer
+| F+ | (a b--n)  | Float: add
+| F- | (a b--n)  | Float: subtract
+| F* | (a b--n)  | Float: multiply
+| F/ | (a b--n)  | Float: divide
+| F< | (a b--f)  | f: if (a < b), else 0
+| F= | (a b--f)  | f: if (a = b), else 0
+| F> | (a b--f)  | f: if (a > b), else 0
+| F. | (n--)     | Float: print top of fload stack
+| F_ | (a--b)    | b: -a
 
 
 ### BIT MANIPULATION OPERATIONS
 | OP |Stack |Description|
 |:--  |:--   |:--|
-| b&  | (a b--n)   |n: a and b
-| b\| | (a b--n)   |n: a or b
-| b^  | (a b--n)   |n: a xor b
-| b~  | (a--b)     |b: not a      (e.g - 1011 => 0100)
-| L   | (a n--b)   |b: a << n     (Left-Shift)
-| R   | (a n--b)   |b: a >> n     (Right-Shift)
+| b&  | (a b--n)   | n: a AND b
+| b\| | (a b--n)   | n: a OR b
+| b^  | (a b--n)   | n: a XOR b
+| b~  | (a--b)     | b: complement of a (e.g - 1011 => 0100)
+| L   | (a n--b)   | b: a << n (Left-Shift)
+| R   | (a n--b)   | b: a >> n (Right-Shift)
 
 
 ### STACK OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| #  | (a--a a)       |Duplicate TOS (DUP)
-| \  | (a b--a)       |Drop TOS (DROP)
-| $  | (a b--b a)     |Swap top 2 stack items (SWAP)
-| %  | (a b--a b a)   |Push 2nd (OVER)
-| _  | (a--b)         |b: -a (NEGATE)
-| D  | (a--b)         |b: a-1 (1-)
-| P  | (a--b)         |b: a+1 (1+)
-| A  | (a--b)         |b: absolute value of a (ABS)
-| xK | (--)           |Display the stack (.S)
+| #  | (a--a a)       | Duplicate TOS (DUP)
+| \  | (a b--a)       | Drop TOS (DROP)
+| $  | (a b--b a)     | Swap top 2 stack items (SWAP)
+| %  | (a b--a b a)   | Push 2nd (OVER)
+| _  | (a--b)         | b: -a (NEGATE)
+| D  | (a--b)         | b: a-1 (1-)
+| P  | (a--b)         | b: a+1 (1+)
+| A  | (a--b)         | b: absolute value of a (ABS)
+| xK | (--)           | Display the stack (.S)
 
 
 ### MEMORY OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| @  | (a--n)      |Fetch CELL n from address a
-| !  | (n a--)     |Store CELL n  to  address a
-| C@ | (a--n)      |Fetch BYTE n from address a
-| C! | (n a--)     |Store BYTE n  to  address a
-| U  | (n--a)      |a: address of byte n in the CODE area.
-| V  | (n--a)      |a: address of byte n in the VARS area.
+| @  | (a--n)      | Fetch CELL n from address a
+| !  | (n a--)     | Store CELL n  to  address a
+| C@ | (a--n)      | Fetch BYTE n from address a
+| C! | (n a--)     | Store BYTE n  to  address a
+| U  | (n--a)      | a: address of byte n in the CODE area.
+| V  | (n--a)      | a: address of byte n in the VARS area.
 
 
 ### REGISTERS OPERATIONS
@@ -195,13 +200,13 @@ This is very fast, but poses some limitations:
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| &ABC | (N--)  |Define register rABC with initial value of N.
-|      |        |*** NOTE: If register rABC has a value <> 0, r4 prints "-redef-r[hash]-".
-|      |        |    This can be used to check if there is a hashing collision.
-| rABC | (--v)  |v: value of register ABC.
-| sABC | (v--)  |v: store v to register ABC.
-| iABC | (--)   |Increment register ABC.
-| dABC | (--)   |Decrement register ABC.
+| &ABC | (N--)  | Define register rABC with initial value of N.
+|      |        | *** NOTE: If register rABC has a value <> 0, r4 prints "-redef-r[hash]-".
+|      |        |     This can be used to check if there is a hashing collision.
+| rABC | (--v)  | v: value of register ABC.
+| sABC | (v--)  | v: store v to register ABC.
+| iABC | (--)   | Increment register ABC.
+| dABC | (--)   | Decrement register ABC.
 
 
 ### TEMPORARY REGISTERS OPERATIONS
@@ -210,12 +215,12 @@ This is very fast, but poses some limitations:
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| T+ | (--)   |Allocate 10 temporary registers|
-| rN | (--v)  |v: value of local #N.|
-| sN | (v--)  |v: store v to local #N.|
-| iN | (--)   |Increment local N.|
-| dN | (--)   |Decrement local n.|
-| T- | (--)   |Free the most recently allocated temporary registers|
+| T+ | (--)   | Allocate 10 temporary registers|
+| rN | (--v)  | v: value of local #N.|
+| sN | (v--)  | v: store v to local #N.|
+| iN | (--)   | Increment local N.|
+| dN | (--)   | Decrement local n.|
+| T- | (--)   | Free the most recently allocated temporary registers|
 
 
 ### FUNCTIONS OPERATIONS
@@ -227,31 +232,31 @@ This is very fast, but poses some limitations:
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| :ABC  | (--)   |Define function ABC. Copy chars to (HERE++) until closing ';'.
-|       |        |If function ABC has a value <> 0, print "-redef-f[hash]-".
-| cABC  | (--)   |Call function ABC. Handles "tail call optimization".
-|       |        | *** NOTE: this allocates 10 local variables, which are freed on ';'
-| ;     | (--)   |Return: PC = rpop()
+| :ABC  | (--)   | Define function ABC. Copy chars to (HERE++) until closing ';'.
+|       |        | If function ABC has a value <> 0, print "-redef-f[hash]-".
+| cABC  | (--)   | Call function ABC. Handles "tail call optimization".
+|       |        |  *** NOTE: this allocates 10 local variables, which are freed on ';'
+| ;     | (--)   | Return: PC = rpop()
 
  
 ### INPUT/OUTPUT OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| .     | (N--)    |Output N as a decimal number.
-| ,     | (N--)    |Output N as a character (EMIT)
-| "str" | (--)     |Output formatted characters until the next '"' see (1)
-| B     | (--)     |Output a single SPACE (32,)
-| N     | (--)     |Output a single NEWLINE (13,10,)
-| K?    | (--f)    |f: non-zero if char is ready to be read, else 0.
-| K@    | (--n)    |n: Key char, wait if no char is available.
-| 0-9   | (--N)    |Scan DECIMAL number N until non digit
-| N.N   | (--F)    |- Use NNN.NNN (eg - 3.14) to enter a floating point number F
-|       |          |- to specify multiple values, separate them by space (4711 3333)
-|       |          |- to enter a negative number, use "negate" (eg - 490_)
-|hXXX   | (--N)    |Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
-| 'C    | (--n)    |n: the ASCII value of C
-| \`x\` | (a--a b) |Copy following chars until closing '`' to (a++).
-|       |          |- a: address, b next byte after trailing NULL.
+| .     | (N--)    | Output N as a decimal number.
+| ,     | (N--)    | Output N as a character (EMIT)
+| "str" | (--)     | Output formatted characters until the next '"' see (1)
+| B     | (--)     | Output a single SPACE (32,)
+| N     | (--)     | Output a single NEWLINE (13,10,)
+| K?    | (--f)    | f: non-zero if char is ready to be read, else 0.
+| K@    | (--n)    | n: Key char, wait if no char is available.
+| 0-9   | (--N)    | Scan DECIMAL number N until non digit
+| N.N   | (--F)    | - Use NNN.NNN (eg - 3.14) to enter a floating point number F
+|       |          | - to specify multiple values, separate them by space (4711 3333)
+|       |          | - to enter a negative number, use "negate" (eg - 490_)
+|hXXX   | (--N)    | Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
+| 'C    | (--n)    | n: the ASCII value of C
+| \`x\` | (a--a b) | Copy following chars until closing '`' to (a++).
+|       |          | - a: address, b next byte after trailing NULL.
 
 (1) Output formatting:
 - Similar to 'C' formatting, the '%' char identifies additional processing.
@@ -271,82 +276,82 @@ This is very fast, but poses some limitations:
 ### LOGICAL/CONDITIONS/FLOW CONTROL OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| <  | (a b--f)    |f: if (a < b) then 1, else 0;
-| =  | (a b--f)    |f: if (a = b) then 1, else 0;
-| >  | (a b--f)    |f: if (a > b) then 1, else 0;
-| ~  | (x--f)      |f: if (x = 0) then 1, else 0; (logical NOT)
-| (  | (f--)       |if (f != 0), execute code in '()', else skip to matching ')'
-| X  | (a--)       |if (a != 0), execute/call function at address a
-| G  | (a--)       |if (a != 0), go/jump to function at address a
+| <  | (a b--f)    | f: if (a < b) then 1, else 0;
+| =  | (a b--f)    | f: if (a = b) then 1, else 0;
+| >  | (a b--f)    | f: if (a > b) then 1, else 0;
+| ~  | (x--f)      | f: if (x = 0) then 1, else 0; (logical NOT)
+| (  | (f--)       | if (f != 0), execute code in '()', else skip to matching ')'
+| X  | (a--)       | if (a != 0), execute/call function at address a
+| G  | (a--)       | if (a != 0), go/jump to function at address a
 
 
 ### FOR/NEXT LOOPING OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| [  | (F T--)   |FOR: start a For/Next loop. 
-|    |           | *** NOTE: if (F > T), F and T are swapped
-| I  | (--i)     |i: the index of the current FOR loop
-| p  | (i--)     |i: number to add to "I"
-| ^  | (--)      |un-loop, use with ';'. Example: rSrK>(^;)
-| ]  | (--)      |NEXT: increment index (I) and loop if (I < T)
+| [  | (F T--)   | FOR: start a For/Next loop. 
+|    |           |  *** NOTE: if (F > T), F and T are swapped
+| I  | (--n)     | n: the index of the current FOR loop
+| p  | (n--)     | n: number to add to "I"
+| ^  | (--)      | UNLOOP, use with ';'. Example: `rSrK>(^;)`
+| ]  | (--)      | NEXT: increment index (I) and loop if (I < T)
 
 
 ### BEGIN/WHILE LOOPING OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| {  | (f--f)      |BEGIN: if (f == 0) skip to ending '}'
-| ^  | (--)        |un-loop, used with ';'. Example: rX0=(^;)
-| }  | (f--f?)     |WHILE: if (f != 0) jump to starting '{', else drop f and continue
+| {  | (f--f)      | BEGIN: if (f == 0) skip to ending '}'
+| ^  | (--)        | UNLOOP, used with ';'. Example: `rX0=(^;)`
+| }  | (f--f?)     | WHILE: if (f != 0) jump to starting '{', else drop f and continue
 
 
 ### FILE OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| fO  | (nm md--fh)  |FILE: Open, nm: name, md: mode, fh: fileHandle
-| fC  | (fh--)       |FILE: Close, fh: fileHandle
-| fD  | (nm--)       |FILE: Delete
-| fR  | (fh--c n)    |FILE: Read, fh: fileHandle, c: char, n: num
-| fW  | (c fh--n)    |FILE: Write, fh: fileHandle, c: char, n: num
-| fS  | (--)         |FILE: Save Code
-| fL  | (--)         |FILE: Load Code
+| fO  | (nm md--fh)  | FILE: Open, nm: name, md: mode, fh: fileHandle
+| fC  | (fh--)       | FILE: Close, fh: fileHandle
+| fD  | (nm--)       | FILE: Delete
+| fR  | (fh--c n)    | FILE: Read, fh: fileHandle, c: char, n: num
+| fW  | (c fh--n)    | FILE: Write, fh: fileHandle, c: char, n: num
+| fS  | (--)         | FILE: Save Code
+| fL  | (--)         | FILE: Load Code
 
 
 ### BLOCK OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| bL  | (n--)        |BLOCK: Load code from block file (block-nnn.r4). This can be nested.
-| bA  | (--)         |BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
-| bE  | (n--)        |BLOCK: Edit block N (file name is block-nnn.r4)
+| bL  | (n--)        | BLOCK: Load code from block file (block-nnn.r4). This can be nested.
+| bA  | (--)         | BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
+| bE  | (n--)        | BLOCK: Edit block N (file name is block-nnn.r4)
 
 
 ### OTHER OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| xV    | (--n)     |r4 version number (YYYYMMDD)
-| xIAF  | (--a)     |INFO: Address where the function vectors begin
-| xIAH  | (--a)     |INFO: Address of the HERE variable
-| xIAR  | (--a)     |INFO: Address where the registers begin
-| xIAU  | (--a)     |INFO: Address there the CODE area begins
-| xIAV  | (--a)     |INFO: Address there the VARS area begins
-| xIC   | (--n)     |INFO: CELL size
-| xIF   | (--n)     |INFO: Number of functions (NUM_FUNCS)
-| xIH   | (--a)     |INFO: Current HERE value
-| xIR   | (--n)     |INFO: Number of registers (NUM_REGS)
-| xIU   | (--n)     |INFO: Size of CODE area (CODE_SZ)
-| xIV   | (--n)     |INFO: Size of VARS area (VARS_SZ)
-| xPI   | (p--)     |Arduino: pin input  (pinMode(p, INPUT))
-| xPU   | (p--)     |Arduino: pin pullup (pinMode(p, INPUT_PULLUP))
-| xPO   | (p--)     |Arduino: pin output (pinMode(p, OUTPUT)
-| xPRA  | (p--n)    |Arduino: pin read analog  (n = analogRead(p))
-| xPRD  | (p--n)    |Arduino: pin read digital (n = digitalRead(p))
-| xPWA  | (n p--)   |Arduino: pin write analog  (analogWrite(p, n))
-| xPWD  | (n p--)   |Arduino: pin write digital (digitalWrite(p, n))
-| xs    | (a--)     |PC: call "system(a)"
-| xSR   | (--)      |R4 System Reset
-| xT    | (--n)     |Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
-| xh[S] | (--)      |Print hash, reg, and func value for [S] (eg - xhALLOT or xhVH)
-| xM    | (--n)     |Time in microseconds (Arduino: micros())
-| xW    | (n--)     |Wait (Arduino: delay(),  Windows: Sleep())
-| xR    | (n--r)    |r: a pseudo-random number between 0 and n (uses XOR-shift)
-|       |           |NOTE: when n=0, r is the entire CELL-sized number
-| xQ    | (--)      |PC: Exit R4
+| xV    | (--n)     | r4 version number (YYYYMMDD)
+| xIAF  | (--a)     | INFO: Address where the function vectors begin
+| xIAH  | (--a)     | INFO: Address of the HERE variable
+| xIAR  | (--a)     | INFO: Address where the registers begin
+| xIAU  | (--a)     | INFO: Address there the CODE area begins
+| xIAV  | (--a)     | INFO: Address there the VARS area begins
+| xIC   | (--n)     | INFO: CELL size
+| xIF   | (--n)     | INFO: Number of functions (NUM_FUNCS)
+| xIH   | (--a)     | INFO: Current HERE value
+| xIR   | (--n)     | INFO: Number of registers (NUM_REGS)
+| xIU   | (--n)     | INFO: Size of CODE area (CODE_SZ)
+| xIV   | (--n)     | INFO: Size of VARS area (VARS_SZ)
+| xPI   | (p--)     | Arduino: open pin input  (pinMode(p, INPUT))
+| xPU   | (p--)     | Arduino: open pin pullup (pinMode(p, INPUT_PULLUP))
+| xPO   | (p--)     | Arduino: open pin output (pinMode(p, OUTPUT)
+| xPRA  | (p--n)    | Arduino: pin read analog  (n = analogRead(p))
+| xPRD  | (p--n)    | Arduino: pin read digital (n = digitalRead(p))
+| xPWA  | (n p--)   | Arduino: pin write analog  (analogWrite(p, n))
+| xPWD  | (n p--)   | Arduino: pin write digital (digitalWrite(p, n))
+| xs    | (a--)     | PC: call "system(a)"
+| xSR   | (--)      | R4 System Reset
+| xT    | (--n)     | Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
+| xh[S] | (--)      | Print hash, reg, and func value for [S] (eg - `xhALLOT` or `xhVH`)
+| xM    | (--n)     | Time in microseconds (Arduino: micros())
+| xW    | (n--)     | Wait (Arduino: delay(),  Windows: Sleep())
+| xR    | (n--r)    | r: a pseudo-random number between 0 and n (uses XOR-shift)
+|       |           | NOTE: when n=0, r is the entire CELL-sized number
+| xQ    | (--)      | PC: Exit R4
