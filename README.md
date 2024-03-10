@@ -56,6 +56,19 @@ Functions are defined in a Forth-like style, using ':', and you call them using 
 
     `1000 sDELAY 13 sLED rLED xPO 1{\ 0 2[I rLED xPWD rDELAY xW] K? 0=} K@ \`
 
+  Explanation of the blink program:
+  | Code| Description|
+  | :-- | :--|
+  | 1000 sDELAY    | Set register DELAY to 1000
+  | 13 sLED        | Set register LED to 13, the typical port number of the built-in LED
+  | rLED xPO       | Push register LED (13) on the stack and open that port
+  | 1{ .... }      | Define a WHILE loop
+  | \\ 0 2 [ ... ] | DROP the WHILE control variable and define a FOR loop from 0 to 2
+  | I rLED xPWD    | Write the loop index (I 0 or 1) to port LED (13)
+  | rDELAY xW      | Wait for DELAY (1000) milliseconds
+  | K? 0=          | Check is a key was pressed; if so, exit loop
+  | K@ \\          | Read the key that was pressed and discard it
+
 There are more examples here: https://github.com/CCurl/r4/blob/main/examples.txt
 
 ## Memory areas
