@@ -61,11 +61,16 @@ void printStringF(const char* fmt, ...) {
 }
 
 void printBase(CELL v, int b) {
-    char x[65], *c=&x[64], n=((v<0) && (b==10))?1:0;
-    UCELL u=(n)?-v:v;
+    char x[65], *c=&x[64];
+    char n=((v<0) && (b==10))?1:0;
+    UCELL u = (n) ? -v : v;
     *(c) = 0;
-    do { *(--c)=(char)((u%b)+'0'); if (*c>'9') *c+=7; u/=b; } while (u);
-    if (n) { *(--c)='-'; }
+    do {
+        *(--c) = (char)((u % b)+'0');
+        if (*c>'9') { *c += 7; }
+        u /= b;
+    } while (u);
+    if (n) { *(--c) = '-'; }
     printString(c);
 }
 

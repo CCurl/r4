@@ -253,9 +253,9 @@ This is very fast, but poses some limitations:
 | N.N   | (--F)    | - Use NNN.NNN (eg - 3.14) to enter a floating point number F
 |       |          | - to specify multiple values, separate them by space (4711 3333)
 |       |          | - to enter a negative number, use "negate" (eg - 490_)
-|hXXX   | (--N)    | Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
+| hXXX  | (--N)    | Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
 | 'C    | (--n)    | n: the ASCII value of C
-| \`x\` | (a--a b) | Copy following chars until closing '`' to (a++).
+| \`x\` | (a--a b) | Copy following chars until closing '`' to (address a).
 |       |          | - a: address, b next byte after trailing NULL.
 
 (1) Output formatting:
