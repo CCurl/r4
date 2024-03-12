@@ -20,3 +20,6 @@ rebuild: clean all
 
 bin: $(app)
 	cp -u -p $(app) ~/bin/
+
+test: $(app)
+	./r4 tests.r4

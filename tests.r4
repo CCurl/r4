@@ -1,0 +1,16 @@
+; tests.r4 - some tests
+
+0 sTNUM 0V sVH
+:NT iTNUM rTNUM "%nTest #%d: ";
+:PF ("PASS";) "FAIL";
+
+:X T+ s3 s2 s1 r1 r3[I sN rN r2 =(T-^;)] T-;
+:- 1 10 100 cX rN 10 =  ;  cNT c- cPF
+:- 22 44 33 cX rN 44 = ~;  cNT c- cPF
+:- rN 32 =;                cNT c- cPF
+:FO fO #(#fC);
+:- rVH`r4.cpp``rt`\cFO;    cNT c- cPF
+:- rVH`xx.xxx``rt`\cFO~;   cNT c- cPF
+
+"%nStack: "xK N
+xQ
