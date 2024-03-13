@@ -6,9 +6,9 @@
 :HDR "Genetic Evolution"N; cHDR
 :NTH 1000+1000/1000*;
 
-0(Each connection is 32 bits)
-0(first byte is input, 2nd is output)
-0(So, [type:1][id:7][type:1][id:7][weight:16])
+0( Each connection is 32 bits )
+0( first byte is input, 2nd is output )
+0( [type:1][id:7][type:1][id:7][weight:16] )
 
 0(rC: current critter)
 
@@ -39,52 +39,54 @@ rVH sCSA               0(Critters start address)
 :DUMPN cNTYPE "{ type: %d, id: %d }";
 
 :- (--x y) Critter: x y;
-:CXY rC C@ rC P C@;
+:GETXY rC C@ rC P C@;
 
-:- (I--nid) Critter: input connection #I;
+:- (I--nid) Critter: neuron input connection #I;
 :CNI 2L rC+ C@;
 
-:- (I--nid) Critter: output connection #I;
-:CNO D 2L rC+ I C@;
+:- (I--nid) Critter: neuron output connection #I;
+:CNO 2L rC+ P C@;
 
-:- (I--wt) Critter: weight #I;
-:CNW 2L rC+ @ hFF&;
+:- (I--wt) Critter: neuron weight #I;
+:CNW 2L rC+ PP @ hFF b&;
 
 :- (I--): Connection dump;
-:DCN # cCNI cDUMPN ", " # cCNO cDUMPN cCNW ", wt: ".;
+:DUMPCON # cCNI cDUMPN ", " # cCNO cDUMPN cCNW ", wt: ".;
 
 :- (I--): Set Critter, I:[1..N];
-:SCR D rCSZ * rCSA + sC;
+:SETCR D rCSZ * rCSA + sC;
 
 :- (x y--): Set X/Y;
-:SXY rC P C! rC C!;
+:SETXY rC P C! rC C!;
 
 :- (--x y): Random X/Y;
-:RXY rWX xR rWY xR;
+:RANDXY rWX xR rWY xR;
 
 :- (--): Create a random critter;
-:RNC cRXY cSXY rC 4+ # rNCN 4*+[255 xR I C!];
+:RANDCR cRANDXY cSETXY rC 4+ # rNCN 4*+[255 xR I C!];
 
 :- (--): Critter dump connections;
-:CDN 1 rNCN["%n     " I cDCN];
+:CDN 1 rNCN["%n     " I cDUMPCON];
 
 :- (--): Critter dump;
-:CDM cCXY$"%n{ x: ". ", y: ".", [" cCDN "]}";
+:DUMPCR cGETXY $ "{ x: %d, y: %d, [" cCDN "]}";
 
 : (--): Dump all critters;
-:DAC 1 rNCR[I #.B cSCR cCDM];
+:DUMPALL 1 rNCR[N I #.B cSETCR cDUMPCR];
 
 :- (--): Randomize all critters;
-:RAC 1 rNCR[I cSCR cRNC];
+:RANDALL 1 rNCR[I cSETCR cRANDCR];
 
 :- (--): Critter Show;
-:CRS cCXY cGXY rC 7M 31+ 40 cSTC "*";
+:SHOWCR cGETXY cGXY rC 7M 31+ 40 cSTC "*";
 
 :- (--): Critter Unshow;
-:CRU cCXY cGXY " ";
+:UNSHOWCR cGETXY cGXY " ";
 
 :- (--): Show all critters;
-:STS 1 rNCR[I cSCR 100xr50<#(cCRS)_(cCRU)] eCLC;
+:SHOWALL 1 rNCR[I cSETCR cSHOWCR] cCLC;
 
-cRAC ; 0(cCLS cCOF 1{\cSTS 0xW K?0=}K@\ cCON)
-cDAC
+:RL 222bL;
+
+cRANDALL  0(cCLS cCOF 1{\cSHOWALL 0xW K?0=}K@\ cCON)
+cDUMPALL

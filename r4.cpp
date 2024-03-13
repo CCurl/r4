@@ -144,7 +144,7 @@ int isOk(CELL exp, const char* msg) {
 void doFloat() {
     ir = *(pc++);
     switch (ir) {
-        case  'F': FTOS = (double)TOS;
+        case  'F': FTOS = (FLT_T)TOS;
         RCASE 'I': TOS = (CELL)FTOS;
         RCASE '+': FNOS += FTOS; pop();
         RCASE '-': FNOS -= FTOS; pop();
@@ -229,8 +229,8 @@ next:
         case  '5': case '6': case '7': case '8': case '9': push(ir-'0');
             while (BTWI(*pc, '0', '9')) { TOS = (TOS * 10) + *(pc++) - '0'; }
             if (*pc=='.') {
-                double x=10;
-                FTOS=(double)TOS; ++pc;
+                FLT_T x=10;
+                FTOS=(FLT_T)TOS; ++pc;
                 while (BTWI(*pc, '0', '9')) { FTOS += (*pc-'0')/x; x*=10; ++pc; }
             }
         NCASE ':': t1 = doHash(MAX_FUNC);

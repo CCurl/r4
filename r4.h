@@ -5,12 +5,18 @@
 #include <stdarg.h>
 #include <stdint.h>
 
+#if __LONG_MAX__ > __INT32_MAX__
+#define FLT_T double
+#else
+#define FLT_T float
+#endif
+
 typedef long CELL;
 typedef unsigned long UCELL;
 typedef uint16_t ushort;
 typedef uint8_t byte;
 typedef byte *addr;
-typedef union { double f; CELL i; char *c; } ST_T;
+typedef union { FLT_T f; CELL i; char *c; } ST_T;
 
 #define CELL_SZ    sizeof(CELL)
 #define TOS        dstack[dsp].i
