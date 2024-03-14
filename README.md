@@ -33,7 +33,7 @@ A temporary register is identified by a single decimal digit (0-9).
 - They are allocated and freed in groups of 10.
 - `T+` allocates 10 temporary registers (r0-r9).
 - `T-` frees the most recently allocated set.
-- They are referred to like other registers. E.G. - `r7` retrieves the value of register #7.
+- They are referred to like other registers. E.G. - `r7` pushes the value of register #7.
 - They have the same operations (r,s,i,d). E.G. - `i4` increments register #4.
 - They can be used across functions, or as local variables inside a function.
 
@@ -59,19 +59,19 @@ rFROM rTO rNUMBER cCOPY
 
 The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
-`1000 sDELAY 13 sLED rLED xPO 1{\ 0 2[I rLED xPWD rDELAY xW] K? 0=} K@ \`
+`1000 sDELAY 13 sLED rLED xPO 1{\ 0 2[I rLED xPWD rDELAY xW] K? ~} K@ \`
 
   Explanation of the blink program:
-  | Code| Description|
-  | :-- | :--|
+  | Code           | Description|
+  | :--            | :--|
   | 1000 sDELAY    | Set register DELAY to 1000
   | 13 sLED        | Set register LED to 13, the typical port number of the built-in LED
   | rLED xPO       | Push register LED (13) on the stack and open that port
-  | 1{ .... }      | Define a WHILE loop
-  | \\ 0 2 [ ... ] | DROP the WHILE control variable and define a FOR loop from 0 to 2
+  | 1{             | Begin a WHILE loop; DROP control value
+  | \\ 0 2 [       | Begin a FOR loop from 0 to 2
   | I rLED xPWD    | Write the loop index (I 0 or 1) to port LED (13)
-  | rDELAY xW      | Wait for DELAY (1000) milliseconds
-  | K? 0=          | Check is a key was pressed; if so, exit loop
+  | rDELAY xW]     | Wait for DELAY (1000) milliseconds; end FOR loop
+  | K? ~}          | Check if a key was pressed; if not then continue, else exit loop
   | K@ \\          | Read the key that was pressed and discard it
 
 There are more examples here: https://github.com/CCurl/r4/blob/main/examples.txt
@@ -150,10 +150,10 @@ This is very fast, but poses some limitations:
 | F- | (a b--n)  | Float: subtract
 | F* | (a b--n)  | Float: multiply
 | F/ | (a b--n)  | Float: divide
-| F< | (a b--f)  | f: if (a < b), else 0
-| F= | (a b--f)  | f: if (a = b), else 0
-| F> | (a b--f)  | f: if (a > b), else 0
-| F. | (n--)     | Float: print top of fload stack
+| F< | (a b--f)  | f: if (a < b) then 1 , else 0
+| F= | (a b--f)  | f: if (a = b) then 1 , else 0
+| F> | (a b--f)  | f: if (a > b) then 1 , else 0
+| F. | (n--)     | Float: print top of float stack
 | F_ | (a--b)    | b: -a
 
 
@@ -176,8 +176,8 @@ This is very fast, but poses some limitations:
 | $  | (a b--b a)     | Swap top 2 stack items (SWAP)
 | %  | (a b--a b a)   | Push 2nd (OVER)
 | _  | (a--b)         | b: -a (NEGATE)
-| D  | (a--b)         | b: a-1 (1-)
-| P  | (a--b)         | b: a+1 (1+)
+| D  | (a--b)         | b: a-1 (DECREMENT)
+| P  | (a--b)         | b: a+1 (INCREMENT)
 | A  | (a--b)         | b: absolute value of a (ABS)
 | xK | (--)           | Display the stack (.S)
 
@@ -230,7 +230,7 @@ This is very fast, but poses some limitations:
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
 
-| OP |Stack |Description|
+| OP    |Stack   |Description|
 | :--   |:--     |:--|
 | :ABC  | (--)   | Define function ABC. Copy chars to (HERE++) until closing ';'.
 |       |        | If function ABC has a value <> 0, print "-redef-f[hash]-".
@@ -240,8 +240,8 @@ This is very fast, but poses some limitations:
 
  
 ### INPUT/OUTPUT OPERATIONS
-| OP |Stack |Description|
-|:-- |:--   |:--|
+| OP    |Stack     |Description|
+|:--    |:--       |:--|
 | .     | (N--)    | Output N as a decimal number.
 | ,     | (N--)    | Output N as a character (EMIT)
 | "str" | (--)     | Output formatted characters until the next '"' see (1)
@@ -292,7 +292,7 @@ This is very fast, but poses some limitations:
 |    |           |  *** NOTE: if (F > T), F and T are swapped
 | I  | (--n)     | n: the index of the current FOR loop
 | p  | (n--)     | n: number to add to "I"
-| ^  | (--)      | UNLOOP, use with ';'. Example: `rSrK>(^;)`
+| ^  | (--)      | UNLOOP, use with ';'. Example: `rS rK>(^;)`
 | ]  | (--)      | NEXT: increment index (I) and loop if (I < T)
 
 
@@ -300,28 +300,28 @@ This is very fast, but poses some limitations:
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | {  | (f--f)      | BEGIN: if (f == 0) skip to ending '}'
-| ^  | (--)        | UNLOOP, used with ';'. Example: `rX0=(^;)`
+| ^  | (--)        | UNLOOP, used with ';'. Example: `rX ~(^;)`
 | }  | (f--f?)     | WHILE: if (f != 0) jump to starting '{', else drop f and continue
 
 
 ### FILE OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| fO  | (nm md--fh)  | FILE: Open, nm: name, md: mode, fh: fileHandle
-| fC  | (fh--)       | FILE: Close, fh: fileHandle
-| fD  | (nm--)       | FILE: Delete
-| fR  | (fh--c n)    | FILE: Read, fh: fileHandle, c: char, n: num
-| fW  | (c fh--n)    | FILE: Write, fh: fileHandle, c: char, n: num
-| fS  | (--)         | FILE: Save Code
-| fL  | (--)         | FILE: Load Code
+| fO | (nm md--fh)  | FILE: Open, nm: name, md: mode, fh: fileHandle
+| fC | (fh--)       | FILE: Close, fh: fileHandle
+| fD | (nm--)       | FILE: Delete
+| fR | (fh--c n)    | FILE: Read, fh: fileHandle, c: char, n: num
+| fW | (c fh--n)    | FILE: Write, fh: fileHandle, c: char, n: num
+| fS | (--)         | FILE: Save Code
+| fL | (--)         | FILE: Load Code
 
 
 ### BLOCK OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| bL  | (n--)        | BLOCK: Load code from block file (block-nnn.r4). This can be nested.
-| bA  | (--)         | BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
-| bE  | (n--)        | BLOCK: Edit block N (file name is block-nnn.r4)
+| bL | (n--)        | BLOCK: Load code from block file (block-nnn.r4). This can be nested.
+| bA | (--)         | BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
+| bE | (n--)        | BLOCK: Edit block N (file name is block-nnn.r4)
 
 
 ### OTHER OPERATIONS
@@ -353,5 +353,5 @@ This is very fast, but poses some limitations:
 | xM    | (--n)     | Time in microseconds (Arduino: micros())
 | xW    | (n--)     | Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    | r: a pseudo-random number between 0 and n (uses XOR-shift)
-|       |           | NOTE: when n=0, r is the entire CELL-sized number
+|       |           |  *** NOTE: when n=0, r is the entire CELL-sized number
 | xQ    | (--)      | PC: Exit R4

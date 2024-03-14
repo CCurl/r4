@@ -88,5 +88,5 @@ rVH sCSA               0(Critters start address)
 
 :RL 222bL;
 
-cRANDALL  0(cCLS cCOF 1{\cSHOWALL 0xW K?0=}K@\ cCON)
+cRANDALL  0(cCLS cCOF 1{\cSHOWALL 0xW K? ~}K@\ cCON)
 cDUMPALL
