@@ -24,23 +24,24 @@ There are multiple reasons for creating r4, including:
 - Short commands so that there is not a lot of typing needed.
 
 ## Registers
-A register name is of the form `[A-Z][A-Z0-9]*`.
+A register name is of the form `[A-Z][A-Z0-9]*` (e.g. - REG12).
 - They can be retrieved, set, incremented, or decremented in a single operation (r[REG],s[REG],i[REG],d[REG]).
 - Example: - `12 sTMP1 34 sTMP2 rTMP1 rTMP2 + .` will print `46`.
 
 ## Temporary registers (aka - LOCALS)
-A temporary register is identified by a single decimal digit (0-9).
+A reference to a temporary register is of the form `[rsid][0-9]` (e.g. r6).
 - They are allocated and freed in groups of 10.
-- `T+` allocates 10 temporary registers (r0-r9).
+- Working with these are very fast, as the name does not need to be hashed.
+- `T+` allocates 10 new temporary registers (r0-r9).
 - `T-` frees the most recently allocated set.
-- They are referred to like other registers. E.G. - `r7` pushes the value of register #7.
-- They have the same operations (r,s,i,d). E.G. - `i4` increments register #4.
-- They can be used across functions, or as local variables inside a function.
+- They have the same operations [rsid]. For example: `i4` increments register #4.
+- They are used like other registers. For example: `r7` pushes the value of register #7.
+- They can be used as local variables inside a function (using T+ and T-), or across functions.
 
 ## Functions
-A function name is of the form `[A-Z][A-Z0-9]*`.
+A function name is of the form `[A-Z][A-Z0-9]*` (e.g. - BTW10AND20).
 
-Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. 
+Functions are defined in a Forth-like style, using ':', and are called using the 'c' opcode.
 
 ## For example:
 ```
@@ -53,8 +54,9 @@ rFROM rTO rNUMBER cCOPY
 | Code | Description |
 |:--|:--|
 | "Hello World!"                          | The standard "hello world" program.
-| :MIN %%>($)\;                           | Define function MIN
+| :MIN %%>($)\; :MAX %%<($)\;             | Define functions MIN and MAX
 | :BTW T+ s3 s2 s1 r1 r2 > r1 r3 < b& T-; | Using temporary registers
+| :BTW10AND20 9 21 cBTW;                  | Define a function with an alphanumeric name
 | 32 127[I###"%n[%c] - %d, %x, %b"]       | Loop to print the ASCII table
 
 The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
@@ -103,7 +105,8 @@ Here is the hashing function (the DJB2a hash function using XOR):
 ```
 int doHash(int max) {
     UCELL hash = 5381;
-    while (BTWI(*pc, 'A', 'Z')) {
+    if (!ISALPHA(*pc)) { return 0; }
+    while (ISALPHANUM(*pc)) {
         hash = (hash * 33) ^ *(pc++);
     }
     return hash & max;
@@ -114,9 +117,9 @@ This is very fast, but poses some limitations:
 - The maximum number of registers and functions need to be powers of 2.
 - r4 does NOT detect hash collisions as it does not keep key values.
   - My tests have indicated that for a large enough number of buckets, collisions are not common.
-  - ':' prints "-redef-f[hash]-" when the given function name already has a value (a possible collision).
-  - '&' prints "-redef-r[hash]-" when a the given register name already has a value (a possible collision).
-  - Use `xh[NAME]` to see info about [NAME]. eg - `xhTEST`
+  - ':' prints "-redef-f:[hash]-" when the given function name already has a value (a possible collision).
+  - '&' prints "-redef-r:[hash]-" when a the given register name already has a value (a possible collision).
+  - Use `xh[NAME]` to see info about [NAME]. For example: `xhTEST`
 
 ## Building r4
 - The target machine/environment is controlled by the #defines in the file "config.h"
@@ -195,7 +198,7 @@ This is very fast, but poses some limitations:
 
 ### REGISTERS OPERATIONS
 #### NOTES:
-- A register name is of the form `[A-Z][A-Z0-9]*`.
+- A register name is of the form `[A-Z][A-Z0-9]*` (e.g. - REG43).
 - The number of registers is controlled by the NUM_REGS #define in "config.h".
 
 | OP |Stack |Description|
@@ -211,7 +214,7 @@ This is very fast, but poses some limitations:
 
 ### TEMPORARY REGISTERS OPERATIONS
 #### NOTES:
-- A temporary name is of the form `[rsid][0-9]` (e.g. rTMP17).
+- A reference to a temporary register is of the form `[rsid][0-9]` (e.g. r7).
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
@@ -225,8 +228,9 @@ This is very fast, but poses some limitations:
 
 ### FUNCTIONS OPERATIONS
 #### NOTES:
-- A function name is of the form `[A-Z][A-Z0-9]*` (e.g. - TMP23)
-- The number of functions is controlled by the NUM_FUNCS #define in "config.h"
+- A function name is of the form `[A-Z][A-Z0-9]*` (e.g. - TMP23).
+- The number of functions is controlled by the NUM_FUNCS #define in "config.h".
+- A function definition is limited to ONE line.
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
 
