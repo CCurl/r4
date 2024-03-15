@@ -18,27 +18,31 @@ typedef uint8_t byte;
 typedef byte *addr;
 typedef union { FLT_T f; CELL i; char *c; } ST_T;
 
-#define CELL_SZ    sizeof(CELL)
-#define TOS        dstack[dsp].i
-#define NOS        dstack[dsp-1].i
-#define AOS        dstack[dsp].c
-#define FTOS       dstack[dsp].f
-#define FNOS       dstack[dsp-1].f
-#define L0         lstack[lsp]
-#define L1         lstack[lsp-1]
-#define L2         lstack[lsp-2]
-#define DROP2      pop(); pop()
-#define NEXT       goto next
-#define NCASE      NEXT; case
-#define BCASE      break; case
-#define RCASE      return; case
+#define CELL_SZ       sizeof(CELL)
+#define TOS           dstack[dsp].i
+#define NOS           dstack[dsp-1].i
+#define AOS           dstack[dsp].c
+#define FTOS          dstack[dsp].f
+#define FNOS          dstack[dsp-1].f
+#define L0            lstack[lsp]
+#define L1            lstack[lsp-1]
+#define L2            lstack[lsp-2]
+#define L3            lstack[lsp-3]
+
+#define DROP2         pop(); pop()
+#define NEXT          goto next
+#define NCASE         NEXT; case
+#define BCASE         break; case
+#define RCASE         return; case
+
 #define BTWI(n,x,y)   (((x) <= (n)) && ((n) <= (y)))
-#define isLocal(x)    BTWI(x,'0','9')
-#define isReg(n)      ((0 <= (n)) && ((n) < NUM_REGS))
-#define isFunc(n)     ((0 <= (n)) && ((n) < NUM_FUNCS))
 #define ABS(x)        ((x < 0) ? -x : x)
 #define MIN(x,y)      ((x)<(y)) ? (x) : (y)
 #define MAX(x,y)      ((x)>(y)) ? (x) : (y)
+#define ISALPHA(x)    BTWI(x, 'A', 'Z')
+#define ISNUM(x)      BTWI(x, '0', '9')
+#define ISALPHANUM(x) ISALPHA(x) || ISNUM(x)
+#define isLocal(x)    ISNUM(x)
 
 extern byte isBye;
 extern byte isError;

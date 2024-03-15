@@ -24,9 +24,9 @@ There are multiple reasons for creating r4, including:
 - Short commands so that there is not a lot of typing needed.
 
 ## Registers
-A register (a built-in variable) is identified by any number of UPPERCASE characters.
+A register name is of the form `[A-Z][A-Z0-9]*`.
 - They can be retrieved, set, incremented, or decremented in a single operation (r[REG],s[REG],i[REG],d[REG]).
-- E.G. - `1234 sABC iABC rABC .` will print `1235`.
+- Example: - `12 sTMP1 34 sTMP2 rTMP1 rTMP2 + .` will print `46`.
 
 ## Temporary registers (aka - LOCALS)
 A temporary register is identified by a single decimal digit (0-9).
@@ -38,7 +38,7 @@ A temporary register is identified by a single decimal digit (0-9).
 - They can be used across functions, or as local variables inside a function.
 
 ## Functions
-A function is identified by any number of UPPERCASE characters.
+A function name is of the form `[A-Z][A-Z0-9]*`.
 
 Functions are defined in a Forth-like style, using ':', and you call them using the 'c' opcode. 
 
@@ -195,7 +195,7 @@ This is very fast, but poses some limitations:
 
 ### REGISTERS OPERATIONS
 #### NOTES:
-- A register reference is any number of consecutive UPPERCASE characters.
+- A register name is of the form `[A-Z][A-Z0-9]*`.
 - The number of registers is controlled by the NUM_REGS #define in "config.h".
 
 | OP |Stack |Description|
@@ -211,7 +211,7 @@ This is very fast, but poses some limitations:
 
 ### TEMPORARY REGISTERS OPERATIONS
 #### NOTES:
-- A temporary register reference is a single decimal digit (0-9).
+- A temporary name is of the form `[rsid][0-9]` (e.g. rTMP17).
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
@@ -225,7 +225,7 @@ This is very fast, but poses some limitations:
 
 ### FUNCTIONS OPERATIONS
 #### NOTES:
-- A function reference is any number of consecutive UPPERCASE characters.
+- A function name is of the form `[A-Z][A-Z0-9]*` (e.g. - TMP23)
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h"
 - Returning while inside of a loop will eventually cause a problem.
   - Use '^' to unwind the loop stack first.
@@ -260,17 +260,17 @@ This is very fast, but poses some limitations:
 
 (1) Output formatting:
 - Similar to 'C' formatting, the '%' char identifies additional processing.
-  - %c - Output TOS as a char
-  - %b - Output TOS as a number in base 2
-  - %d - Output TOS as a number in base 10
-  - %x - Output TOS as a number in base 16
-  - %B - Output NOS as a number in base TOS
-  - %s - Output TOS as a string
-  - %e - Output an escape (27)
-  - %q - Output a quote (34)
-  - %n - Output a CR/LF (13,10)
-  - %f - Output TOS as a float using "%f"
-  - %g - Output TOS as a float using "%g"
+  - %c: (N--)   Output N as a char
+  - %b: (N--)   Output N as a number in base 2
+  - %d: (N--)   Output N as a number in base 10
+  - %x: (N--)   Output N as a number in base 16
+  - %B: (N B--) Output N as a number in base B
+  - %s: (A--)   Output A as a NULL-terminated string
+  - %e: (--)    Output an escape (27)
+  - %q: (--)    Output a quote (34)
+  - %n: (--)    Output a CR/LF (13,10)
+  - %f: (F--)   Output F as a double/float using "%f"
+  - %g: (F--)   Output F as a double/float using "%g"
   - any other char after the % is output as is (eg "%%" outputs a single '%')
 
 ### LOGICAL/CONDITIONS/FLOW CONTROL OPERATIONS
@@ -291,6 +291,7 @@ This is very fast, but poses some limitations:
 | [  | (F T--)   | FOR: start a For/Next loop. 
 |    |           |  *** NOTE: if (F > T), F and T are swapped
 | I  | (--n)     | n: the index of the current FOR loop
+| J  | (--n)     | n: the index of the next outer FOR loop
 | p  | (n--)     | n: number to add to "I"
 | ^  | (--)      | UNLOOP, use with ';'. Example: `rS rK>(^;)`
 | ]  | (--)      | NEXT: increment index (I) and loop if (I < T)

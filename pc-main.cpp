@@ -108,6 +108,8 @@ void loadCode(const char* src) {
     run(HERE);
 }
 
+// #define __HISTORY__
+
 void doHistory(char* str) {
 #ifdef __HISTORY__
     FILE* fp = fopen("history.txt", "at");
@@ -130,7 +132,8 @@ void loop() {
         fgets(buf, sizeof(buf), stdin);
         doHistory(buf);
         rtrim(buf);
-    }
+    }   
+    // doHistory(buf);
     loadCode(buf);
 }
 

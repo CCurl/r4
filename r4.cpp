@@ -60,8 +60,9 @@ void printStringF(const char* fmt, ...) {
     printString(buf);
 }
 
-void printBase(CELL v, int b) {
-    char x[65], *c=&x[64];
+char *num2Str(CELL v, int b) {
+    static char x[65], *c=&x[64];
+    b = b ? b : 10;
     char n=((v<0) && (b==10))?1:0;
     UCELL u = (n) ? -v : v;
     *(c) = 0;
@@ -71,7 +72,11 @@ void printBase(CELL v, int b) {
         u /= b;
     } while (u);
     if (n) { *(--c) = '-'; }
-    printString(c);
+    return c;
+}
+
+void printBase(CELL v, int b) {
+    printString(num2Str(v, b));
 }
 
 addr dotQ(addr str) {
@@ -108,9 +113,8 @@ void dumpStack() {
 
 CELL doHash(CELL max) {
     CELL hash = 5381;
-    while (BTWI(*pc, 'A', 'Z')) {
-        hash = (hash * 33) ^ *(pc++);
-    }
+    if (!ISALPHA(*pc)) { return 0; }
+    while (ISALPHANUM(*pc)) { hash = (hash * 33) ^ *(pc++); }
     return hash & max;
 }
 
@@ -227,15 +231,15 @@ next:
         NCASE '/': if (isOk(TOS, "-0div-")) { NOS /= TOS; pop(); }
         NCASE '0': case '1': case '2': case '3': case '4':
         case  '5': case '6': case '7': case '8': case '9': push(ir-'0');
-            while (BTWI(*pc, '0', '9')) { TOS = (TOS * 10) + *(pc++) - '0'; }
+            while (ISNUM(*pc)) { TOS = (TOS * 10) + *(pc++) - '0'; }
             if (*pc=='.') {
                 FLT_T x=10;
                 FTOS=(FLT_T)TOS; ++pc;
-                while (BTWI(*pc, '0', '9')) { FTOS += (*pc-'0')/x; x*=10; ++pc; }
+                while (ISNUM(*pc)) { FTOS += (*pc-'0')/x; x*=10; ++pc; }
             }
         NCASE ':': t1 = doHash(MAX_FUNC);
             while (*(pc) == ' ') { pc++; }
-            if (func[t1] && (t1 != 5381)) { printStringF("-redef-f:[%ld]-",t1); }
+            if (func[t1] && t1) { printStringF("-redef-f:[%ld]-",t1); }
             func[t1] = (addr)pc;
             skipTo(';', 0);
             HERE = (HERE < pc) ? pc : HERE;
@@ -254,6 +258,7 @@ next:
         NCASE 'F': doFloat();
         NCASE 'G': if (TOS) { pc = (addr)TOS; } pop();
         NCASE 'I': push(L0);
+        NCASE 'J': push(L3);
         NCASE 'K': ir = *(pc++);
             if (ir == '?') { push(qkey()); }
             else if (ir == '@') { push(key()); }
@@ -286,11 +291,12 @@ next:
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
             else if (ir == 'A') { loadAbort(); }            // Block Load Abort
             else if (ir == 'E') { doEditor(); }             // Block Edit
-        NCASE 'c': t1=doHash(MAX_FUNC); if (func[t1]) {
-            if (*pc != ';') { rpush(pc); }
-            pc = func[t1];
-        }
-        NCASE 'd': if (isLocal(*pc)) { --locs[*(pc++)-'0'+locBase]; }
+        NCASE 'c': t1=doHash(MAX_FUNC);
+            if (func[t1]) {
+                if (*pc != ';') { rpush(pc); }
+                pc = func[t1];
+            }
+        NCASE 'd': if (ISNUM(*pc)) { --locs[*(pc++)-'0'+locBase]; }
                    else { --reg[doHash(MAX_REG)]; }
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
@@ -300,7 +306,7 @@ next:
             else if (ir == 'S') { codeSave(code, HERE); }
             else if (ir == 'L') { HERE = codeLoad(code, HERE); }
         NCASE 'h': push(0); while (1) {
-                t1 = BTWI(*pc,'0','9') ? (*pc)-'0' : -1;
+                t1 = ISNUM(*pc) ? (*pc)-'0' : -1;
                 t1 = BTWI(*pc,'A','F') ? (*pc)-'A'+10 : t1;
                 if (t1 < 0) { NEXT; }
                 TOS = (TOS*16) + t1; ++pc;
