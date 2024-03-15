@@ -53,11 +53,11 @@ rFROM rTO rNUMBER cCOPY
 
 | Code | Description |
 |:--|:--|
-| "Hello World!"                          | The standard "hello world" program.
-| :MIN %%>($)\; :MAX %%<($)\;             | Define functions MIN and MAX
-| :BTW T+ s3 s2 s1 r1 r2 > r1 r3 < b& T-; | Using temporary registers
-| :BTW10AND20 9 21 cBTW;                  | Define a function with an alphanumeric name
-| 32 127[I###"%n[%c] - %d, %x, %b"]       | Loop to print the ASCII table
+| "Hello World!"                             | The standard "hello world" program.
+| :MIN %%>($)\\; :MAX %%<(<SPAN>$</SPAN>)\\; | Define functions MIN and MAX
+| :BTW T+ s3 s2 s1 r1 r2 > r1 r3 < b& T-;    | Using temporary registers
+| :BTW10AND20 9 21 cBTW;                     | Define a function with an alphanumeric name
+| 32 127[I###"%n[%c] - %d, %x, %b"]          | Loop to print the ASCII table
 
 The Arduino "blink" program is a one-liner, except this version stops when a key is pressed:
 
