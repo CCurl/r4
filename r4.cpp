@@ -61,9 +61,8 @@ void printStringF(const char* fmt, ...) {
 }
 
 char *num2Str(CELL v, int b) {
-    static char x[65], *c=&x[64];
     b = b ? b : 10;
-    char n=((v<0) && (b==10))?1:0;
+    byte *c = &vars[VARS_SZ-1], n=((v<0) && (b==10))?1:0;
     UCELL u = (n) ? -v : v;
     *(c) = 0;
     do {
@@ -72,7 +71,7 @@ char *num2Str(CELL v, int b) {
         u /= b;
     } while (u);
     if (n) { *(--c) = '-'; }
-    return c;
+    return (char*)c;
 }
 
 void printBase(CELL v, int b) {
@@ -154,9 +153,9 @@ void doFloat() {
         RCASE '-': FNOS -= FTOS; pop();
         RCASE '*': FNOS *= FTOS; pop();
         RCASE '/': if (isOk(FTOS!=0, "-0div-")) { FNOS /= FTOS; pop(); }
-        RCASE '<': FNOS = (FNOS<FTOS)  ? 1 : 0; pop();
-        RCASE '>': FNOS = (FNOS>FTOS)  ? 1 : 0; pop();
-        RCASE '=': FNOS = (FNOS==FTOS) ? 1 : 0; pop();
+        RCASE '<': NOS = (FNOS<FTOS)  ? 1 : 0; pop();
+        RCASE '>': NOS = (FNOS>FTOS)  ? 1 : 0; pop();
+        RCASE '=': NOS = (FNOS==FTOS) ? 1 : 0; pop();
         RCASE '_': FTOS = -FTOS;
         RCASE '.': printStringF("%g", FTOS); pop();
         return; default:
