@@ -71,20 +71,14 @@ void fileRead() {
 // fh: File handle, buf: address
 // returns: -1 if EOF, else len
 int fileReadLine(CELL fh, char *buf) {
-    byte c, len = 0;
-    while (1) {
-        *(buf) = 0;
-        CELL n = fread(&c, 1, 1, (FILE *)fh);
-        if (n == 0) { return -1; }
-        if (c == 10) { break; }
-        if (c == 13) { break; }
-        if (c == 9) { c = 32; }
-        if (BTWI(c, 32, 126)) {
-            *(buf++) = c;
-            ++len;
-        }
+    byte c, l=0;
+    if (fgets(buf, 256, (FILE*)fh) == buf) {
+        while (buf[l]) { if (buf[l]<32) { buf[l]=32; } ++l; }
+        while (l && (buf[l-1]<33)) { --l; buf[l]=0; }
+        return l;
     }
-    return len;
+    buf[0]=0;
+    return -1;
 }
 
 // fW (c fh--n) - File Write

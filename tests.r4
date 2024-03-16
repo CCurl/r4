@@ -5,12 +5,13 @@
 :PF ("PASS";) "FAIL";
 
 :X T+ s3 s2 s1 r1 r3[I sN rN r2 =(T-^;)] T-;
-:- 1 10 100 cX rN 10 =  ;  cNT c- cPF
-:- 22 44 33 cX rN 44 = ~;  cNT c- cPF
-:- rN 32 =;                cNT c- cPF
+:T1 1 10 100 cX rN 10 =  ;  cNT cT1 cPF
+:T2 22 44 33 cX rN 44 = ~;  cNT cT2 cPF
+:T3 rN 32 =;                cNT cT3 cPF
 :FO fO #(#fC);
-:- rVH`r4.cpp``rt`\cFO;    cNT c- cPF
-:- rVH`xx.xxx``rt`\cFO~;   cNT c- cPF
+:T4 rVH`r4.cpp``rt`\cFO;    cNT cT4 cPF
+:T5 rVH`xx.xxx``rt`\cFO~;   cNT cT5 cPF
+:T6 321 # s2 4 5 6 cX r2 =; cNT cT6 cPF
 
 "%nStack: "xK N
 xQ
