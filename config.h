@@ -1,6 +1,7 @@
 #ifndef __CONFIG__
 #define __CONFIG__
 
+#define VERSION          20240317
 #define PC 1
 
 #ifdef _WIN32
@@ -47,6 +48,5 @@
 
 #define MAX_FUNC         (NUM_FUNCS-1)
 #define MAX_REG          (NUM_REGS-1)
-#define VERSION          20240308
 
 #endif
