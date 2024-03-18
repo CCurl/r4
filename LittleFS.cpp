@@ -83,8 +83,6 @@ int writeBlock(int num, char *blk, int sz) {
 }
 
 void noFile() {}
-addr codeLoad(addr x, addr h) { noFile(); return h; }
-void codeSave(addr x, addr y) { noFile(); }
 void blockLoad(CELL num) { noFile(); }
 void loadAbort() { noFile(); }
 int fileReadLine(CELL fh, char* buf) { noFile(); return -1; }

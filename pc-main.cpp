@@ -129,7 +129,7 @@ void loop() {
         }
     } else {
         ok();
-        fgets(buf, sizeof(buf), stdin);
+        fileReadLine((CELL)stdin, buf);
         doHistory(buf);
         rtrim(buf);
     }   

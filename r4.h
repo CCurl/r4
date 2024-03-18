@@ -22,6 +22,7 @@ typedef union { FLT_T f; CELL i; char *c; } ST_T;
 #define TOS           dstack[dsp].i
 #define NOS           dstack[dsp-1].i
 #define AOS           dstack[dsp].c
+#define ANOS          dstack[dsp-1].c
 #define FTOS          dstack[dsp].f
 #define FNOS          dstack[dsp-1].f
 #define L0            lstack[lsp]
@@ -81,8 +82,6 @@ extern void fileClose();
 extern void fileDelete();
 extern void fileRead();
 extern void fileWrite();
-extern addr codeLoad(addr, addr);
-extern void codeSave(addr, addr);
 extern void blockLoad(CELL);
 extern void loadAbort();
 extern int readBlock(int blk, char* buf, int sz);

@@ -317,8 +317,7 @@ This is very fast, but poses some limitations:
 | fD | (nm--)       | FILE: Delete
 | fR | (fh--c n)    | FILE: Read, fh: fileHandle, c: char, n: num
 | fW | (c fh--n)    | FILE: Write, fh: fileHandle, c: char, n: num
-| fS | (--)         | FILE: Save Code
-| fL | (--)         | FILE: Load Code
+| fL | (a fh--n)    | FILE: ReadLine, fh: fileHandle, a: address, n: num (-1 if EOF)
 
 
 ### BLOCK OPERATIONS

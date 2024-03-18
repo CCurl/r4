@@ -302,8 +302,7 @@ next:
             else if (ir == 'C') { fileClose(); }
             else if (ir == 'R') { fileRead(); }
             else if (ir == 'W') { fileWrite(); }
-            else if (ir == 'S') { codeSave(code, HERE); }
-            else if (ir == 'L') { HERE = codeLoad(code, HERE); }
+            else if (ir == 'L') { t1=pop(); TOS = fileReadLine(t1, AOS); }
         NCASE 'h': push(0); while (1) {
                 t1 = ISNUM(*pc) ? (*pc)-'0' : -1;
                 t1 = BTWI(*pc,'A','F') ? (*pc)-'A'+10 : t1;
