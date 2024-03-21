@@ -1,5 +1,6 @@
 xV 100 S$ 100 S$ "r4 - v%d.%d.%d - by Chris Curl"
-N"System info: "xIR." registers, "xIF." functions, "xIU." bytes code space."
+N"System info: "xIR." registers, "xIF." functions."
+xIU"%n  %d bytes code space, " xIV " %d bytes user space."
 N"GitHub repo: https://github.com/CCurl/r4"N
 
 N"Block#    Description"
