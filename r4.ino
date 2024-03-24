@@ -91,7 +91,7 @@ int isBackspace(char c) {
 void handleInput(char c) {
     static addr here = (addr)NULL;
     static addr here1 = (addr)NULL;
-    if (here == NULL) { 
+    if (here == (addr)NULL) {
         here = (addr)HERE; 
         here1 = here; 
     }
@@ -111,7 +111,7 @@ void handleInput(char c) {
         return;
     }
     if (c == 9) { c = 32; }
-    if (32 <= c) {
+    if (BTWI(c, 32, 126)) {
         *(here1++) = (byte)c;
         char b[] = {c, 0};
         printString(b);

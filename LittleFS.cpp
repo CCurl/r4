@@ -22,22 +22,25 @@ File files[NFILES+1];
 
 void fileInit() {
 	myFS.begin(1 * 1024 * 1024);
-  // myFS.quickFormat();
+	// myFS.quickFormat();
 	printString("\r\nLittleFS: initialized");
 	printStringF("\r\nBytes total: %llu, used: %llu", myFS.totalSize(), myFS.usedSize());
-  for (int i=0;i<=NFILES;i++) { files[i] = File(); }
+	for (int i=0;i<=NFILES;i++) { files[i] = File(); }
 }
 
 int freeFile() {
-  for (int i=1;i<=NFILES;i++) { if (files[i].name()[0] == (char)0) { return i; } }
-  return 0;
+	for (int i=1;i<=NFILES;i++) {
+		if ((bool)files[i] == false) { return i; }
+	}
+	return 0;
 }
 
 CELL fileOpenI(const char *fn, const char *md) {
-  int fh = freeFile();
-  if (BTWI(fh, 1, NFILES)) {
-	  files[fh] = myFS.open(fn, (md[0]=='w') ? FILE_WRITE_BEGIN : FILE_READ);  
-  }
+	int fh = freeFile();
+	if (BTWI(fh, 1, NFILES)) {
+		files[fh] = myFS.open(fn, (md[0]=='w') ? FILE_WRITE_BEGIN : FILE_READ);
+        if (md[0]=='w') { files[fh].truncate(); }
+	}
 	return fh;
 }
 
@@ -45,15 +48,14 @@ CELL fileOpenI(const char *fn, const char *md) {
 void fileOpen() {
 	char *md = (char *)pop();
 	char *fn = AOS;
-  TOS = fileOpenI(fn, md);
+	TOS = fileOpenI(fn, md);
 }
 
 void fileClose() {
-  CELL fh = pop();
-	if (BTWI(fh, 1, NFILES)) {
-    files[fh].close();
-    files[fh] = File();
-  }
+	CELL fh = pop();
+	if (BTWI(fh, 1, NFILES) &&((bool)files[fh])) {
+		files[fh].close();
+	}
 }
 
 // fR (fh--c n) - File Read
@@ -75,19 +77,19 @@ void fileRead() {
 // n=0: File not open or error
 void fileWrite() {
 	int fh = pop();
-  char c = (char)TOS;
-  TOS = 0;
+	char c = (char)TOS;
+	TOS = 0;
 	if (BTWI(fh, 1, NFILES)) {
-	  TOS = files[fh].write(&c,1);
-  }
+		TOS = files[fh].write(&c,1);
+	}
 }
 
 int readBlock(int num, char *blk, int sz) {
 	char fn[32];
 	sprintf(fn, "block-%03d", num);
 	num = 0;
-	File x=myFS.open(fn, FILE_READ);
-	if (x) {
+	File x = myFS.open(fn, FILE_READ);
+	if ((bool)x) {
 		num = x.read(blk, sz);
 		x.close();
 	}
@@ -98,34 +100,35 @@ int writeBlock(int num, char *blk, int sz) {
 	char fn[32];
 	sprintf(fn, "block-%03d", num);
 	num = 0;
-	File x=myFS.open(fn, FILE_WRITE_BEGIN);
-	if (x) {
-		num = x.write(blk, sz);
+	File x = myFS.open(fn, FILE_WRITE_BEGIN);
+	if ((bool)x) {
+        x.truncate();
+        num = x.write(blk, sz);
 		x.close();
 	}
 	return num;
 }
 
-int fileReadLine(CELL fh, char* buf) {
-  int n = -1;
-  buf[0] = 0;
-  if (BTWI(fh, 1, NFILES) && (0 < files[fh].available())) {
-    n = files[fh].readBytesUntil(10, buf, 256);
-    buf[n] = 0;
-  }
-  return n;
+int fileReadLine(CELL fh, char *buf) {
+	int n = -1;
+	buf[0] = 0;
+	if (BTWI(fh, 1, NFILES) && (0 < files[fh].available())) {
+		n = files[fh].readBytesUntil(10, buf, 256);
+		buf[n] = 0;
+	}
+	return n;
 }
 
 void blockLoad(CELL num) {
 	char fn[32];
 	sprintf(fn, "block-%03ld", num);
-  CELL fh = fileOpenI(fn, "r");
-  if (files[fh].available()) {
-    if (input_fp) {
-      fpush(input_fp);
-    }
-    input_fp = fh;
-  }
+	CELL fh = fileOpenI(fn, "r");
+	if (files[fh].available()) {
+		if (input_fp) {
+			fpush(input_fp);
+		}
+		input_fp = fh;
+	}
 }
 
 void loadAbort() {}

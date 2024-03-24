@@ -170,6 +170,8 @@ void edSvBlk(int force) {
             else { break; }
         }
         writeBlock(blkNum, theBlock, len);
+        sprintf(tBuf, " - %ld bytes ", len);
+        msg = &tBuf[0];
         isDirty = 0;
     }
 }
