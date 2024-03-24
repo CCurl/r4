@@ -59,35 +59,20 @@ void loadCode(const char* src) {
 // ********************************************
 // * HERE is where you load your default code *
 // ********************************************
-
-#define SOURCE_STARTUP \
-    X(1000, ":C 0U xIH[I C@#,59=(I1+C@58=(N))];") \
-    X(1010, ":R 0xIR1-[rI4*xIAR+@#s1(rI26S$26S$'A+,'A+,'A+,':,Br1.N)];") \
-    X(1040, ":U xIH xIAU-;") \
-    X(1045, ":SI N\"System: \"xIR.\" registers, \"xIF.\" functions: \"xIU.\" bytes code memory.\";") \
-    X(2000, ":Q iT rA#*rS/sC rB#*rS/sD rCrD+rK>(rJsM;)rArB*100/rY+sB rCrD-rX+sA iJ;") \
-    X(2010, ":L 0sA 0sB 0sJ rS sM 1{\\cQ rJ rM<};") \
-    X(2020, ":O cL rJ 40+# 126>(\\32),;") \
-    X(2030, ":X 490_ sX 1 95[  cO rX  8+sX];") \
-    X(2040, ":Y 300_ sY 1 31[N cX rY 20+sY];") \
-    X(2050, ":M cI 0sT xT cY xT$- N rT.\" iterations, \" . \" ms\";") \
-    X(2060, ":I 200 sS 1000000 sK;") \
-    X(9999, "1000 xW cSI 0 fL")
-
-#define X(num, val) const PROGMEM char str ## num[] = val;
-SOURCE_STARTUP
-
-#undef X
-#define X(num, val) str ## num,
-const char *bootStrap[] = {
-    SOURCE_STARTUP
-    NULL
-};
-
 void loadBaseSystem() {
-    for (int i = 0; bootStrap[i] != NULL; i++) {
-        loadCode(bootStrap[i]);
-    }
+    // loadCode(":CD 0U xIH[I C@ #, 59=(I P C@ 58=(N))];");
+    // loadCode(":S0 xIR\"%d registers, \" xIF\"%d functions, \";");
+    // loadCode(":S1 xIU\"%d bytes code, \" xIV\"%d bytes user\";");
+    // loadCode(":SI N\"r4 - \" cS0 cS1;");
+    // loadCode(":FT rVH `block-000``r`\\ fO;");
+    // loadCode(":Q i6 rA#*rS/sC rB#*rS/sD rCrD+rK>(rJsM;)rArB*100/rY+sB rCrD-rX+sA iJ;");
+    // loadCode(":L 0sA 0sB rS sM 1{\\cQ rJ rM<};");
+    // loadCode(":O 0sJ cL rJ 40+# 126>(\\32),;");
+    // loadCode(":X 490_ sX 1 95[  cO rX  8+sX];");
+    // loadCode(":Y 300_ sY 1 31[N cX rY 20+sY];");
+    // loadCode(":I 200 sS 1000000 sK;");
+    // loadCode(":M cI 0s6 xT cY xT$- N r6\"%d iterations, %d ms\";");
+    loadCode("0 bL");
 }
 
 void ok() {
@@ -168,11 +153,14 @@ void loop() {
     }
 
     if (input_fp) {
-        // printString("-inputFp-");
+        //printString("-inputFp-");
         int n = fileReadLine(input_fp, (char *)HERE);
-        // printStringF("\r\n%s", (char *)HERE);
-        if (n < 0) { input_fp = fpop(); }
-        run(HERE);
+        //printStringF("\r\n%s", (char *)HERE);
+        if (n < 0) {
+          push(input_fp); fileClose();
+          input_fp = fpop();
+        }
+        else { run(HERE); }
         if (input_fp == 0) { ok(); }
         return;
     } else {

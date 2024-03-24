@@ -12,7 +12,7 @@ void doEditor() { printString("-noEdit-"); }
 
 #define MAX_LINES     150
 #define LLEN          100
-#define SCR_HEIGHT    35
+#define SCR_HEIGHT     25
 
 #define SCR_LINES     (int)edScrH
 #define BLOCK_SZ      (MAX_LINES*LLEN)
