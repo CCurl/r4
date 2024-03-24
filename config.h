@@ -1,6 +1,7 @@
 #ifndef __CONFIG__
 #define __CONFIG__
 
+#define VERSION          20240317
 #define PC 1
 
 #ifdef _WIN32
@@ -20,6 +21,7 @@
   #define STK_SZ         256
   #define RSTK_SZ        256
   #define LSTACK_SZ       60
+  #define NUM_LOCALS     100
   #define CODE_SZ        (128*1024)
   #define VARS_SZ        (256*1024)
   #define NUM_REGS        0x10000
@@ -29,13 +31,14 @@
   #define __EDITOR__
 #else
   /* Dev Board */
-  #define STK_SZ          32
-  #define RSTK_SZ         32
+  #define STK_SZ          64
+  #define RSTK_SZ         64
   #define LSTACK_SZ       30
+  #define NUM_LOCALS      50
   #define CODE_SZ        ( 64*1024)
   #define VARS_SZ        (128*1024)
-  #define NUM_REGS        0x8000
-  #define NUM_FUNCS       0x8000
+  #define NUM_REGS        0x4000
+  #define NUM_FUNCS       0x4000
   #define __LITTLEFS__
   #define __BOARD__      TEEENSY4
   #define __EDITOR__

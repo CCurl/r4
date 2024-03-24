@@ -12,7 +12,7 @@ void doEditor() { printString("-noEdit-"); }
 
 #define MAX_LINES     150
 #define LLEN          100
-#define SCR_HEIGHT    35
+#define SCR_HEIGHT     25
 
 #define SCR_LINES     (int)edScrH
 #define BLOCK_SZ      (MAX_LINES*LLEN)
@@ -20,8 +20,6 @@ void doEditor() { printString("-noEdit-"); }
 #define EDCH(l,o)     EDCHAR(scrTop+l,o)
 #define SHOW(l,v)     lineShow[(scrTop+l)]=v
 #define DIRTY(l)      isDirty=1; SHOW(l,1)
-#define MAX(a,b) (a)>(b)?(a):(b)
-#define MIN(a,b) (a)<(b)?(a):(b)
 
 #define strEq(a,b)  (strcmp(a,b)==0)
 #define strCpy(a,b) strcpy(a,b)
@@ -259,7 +257,7 @@ int edReadLine(char *buf, int sz) {
         char c = key();
         if (c==27) { len=0; break; }
         if (c==13) { break; }
-        if ((c==127) || (c==8) && (len)) { --len; printStringF("%c %c",8,8); }
+        if ((c==127) || ((c==8) && (len))) { --len; printStringF("%c %c",8,8); }
         if (BTWI(c,32,126)) { buf[len++]=c; printChar(c); }
     }
     CursorOff();

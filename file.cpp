@@ -9,8 +9,6 @@ void fileClose() { noFile(); }
 void fileDelete() { noFile(); }
 void fileRead() { noFile(); }
 void fileWrite() { noFile(); }
-addr codeLoad(addr x) { noFile(); return x; }
-void codeSave(addr x, addr y) { noFile(); }
 void blockLoad(CELL num) { noFile(); }
 void loadAbort() { noFile(); }
 int fileReadLine(CELL fh, char* buf) { noFile(); return -1; }
@@ -57,9 +55,9 @@ void fileDelete() {
 // fh: File handle, c: char read, n: num chars read
 // n=0: End of file or file error
 void fileRead() {
-    FILE* fh = (FILE*)TOS;
-    NOS = TOS = 0;
+    FILE *fh = (FILE*)TOS;
     push(0);
+    NOS = 0;
     if (fh) {
         char c;
         TOS = fread(&c, 1, 1, fh);
@@ -67,24 +65,18 @@ void fileRead() {
     }
 }
 
-// fileReadLine(fh, buf)
+// fL - fileReadLine(fh, buf)
 // fh: File handle, buf: address
 // returns: -1 if EOF, else len
 int fileReadLine(CELL fh, char *buf) {
-    byte c, len = 0;
-    while (1) {
-        *(buf) = 0;
-        CELL n = fread(&c, 1, 1, (FILE *)fh);
-        if (n == 0) { return -1; }
-        if (c == 10) { break; }
-        if (c == 13) { break; }
-        if (c == 9) { c = 32; }
-        if (BTWI(c, 32, 126)) {
-            *(buf++) = c;
-            ++len;
-        }
+    byte c, l=0;
+    if (fgets(buf, 256, (FILE*)fh) == buf) {
+        while (buf[l]) { if (buf[l]<32) { buf[l]=32; } ++l; }
+        while (l && (buf[l-1]<33)) { --l; buf[l]=0; }
+        return l;
     }
-    return len;
+    buf[0]=0;
+    return -1;
 }
 
 // fW (c fh--n) - File Write
@@ -96,37 +88,6 @@ void fileWrite() {
     TOS = 0;
     if (fh) {
         TOS = fwrite(&c, 1, 1, fh);
-    }
-}
-
-// fL (--) - File Load code
-addr codeLoad(addr code, addr here) {
-    FILE *fh = fopen("code.r4", "rt");
-    if (fh) {
-        vmInit();
-        CELL num = fread(code, 1, CODE_SZ, fh);
-        fclose(fh);
-        here = code + num;
-        run(code);
-        printStringF("-loaded, (%d bytes)-", num);
-    }
-    else {
-        printString("-loadFail-");
-    }
-    return here;
-}
-
-// fS (--) - File Save code
-void codeSave(addr code, addr here) {
-    FILE* fh = fopen("code.r4", "wt");
-    if (fh) {
-        int count = (int)(here - code);
-        fwrite(code, 1, count, fh);
-        fclose(fh);
-        printStringF("-saved (%d)-", count);
-    }
-    else {
-        printString("-saveFail-");
     }
 }
 
