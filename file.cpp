@@ -1,5 +1,7 @@
 #include "r4.h"
 
+// #define __FILES__ 12345
+
 #ifndef __FILES__
 #ifndef __LITTLEFS__
 void noFile() { printString("-noFile-"); }
@@ -13,7 +15,9 @@ void blockLoad(CELL num) { noFile(); }
 void loadAbort() { noFile(); }
 int fileReadLine(CELL fh, char* buf) { noFile(); return -1; }
 int readBlock(int blk, char* buf, int sz) { noFile(); return 0; }
+void readBlock1() { noFile(); }
 int writeBlock(int blk, char* buf, int sz) { noFile(); return 0; }
+void writeBlock1() { noFile(); }
 #endif // __LITTLEFS__
 #else
 // shared with __LITTLEFS__
@@ -45,10 +49,9 @@ void fileClose() {
 
 // fD (nm--) - File Delete
 // nm: File name
-// n=0: End of file or file error
 void fileDelete() {
-    char* fn = AOS;
-    TOS = remove(fn) == 0 ? 1 : 0;
+    char *fn = (char*)pop();
+    remove(fn);
 }
 
 // fR (fh--c n) - File Read
@@ -129,6 +132,13 @@ int readBlock(int blk, char *buf, int sz) {
     return fp ? 1 : 0;
 }
 
+// bR (num addr sz--f)
+void readBlock1() {
+    CELL t1 = pop();
+    char *n1 = (char*)pop();
+    TOS = readBlock(TOS, (char*)n1, t1);
+}
+
 int writeBlock(int blk, char *buf, int sz) {
     char fn[24];
     sprintf(fn, "block-%03d.r4", blk);
@@ -138,6 +148,13 @@ int writeBlock(int blk, char *buf, int sz) {
         fclose(fp);
     }
     return fp ? 1 : 0;
+}
+
+// bW (num addr sz--f)
+void writeBlock1() {
+    CELL t1 = pop();
+    char *n1 = (char*)pop();
+    TOS = writeBlock(TOS, (char*)n1, t1);
 }
 
 #endif // __FILES__

@@ -58,6 +58,12 @@ void fileClose() {
 	}
 }
 
+// fD (nm--) - File Delete
+void fileDelete() {
+	char *nm = (char *)pop();
+    myFS.remove(nm);
+}
+
 // fR (fh--c n) - File Read
 // fh: File handle, c: char read, n: num chars read
 // n=0: End of file or file error
@@ -96,6 +102,13 @@ int readBlock(int num, char *blk, int sz) {
 	return num;
 }
 
+// bR (num addr sz--f)
+void readBlock1() {
+    CELL t1 = pop();
+    char *n1 = (char*)pop();
+    TOS = readBlock(TOS, (char*)n1, t1);
+}
+
 int writeBlock(int num, char *blk, int sz) {
 	char fn[32];
 	sprintf(fn, "block-%03d", num);
@@ -107,6 +120,13 @@ int writeBlock(int num, char *blk, int sz) {
 		x.close();
 	}
 	return num;
+}
+
+// bW (num addr sz--f)
+void writeBlock1() {
+    CELL t1 = pop();
+    char *n1 = (char*)pop();
+    TOS = writeBlock(TOS, (char*)n1, t1);
 }
 
 int fileReadLine(CELL fh, char *buf) {
