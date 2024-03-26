@@ -254,7 +254,7 @@ This is very fast, but poses some limitations:
 | K?    | (--f)    | f: non-zero if char is ready to be read, else 0.
 | K@    | (--n)    | n: Key char, wait if no char is available.
 | 0-9   | (--N)    | Scan DECIMAL number N until non digit
-| N.N   | (--F)    | - Use NNN.NNN (eg - 3.14) to enter a floating point number F
+| N.N   | (--F)    | - Use NNN.NNN (eg - 3.1415) to enter a floating point number F
 |       |          | - to specify multiple values, separate them by space (4711 3333)
 |       |          | - to enter a negative number, use "negate" (eg - 490_)
 | hXXX  | (--N)    | Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
@@ -324,7 +324,7 @@ This is very fast, but poses some limitations:
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | bL | (N--)        | BLOCK: Load block N (block-nnn.r4). This can be nested.
-| bA | (--)         | BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
+| bA | (--)         | BLOCK: Load Abort - stop loading the current block (use wih `xh`)
 | bE | (N--)        | BLOCK: Edit block N (file name is block-nnn.r4)
 | bR | (N a sz--)   | BLOCK: Read block N; a: addr, sz: size of buffer
 | bW | (N a sz--)   | BLOCK: Write block N; a: addr, sz: size of buffer

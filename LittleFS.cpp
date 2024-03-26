@@ -37,7 +37,7 @@ int freeFile() {
 
 CELL fileOpenI(const char *fn, const char *md) {
 	int fh = freeFile();
-	if (BTWI(fh, 1, NFILES)) {
+	if (0 < fh) {
 		files[fh] = myFS.open(fn, (md[0]=='w') ? FILE_WRITE_BEGIN : FILE_READ);
         if (md[0]=='w') { files[fh].truncate(); }
 	}
@@ -51,6 +51,7 @@ void fileOpen() {
 	TOS = fileOpenI(fn, md);
 }
 
+// fC (fh--) - File Close
 void fileClose() {
 	CELL fh = pop();
 	if (BTWI(fh, 1, NFILES) &&((bool)files[fh])) {
@@ -129,6 +130,7 @@ void writeBlock1() {
     TOS = writeBlock(TOS, (char*)n1, t1);
 }
 
+// fL - File readLine
 int fileReadLine(CELL fh, char *buf) {
 	int n = -1;
 	buf[0] = 0;
@@ -139,6 +141,7 @@ int fileReadLine(CELL fh, char *buf) {
 	return n;
 }
 
+// bL - Block Load
 void blockLoad(CELL num) {
 	char fn[32];
 	sprintf(fn, "block-%03ld", num);
@@ -151,6 +154,7 @@ void blockLoad(CELL num) {
 	}
 }
 
+// bA - Block load Abort
 void loadAbort() {}
 
 #endif // __LITTLEFS__
