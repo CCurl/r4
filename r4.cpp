@@ -184,8 +184,9 @@ void doExt() {
             if (ir == 'R') { push(NUM_REGS); }
             if (ir == 'U') { push(CODE_SZ); }
             if (ir == 'V') { push(VARS_SZ); }
-        RCASE 'h': t1=doHash(-1);
-            printStringF("-hash:%ld,reg:%ld,func:%ld-", t1, reg[t1&MAX_REG], func[t1&MAX_FUNC]);
+        RCASE 'h': t1=doHash(-1); push(t1);
+                push(reg[t1&MAX_REG]);
+                push((CELL)func[t1&MAX_FUNC]);
         RCASE 'K': dumpStack();
         RCASE 'S': if (*pc == 'R') { vmInit(); }
         RCASE 'M': push(doMicros());
@@ -290,6 +291,8 @@ next:
             else if (ir == 'L') { blockLoad(pop()); }       // Block Load
             else if (ir == 'A') { loadAbort(); }            // Block Load Abort
             else if (ir == 'E') { doEditor(); }             // Block Edit
+            else if (ir == 'R') { readBlock1(); }           // Block Read
+            else if (ir == 'W') { writeBlock1(); }          // Block Write
         NCASE 'c': t1=doHash(MAX_FUNC);
             if (func[t1]) {
                 if (*pc != ';') { rpush(pc); }
@@ -300,6 +303,7 @@ next:
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
             else if (ir == 'C') { fileClose(); }
+            else if (ir == 'D') { fileDelete(); }
             else if (ir == 'R') { fileRead(); }
             else if (ir == 'W') { fileWrite(); }
             else if (ir == 'L') { t1=pop(); TOS = fileReadLine(t1, AOS); }

@@ -254,7 +254,7 @@ This is very fast, but poses some limitations:
 | K?    | (--f)    | f: non-zero if char is ready to be read, else 0.
 | K@    | (--n)    | n: Key char, wait if no char is available.
 | 0-9   | (--N)    | Scan DECIMAL number N until non digit
-| N.N   | (--F)    | - Use NNN.NNN (eg - 3.14) to enter a floating point number F
+| N.N   | (--F)    | - Use NNN.NNN (eg - 3.1415) to enter a floating point number F
 |       |          | - to specify multiple values, separate them by space (4711 3333)
 |       |          | - to enter a negative number, use "negate" (eg - 490_)
 | hXXX  | (--N)    | Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
@@ -314,7 +314,7 @@ This is very fast, but poses some limitations:
 |:-- |:--   |:--|
 | fO | (nm md--fh)  | FILE: Open, nm: name, md: mode, fh: fileHandle
 | fC | (fh--)       | FILE: Close, fh: fileHandle
-| fD | (nm--)       | FILE: Delete
+| fD | (nm--)       | FILE: Delete, nm: name
 | fR | (fh--c n)    | FILE: Read, fh: fileHandle, c: char, n: num
 | fW | (c fh--n)    | FILE: Write, fh: fileHandle, c: char, n: num
 | fL | (a fh--n)    | FILE: ReadLine, fh: fileHandle, a: address, n: num (-1 if EOF)
@@ -323,9 +323,11 @@ This is very fast, but poses some limitations:
 ### BLOCK OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| bL | (n--)        | BLOCK: Load code from block file (block-nnn.r4). This can be nested.
-| bA | (--)         | BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
-| bE | (n--)        | BLOCK: Edit block N (file name is block-nnn.r4)
+| bL | (N--)        | BLOCK: Load block N (block-nnn.r4). This can be nested.
+| bA | (--)         | BLOCK: Load Abort - stop loading the current block (use wih `xh`)
+| bE | (N--)        | BLOCK: Edit block N (file name is block-nnn.r4)
+| bR | (N a sz--)   | BLOCK: Read block N; a: addr, sz: size of buffer
+| bW | (N a sz--)   | BLOCK: Write block N; a: addr, sz: size of buffer
 
 
 ### OTHER OPERATIONS
@@ -353,7 +355,7 @@ This is very fast, but poses some limitations:
 | xs    | (a--)     | PC: call "system(a)"
 | xSR   | (--)      | R4 System Reset
 | xT    | (--n)     | Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
-| xh[S] | (--)      | Print hash, reg, and func value for [S] (eg - `xhALLOT` or `xhVH`)
+| xh[S] | (--n r f) | n: Hash, r: Reg, and f: Func value for [S] (eg - `xhALLOT`)
 | xM    | (--n)     | Time in microseconds (Arduino: micros())
 | xW    | (n--)     | Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    | r: a pseudo-random number between 0 and n (uses XOR-shift)

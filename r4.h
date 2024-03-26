@@ -85,6 +85,8 @@ extern void fileWrite();
 extern void blockLoad(CELL);
 extern void loadAbort();
 extern int readBlock(int blk, char* buf, int sz);
+extern void readBlock1();
 extern int writeBlock(int blk, char* buf, int sz);
+extern void writeBlock1();
 extern int fileReadLine(CELL fh, char* buf);
 extern addr pc;
