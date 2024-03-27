@@ -278,7 +278,7 @@ next:
         NCASE '[': doFor();
         NCASE '\\': pop();
         NCASE ']': if ((++L0)<L1) { pc=(addr)L2; NEXT; } /* fall through */
-        case '^': lsp -= 3; if (lsp<0) { lsp=0; }
+        case '^': lsp = (lsp<3) ? 0: lsp-3;
         NCASE '_': TOS = -TOS;
         NCASE '`': push(TOS);
             while ((*pc) && (*pc != ir)) { *(AOS++) = *(pc++); }
@@ -298,7 +298,7 @@ next:
                 if (*pc != ';') { rpush(pc); }
                 pc = func[t1];
             }
-        NCASE 'd': if (ISNUM(*pc)) { --locs[*(pc++)-'0'+locBase]; }
+        NCASE 'd': if (isLocal(*pc)) { --locs[*(pc++)-'0'+locBase]; }
                    else { --reg[doHash(MAX_REG)]; }
         NCASE 'f': ir = *(pc++);
             if (ir == 'O') { fileOpen(); }
@@ -322,10 +322,9 @@ next:
                    else { reg[doHash(MAX_REG)] = pop(); }
         NCASE 'x': doExt();
         NCASE '{': if (!TOS) { skipTo('}', 0); NEXT; }
-                lsp += ((lsp+2) < LSTACK_SZ) ? 3 : 0;
-                L0 = 0; L1 = 1; L2 = (CELL)pc;
+                push(0); push(0); doFor();
         // NCASE '|':  /*FREE*/
-        NCASE '}': if (TOS) { pc=(addr)L2; } else { pop(); lsp = (2<lsp) ? lsp-3 : 0; }
+        NCASE '}': if (TOS) { pc=(addr)L2; } else { pop(); lsp=(lsp<3)?0:lsp-3; }
         NCASE '~': TOS = (TOS) ? 0 : 1;
         NEXT;
         default: printStringF("-[ir:%d?]-", ir); NEXT;
