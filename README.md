@@ -147,17 +147,19 @@ This is very fast, but poses some limitations:
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| FF | (i--f)    | Convert TOS from integer to float
-| FI | (f--i)    | Convert TOS from float to integer
-| F+ | (a b--n)  | Float: add
-| F- | (a b--n)  | Float: subtract
-| F* | (a b--n)  | Float: multiply
-| F/ | (a b--n)  | Float: divide
-| F< | (a b--f)  | f: if (a < b) then 1 , else 0
-| F= | (a b--f)  | f: if (a = b) then 1 , else 0
-| F> | (a b--f)  | f: if (a > b) then 1 , else 0
-| F. | (n--)     | Float: print top of float stack
+| FF | (i--f)    | f: i converted to a float
+| FI | (f--i)    | i: f converted to an integer
+| F+ | (a b--n)  | n: a + b
+| F- | (a b--n)  | n: a - b
+| F* | (a b--n)  | n: a * b
+| F/ | (a b--n)  | n: a / b
+| F< | (a b--fl) | fl: if (a < b) then 1 , else 0
+| F= | (a b--fl) | fl: if (a = b) then 1 , else 0
+| F> | (a b--fl) | fl: if (a > b) then 1 , else 0
+| F. | (fl--)    | Float: print fl
 | F_ | (a--b)    | b: -a
+| FQ | (f--sq)   | sq: the SQRT of f
+| FT | (f--th)   | th: the TANH of f
 
 
 ### BIT MANIPULATION OPERATIONS
@@ -206,8 +208,8 @@ This is very fast, but poses some limitations:
 | &ABC | (N--)  | Define register rABC with initial value of N.
 |      |        | *** NOTE: If register rABC has a value <> 0, r4 prints "-redef-r[hash]-".
 |      |        |     This can be used to check if there is a hashing collision.
-| rABC | (--v)  | v: value of register ABC.
-| sABC | (v--)  | v: store v to register ABC.
+| rABC | (--N)  | N: value of register ABC.
+| sABC | (N--)  | N: value to store in register ABC.
 | iABC | (--)   | Increment register ABC.
 | dABC | (--)   | Decrement register ABC.
 
@@ -219,8 +221,8 @@ This is very fast, but poses some limitations:
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | T+ | (--)   | Allocate 10 temporary registers
-| rN | (--v)  | v: value of register #N.
-| sN | (v--)  | v: store v to register #N.
+| rN | (--V)  | V: value of register #N.
+| sN | (V--)  | V: value to store in register #N.
 | iN | (--)   | Increment register #N.
 | dN | (--)   | Decrement register #N.
 | T- | (--)   | Free the most recently allocated temporary registers
@@ -231,7 +233,7 @@ This is very fast, but poses some limitations:
 - A function name is of the form `[A-Z][A-Z0-9]*` (e.g. - TMP23).
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h".
 - A function definition is limited to ONE line.
-- Returning while inside of a loop will eventually cause a problem.
+- Returning while inside of a loop will eventually cause a problem if not unwound.
   - Use '^' to unwind the loop stack first.
 
 | OP    |Stack   |Description|
@@ -297,7 +299,7 @@ This is very fast, but poses some limitations:
 | I  | (--n)     | n: the index of the current FOR loop
 | J  | (--n)     | n: the index of the next outer FOR loop
 | p  | (n--)     | n: number to add to "I"
-| ^  | (--)      | UNLOOP, use with ';'. Example: `rS rK>(^;)`
+| ^  | (--)      | UNWIND, use with ';'. Example: `rS rK>(^;)`
 | ]  | (--)      | NEXT: increment index (I) and loop if (I < T)
 
 
@@ -305,7 +307,7 @@ This is very fast, but poses some limitations:
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | {  | (f--f)      | BEGIN: if (f == 0) skip to ending '}'
-| ^  | (--)        | UNLOOP, used with ';'. Example: `rX ~(^;)`
+| ^  | (--)        | UNWIND, used with ';'. Example: `rX ~(^;)`
 | }  | (f--f?)     | WHILE: if (f != 0) jump to starting '{', else drop f and continue
 
 

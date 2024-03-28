@@ -2,6 +2,7 @@
 
 #include "r4.h"
 #include "config.h"
+#include <cmath>
 
 byte ir, isBye = 0, isError = 0;
 addr pc, HERE;
@@ -158,6 +159,8 @@ void doFloat() {
         RCASE '=': NOS = (FNOS==FTOS) ? 1 : 0; pop();
         RCASE '_': FTOS = -FTOS;
         RCASE '.': printStringF("%g", FTOS); pop();
+        RCASE 'Q': FTOS = sqrt(FTOS);
+        RCASE 'T': FTOS = tanh(FTOS);
         return; default:
             isError = 1;
             printStringF("-flt:%c?-", ir);
