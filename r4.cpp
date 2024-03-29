@@ -12,6 +12,7 @@ ST_T   dstack[STK_SZ+1];
 CELL   reg[NUM_REGS], locs[NUM_LOCALS], lstack[LSTACK_SZ+1];
 addr   rstack[RSTK_SZ+1], func[NUM_FUNCS];
 byte   code[CODE_SZ], vars[VARS_SZ];
+static char buf[128];
 
 void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp].i = v; } }
 CELL pop() { return (dsp) ? dstack[dsp--].i : 0; }
@@ -53,7 +54,6 @@ CELL getCell(byte* from) {
 }
 
 void printStringF(const char* fmt, ...) {
-    static char buf[128];
     va_list args;
     va_start(args, fmt);
     vsnprintf(buf, sizeof(buf), fmt, args);
@@ -63,7 +63,7 @@ void printStringF(const char* fmt, ...) {
 
 char *num2Str(CELL v, int b) {
     b = b ? b : 10;
-    byte *c = &vars[VARS_SZ-1], n=((v<0) && (b==10))?1:0;
+    char *c = &buf[sizeof(buf)-1], n=((v<0) && (b==10))?1:0;
     UCELL u = (n) ? -v : v;
     *(c) = 0;
     do {
