@@ -72,7 +72,7 @@ void fileRead() {
 // fh: File handle, buf: address
 // returns: -1 if EOF, else len
 int fileReadLine(CELL fh, char *buf) {
-    byte c, l=0;
+    byte l=0;
     if (fgets(buf, 256, (FILE*)fh) == buf) {
         while (buf[l]) { if (buf[l]<32) { buf[l]=32; } ++l; }
         while (l && (buf[l-1]<33)) { --l; buf[l]=0; }
