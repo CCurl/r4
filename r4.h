@@ -18,6 +18,7 @@ typedef uint8_t byte;
 typedef byte *addr;
 typedef union { FLT_T f; CELL i; char *c; } ST_T;
 
+#define VERSION       20240329
 #define CELL_SZ       sizeof(CELL)
 #define TOS           dstack[dsp].i
 #define NOS           dstack[dsp-1].i
@@ -44,6 +45,7 @@ typedef union { FLT_T f; CELL i; char *c; } ST_T;
 #define ISNUM(x)      BTWI(x, '0', '9')
 #define ISALPHANUM(x) ISALPHA(x) || ISNUM(x)
 #define isLocal(x)    ISNUM(x)
+#define BLOCK_FN      "block-%03d.r4"
 
 extern byte isBye;
 extern byte isError;

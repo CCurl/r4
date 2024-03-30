@@ -93,7 +93,7 @@ void fileWrite() {
 
 int readBlock(int num, char *blk, int sz) {
 	char fn[32];
-	sprintf(fn, "block-%03d", num);
+	sprintf(fn, BLOCK_FN, num);
 	num = 0;
 	File x = myFS.open(fn, FILE_READ);
 	if ((bool)x) {
@@ -112,7 +112,7 @@ void readBlock1() {
 
 int writeBlock(int num, char *blk, int sz) {
 	char fn[32];
-	sprintf(fn, "block-%03d", num);
+	sprintf(fn, BLOCK_FN, num);
 	num = 0;
 	File x = myFS.open(fn, FILE_WRITE_BEGIN);
 	if ((bool)x) {
@@ -144,7 +144,7 @@ int fileReadLine(CELL fh, char *buf) {
 // bL - Block Load
 void blockLoad(CELL num) {
 	char fn[32];
-	sprintf(fn, "block-%03ld", num);
+	sprintf(fn, BLOCK_FN, num);
 	CELL fh = fileOpenI(fn, "r");
 	if (files[fh].available()) {
 		if (input_fp) {
