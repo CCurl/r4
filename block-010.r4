@@ -15,5 +15,5 @@
 :CLL 30 38[N  40  48[J I cSTC " ("J.";"I.") "] cCLC];
 :CLU 90 98[N 100 108[J I cSTC " ("J.";"I.") "] cCLC];
 
-:DLOOP 1{\iT 8xR 30+ 40 cSTC rX xR 1+ rY xR 1+ cGXY "*" K? ~}K@\;
-:DMO 0sT cCLS cCOFF rX ~(150sX) rY ~(35sY) cDLOOP cCLC cCON rX rY cGXY;
+:DLOOP 1{\iT 8xR 30+ 40 cSTC rX xR 1+ rY xR 1+ cGXY "*" K? ~}K@\cCLC;
+:DMO 0sT rX ~(150sX) rY ~(35sY) cCLS cCURSOROFF cDLOOP cCURSORON rX rY cGXY;
