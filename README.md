@@ -358,6 +358,7 @@ This is very fast, but poses some limitations:
 | xSR   | (--)      | R4 System Reset
 | xT    | (--n)     | Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
 | xh[S] | (--n r f) | n: Hash, r: Reg, and f: Func value for [S] (eg - `xhALLOT`)
+| xH    | (n--)     | n: new value for screen height (for the editor). If n=0 default to 35.
 | xM    | (--n)     | Time in microseconds (Arduino: micros())
 | xW    | (n--)     | Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    | r: a pseudo-random number between 0 and n (uses XOR-shift)

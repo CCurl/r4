@@ -187,6 +187,7 @@ void doExt() {
             if (ir == 'R') { push(NUM_REGS); }
             if (ir == 'U') { push(CODE_SZ); }
             if (ir == 'V') { push(VARS_SZ); }
+        RCASE 'H': edScrH = pop(); if (edScrH == 0) { edScrH = 35; }
         RCASE 'h': t1=doHash(-1); push(t1);
                 push(reg[t1&MAX_REG]);
                 push((CELL)func[t1&MAX_FUNC]);

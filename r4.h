@@ -53,7 +53,7 @@ extern addr HERE;
 extern ST_T dstack[];
 extern int dsp;
 extern addr func[];
-extern CELL input_fp;
+extern CELL input_fp, edScrH;
 
 extern void vmInit();
 extern CELL pop();

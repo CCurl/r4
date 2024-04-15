@@ -8,6 +8,7 @@
 
 #ifndef __EDITOR__
 void doEditor() { printString("-noEdit-"); }
+int scrTop;
 #else
 
 #define MAX_LINES     150
@@ -151,7 +152,9 @@ void toBuf() {
             EDCHAR(l,o++) = (char)ch;
         }
     }
+    o = scrTop; scrTop = 0;
     for (int i = 0; i < MAX_LINES; i++) { addLF(i); }
+    scrTop = o;
 }
 
 void edRdBlk(int force) {
