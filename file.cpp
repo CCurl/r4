@@ -1,9 +1,17 @@
 #include "r4.h"
 
-// #define __FILES__ 12345
+// begin: shared
+static int fdsp = 0;
+static CELL_T fstack[FSTK_SZ + 1];
+CELL_T input_fp;
 
-#ifndef __FILES__
-#ifndef __LITTLEFS__
+void fpush(CELL_T v) { if (fdsp < FSTK_SZ) { fstack[++fdsp] = v; } }
+CELL_T fpop() { return (0 < fdsp) ? fstack[fdsp--] : 0; }
+// end: shared
+
+// #define __FILES__
+
+#ifdef __NO_FS__
 void noFile() { printString("-noFile-"); }
 void fileInit() { noFile(); }
 void fileOpen() { noFile(); }
@@ -11,23 +19,16 @@ void fileClose() { noFile(); }
 void fileDelete() { noFile(); }
 void fileRead() { noFile(); }
 void fileWrite() { noFile(); }
-void blockLoad(CELL num) { noFile(); }
+void blockLoad(CELL_T num) { noFile(); }
 void loadAbort() { noFile(); }
-int fileReadLine(CELL fh, char* buf) { noFile(); return -1; }
+int fileReadLine(CELL_T fh, char* buf) { noFile(); return -1; }
 int readBlock(int blk, char* buf, int sz) { noFile(); return 0; }
 void readBlock1() { noFile(); }
 int writeBlock(int blk, char* buf, int sz) { noFile(); return 0; }
 void writeBlock1() { noFile(); }
-#endif // __LITTLEFS__
-#else
-// shared with __LITTLEFS__
-static int fdsp = 0;
-static CELL fstack[STK_SZ + 1];
-CELL input_fp;
+#endif // __NO_FS__
 
-void fpush(CELL v) { if (fdsp < STK_SZ) { fstack[++fdsp] = v; } }
-CELL fpop() { return (0 < fdsp) ? fstack[fdsp--] : 0; }
-// shared with __LITTLEFS__
+#ifdef __FILES__
 
 void fileInit() {}
 
@@ -37,7 +38,7 @@ void fileInit() {}
 void fileOpen() {
     char* md = (char *)pop();
     char* fn = AOS;
-    TOS = (CELL)fopen(fn, md);
+    TOS = (CELL_T)fopen(fn, md);
 }
 
 // fC (fh--) - File Close
@@ -71,7 +72,7 @@ void fileRead() {
 // fL - fileReadLine(fh, buf)
 // fh: File handle, buf: address
 // returns: -1 if EOF, else len
-int fileReadLine(CELL fh, char *buf) {
+int fileReadLine(CELL_T fh, char *buf) {
     byte l=0;
     if (fgets(buf, 256, (FILE*)fh) == buf) {
         while (buf[l]) { if (buf[l]<32) { buf[l]=32; } ++l; }
@@ -96,13 +97,13 @@ void fileWrite() {
 
 // fB (n--) - File: block load
 // Loads a block file
-void blockLoad(CELL num) {
+void blockLoad(CELL_T num) {
     char buf[24];
     sprintf(buf, "block-%03d.r4", (int)num);
     FILE* fp = fopen(buf, "rb");
     if (fp) {
         if (input_fp) { fpush(input_fp); }
-        input_fp = (CELL)fp;
+        input_fp = (CELL_T)fp;
     }
 }
 
@@ -122,7 +123,7 @@ int readBlock(int blk, char *buf, int sz) {
     if (fp) {
         // Read in one byte at a time, to strip out CR
         while (cn < sz) {
-            CELL n = fread(fn, 1, 1, fp);
+            CELL_T n = fread(fn, 1, 1, fp);
             if (n == 0) { break; }
             if (fn[0] == 13) { continue; }
             buf[cn++] = fn[0];
@@ -134,7 +135,7 @@ int readBlock(int blk, char *buf, int sz) {
 
 // bR (num addr sz--f)
 void readBlock1() {
-    CELL t1 = pop();
+    CELL_T t1 = pop();
     char *n1 = (char*)pop();
     TOS = readBlock(TOS, (char*)n1, t1);
 }
@@ -152,7 +153,7 @@ int writeBlock(int blk, char *buf, int sz) {
 
 // bW (num addr sz--f)
 void writeBlock1() {
-    CELL t1 = pop();
+    CELL_T t1 = pop();
     char *n1 = (char*)pop();
     TOS = writeBlock(TOS, (char*)n1, t1);
 }

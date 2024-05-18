@@ -6,16 +6,16 @@
 
 byte ir, isBye = 0, isError = 0;
 addr pc, HERE;
-CELL n1, t1, seed = 0;
+CELL_T n1, t1, seed = 0;
 int dsp, rsp, lsp, locBase;
 ST_T   dstack[STK_SZ+1];
-CELL   reg[NUM_REGS], locs[NUM_LOCALS], lstack[LSTACK_SZ+1];
+CELL_T   reg[NUM_REGS], locs[NUM_LOCALS], lstack[LSTACK_SZ+1];
 addr   rstack[RSTK_SZ+1], func[NUM_FUNCS];
 byte   code[CODE_SZ], vars[VARS_SZ];
 static char buf[128];
 
-void push(CELL v) { if (dsp < STK_SZ) { dstack[++dsp].i = v; } }
-CELL pop() { return (dsp) ? dstack[dsp--].i : 0; }
+void push(CELL_T v) { if (dsp < STK_SZ) { dstack[++dsp].i = v; } }
+CELL_T pop() { return (dsp) ? dstack[dsp--].i : 0; }
 
 void rpush(addr v) { if (rsp < RSTK_SZ) { rstack[++rsp] = v; } }
 addr rpop() { return (rsp) ? rstack[rsp--] : 0; }
@@ -28,7 +28,7 @@ void vmInit() {
     HERE = &code[0];
 }
 
-void setCell(byte* to, CELL val) {
+void setCell(byte* to, CELL_T val) {
 #ifdef _NEEDS_ALIGN_
     *(to++) = (byte)val; 
     for (int i = 1; i < CELL_SZ; i++) {
@@ -36,19 +36,19 @@ void setCell(byte* to, CELL val) {
         *(to++) = (byte)val;
     }
 #else
-    * ((CELL *)to) = val;
+    * ((CELL_T *)to) = val;
 #endif
 }
 
-CELL getCell(byte* from) {
-    CELL val = 0;
+CELL_T getCell(byte* from) {
+    CELL_T val = 0;
 #ifdef _NEEDS_ALIGN_
     from += (CELL_SZ - 1);
     for (int i = 0; i < CELL_SZ; i++) {
         val = (val << 8) + *(from--);
     }
 #else
-    val = *((CELL*)from);
+    val = *((CELL_T*)from);
 #endif
     return val;
 }
@@ -61,10 +61,10 @@ void printStringF(const char* fmt, ...) {
     printString(buf);
 }
 
-char *num2Str(CELL v, int b) {
+char *num2Str(CELL_T v, int b) {
     b = b ? b : 10;
     char *c = &buf[sizeof(buf)-1], n=((v<0) && (b==10))?1:0;
-    UCELL u = (n) ? -v : v;
+    UCELL_T u = (n) ? -v : v;
     *(c) = 0;
     do {
         *(--c) = (char)((u % b)+'0');
@@ -75,7 +75,7 @@ char *num2Str(CELL v, int b) {
     return (char*)c;
 }
 
-void printBase(CELL v, int b) {
+void printBase(CELL_T v, int b) {
     printString(num2Str(v, b));
 }
 
@@ -111,8 +111,8 @@ void dumpStack() {
     printChar(')');
 }
 
-CELL doHash(CELL max) {
-    CELL hash = 5381;
+CELL_T doHash(CELL_T max) {
+    CELL_T hash = 5381;
     if (!ISALPHA(*pc)) { return 0; }
     while (ISALPHANUM(*pc)) { hash = (hash * 33) ^ *(pc++); }
     return hash & max;
@@ -135,12 +135,12 @@ void skipTo(byte to, int isCreate) {
 }
 
 void doFor() {
-    CELL f = pop(), t = pop();
+    CELL_T f = pop(), t = pop();
     lsp += 3; if (LSTACK_SZ < lsp) { printString("-[lsp]-"); lsp=LSTACK_SZ; }
-    L0 = (f<t)?f:t; L1 = (t>f)?t:f; L2 = (CELL)pc;
+    L0 = (f<t)?f:t; L1 = (t>f)?t:f; L2 = (CELL_T)pc;
 }
 
-int isOk(CELL exp, const char* msg) {
+int isOk(CELL_T exp, const char* msg) {
     isError = (exp == 0); if (isError) { printString(msg); }
     return (isError == 0);
 }
@@ -149,7 +149,7 @@ void doFloat() {
     ir = *(pc++);
     switch (ir) {
         case  'F': FTOS = (FLT_T)TOS;
-        RCASE 'I': TOS = (CELL)FTOS;
+        RCASE 'I': TOS = (CELL_T)FTOS;
         RCASE '+': FNOS += FTOS; pop();
         RCASE '-': FNOS -= FTOS; pop();
         RCASE '*': FNOS *= FTOS; pop();
@@ -173,16 +173,16 @@ void doExt() {
         case 'I': ir = *(pc++);
             if (ir == 'A') { 
                 ir = *(pc++);
-                if (ir == 'F') { push((CELL)&func[0]); }
-                if (ir == 'H') { push((CELL)&HERE); }
-                if (ir == 'R') { push((CELL)&reg[0]); }
-                if (ir == 'U') { push((CELL)&code[0]); }
-                if (ir == 'V') { push((CELL)&vars[0]); }
+                if (ir == 'F') { push((CELL_T)&func[0]); }
+                if (ir == 'H') { push((CELL_T)&HERE); }
+                if (ir == 'R') { push((CELL_T)&reg[0]); }
+                if (ir == 'U') { push((CELL_T)&code[0]); }
+                if (ir == 'V') { push((CELL_T)&vars[0]); }
                 return;
             };
             if (ir == 'C') { push(CELL_SZ); }
             if (ir == 'F') { push(NUM_FUNCS); }
-            if (ir == 'H') { push((CELL)HERE); }
+            if (ir == 'H') { push((CELL_T)HERE); }
             if (ir == 'L') { push(NUM_LOCALS); }
             if (ir == 'R') { push(NUM_REGS); }
             if (ir == 'U') { push(CODE_SZ); }
@@ -190,7 +190,7 @@ void doExt() {
         RCASE 'H': edScrH = pop(); if (edScrH == 0) { edScrH = 35; }
         RCASE 'h': t1=doHash(-1); push(t1);
                 push(reg[t1&MAX_REG]);
-                push((CELL)func[t1&MAX_FUNC]);
+                push((CELL_T)func[t1&MAX_FUNC]);
         RCASE 'K': dumpStack();
         RCASE 'S': if (*pc == 'R') { vmInit(); }
         RCASE 'M': push(doMicros());
@@ -231,7 +231,7 @@ next:
         NCASE '+': t1 = pop(); TOS += t1;
         NCASE ',': printChar((char)pop());
         NCASE '-': t1 = pop(); TOS -= t1;
-        NCASE '.': printStringF("%ld", (CELL)pop());
+        NCASE '.': printStringF("%ld", (CELL_T)pop());
         NCASE '/': if (isOk(TOS, "-0div-")) { NOS /= TOS; pop(); }
         NCASE '0': case '1': case '2': case '3': case '4':
         case  '5': case '6': case '7': case '8': case '9': push(ir-'0');
@@ -275,8 +275,8 @@ next:
         NCASE 'T': ir = *(pc++);
             if (ir == '+') { locBase = MIN(locBase+10, NUM_LOCALS-10); }
             else if (ir == '-') { locBase = MAX(locBase-10, 0); }
-        NCASE 'U': TOS += (CELL)&code[0];
-        NCASE 'V': TOS += (CELL)&vars[0];
+        NCASE 'U': TOS += (CELL_T)&code[0];
+        NCASE 'V': TOS += (CELL_T)&vars[0];
         NCASE 'X': if (TOS) { rpush(pc); pc = (addr)TOS; } pop();
         NCASE 'Z': printString((char*)pop());
         NCASE '[': doFor();

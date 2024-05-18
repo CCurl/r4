@@ -190,8 +190,8 @@ This is very fast, but poses some limitations:
 ### MEMORY OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| @  | (a--n)      | Fetch CELL n from address a
-| !  | (n a--)     | Store CELL n  to  address a
+| @  | (a--n)      | Fetch CELL_T n from address a
+| !  | (n a--)     | Store CELL_T n  to  address a
 | C@ | (a--n)      | Fetch BYTE n from address a
 | C! | (n a--)     | Store BYTE n  to  address a
 | U  | (n--a)      | a: address of byte n in the CODE area.
@@ -341,7 +341,7 @@ This is very fast, but poses some limitations:
 | xIAR  | (--a)     | INFO: Address where the registers begin
 | xIAU  | (--a)     | INFO: Address there the CODE area begins
 | xIAV  | (--a)     | INFO: Address there the VARS area begins
-| xIC   | (--n)     | INFO: CELL size
+| xIC   | (--n)     | INFO: CELL_T size
 | xIF   | (--n)     | INFO: Number of functions (NUM_FUNCS)
 | xIH   | (--a)     | INFO: Current HERE value
 | xIR   | (--n)     | INFO: Number of registers (NUM_REGS)
@@ -362,5 +362,5 @@ This is very fast, but poses some limitations:
 | xM    | (--n)     | Time in microseconds (Arduino: micros())
 | xW    | (n--)     | Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    | r: a pseudo-random number between 0 and n (uses XOR-shift)
-|       |           |  *** NOTE: when n=0, r is the entire CELL-sized number
+|       |           |  *** NOTE: when n=0, r is the entire CELL_T-sized number
 | xQ    | (--)      | PC: Exit R4

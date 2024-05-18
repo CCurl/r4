@@ -11,15 +11,15 @@
 #define FLT_T float
 #endif
 
-typedef long CELL;
-typedef unsigned long UCELL;
+typedef long CELL_T;
+typedef unsigned long UCELL_T;
 typedef uint16_t ushort;
 typedef uint8_t byte;
 typedef byte *addr;
-typedef union { FLT_T f; CELL i; char *c; } ST_T;
+typedef union { FLT_T f; CELL_T i; char *c; } ST_T;
 
-#define VERSION       20240329
-#define CELL_SZ       sizeof(CELL)
+#define VERSION       20240518
+#define CELL_SZ       sizeof(CELL_T)
 #define TOS           dstack[dsp].i
 #define NOS           dstack[dsp-1].i
 #define AOS           dstack[dsp].c
@@ -53,22 +53,22 @@ extern addr HERE;
 extern ST_T dstack[];
 extern int dsp;
 extern addr func[];
-extern CELL input_fp, edScrH;
+extern CELL_T input_fp, edScrH;
 
 extern void vmInit();
-extern CELL pop();
-extern void push(CELL);
-extern CELL doHash(CELL max);
+extern CELL_T pop();
+extern void push(CELL_T);
+extern CELL_T doHash(CELL_T max);
 extern addr run(addr);
 extern addr doCustom(byte, addr);
 extern void printChar(const char);
 extern void printString(const char*);
 extern void printStringF(const char*, ...);
 extern void dumpStack();
-extern CELL getSeed();
-extern CELL doMicros();
-extern CELL doMillis();
-extern void doDelay(CELL);
+extern CELL_T getSeed();
+extern CELL_T doMicros();
+extern CELL_T doMillis();
+extern void doDelay(CELL_T);
 extern int qkey();
 extern int key();
 
@@ -76,19 +76,19 @@ extern int key();
 extern void doEditor();
 
 // File support
-extern void fpush(CELL);
-extern CELL fpop();
+extern void fpush(CELL_T);
+extern CELL_T fpop();
 extern void fileInit();
 extern void fileOpen();
 extern void fileClose();
 extern void fileDelete();
 extern void fileRead();
 extern void fileWrite();
-extern void blockLoad(CELL);
+extern void blockLoad(CELL_T);
 extern void loadAbort();
 extern int readBlock(int blk, char* buf, int sz);
 extern void readBlock1();
 extern int writeBlock(int blk, char* buf, int sz);
 extern void writeBlock1();
-extern int fileReadLine(CELL fh, char* buf);
+extern int fileReadLine(CELL_T fh, char* buf);
 extern addr pc;

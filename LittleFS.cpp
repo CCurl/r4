@@ -1,15 +1,6 @@
 #include "r4.h"
 
-#ifdef __LITTLEFS__
-
-// shared with __FILE__
-static byte fdsp = 0;
-static CELL fstack[STK_SZ + 1];
-CELL input_fp;
-
-void fpush(CELL v) { if (fdsp < STK_SZ) { fstack[++fdsp] = v; } }
-CELL fpop() { return (fdsp) ? fstack[fdsp--] : 0; }
-// shared with __FILE__
+#ifdef __TEENSY_FS__
 
 // LittleFS uses NEXT
 #undef NEXT
@@ -35,7 +26,7 @@ int freeFile() {
 	return 0;
 }
 
-CELL fileOpenI(const char *fn, const char *md) {
+CELL_T fileOpenI(const char *fn, const char *md) {
 	int fh = freeFile();
 	if (0 < fh) {
 		files[fh] = myFS.open(fn, (md[0]=='w') ? FILE_WRITE_BEGIN : FILE_READ);
@@ -53,7 +44,7 @@ void fileOpen() {
 
 // fC (fh--) - File Close
 void fileClose() {
-	CELL fh = pop();
+	CELL_T fh = pop();
 	if (BTWI(fh, 1, NFILES) &&((bool)files[fh])) {
 		files[fh].close();
 	}
@@ -105,7 +96,7 @@ int readBlock(int num, char *blk, int sz) {
 
 // bR (num addr sz--f)
 void readBlock1() {
-    CELL t1 = pop();
+    CELL_T t1 = pop();
     char *n1 = (char*)pop();
     TOS = readBlock(TOS, (char*)n1, t1);
 }
@@ -125,13 +116,13 @@ int writeBlock(int num, char *blk, int sz) {
 
 // bW (num addr sz--f)
 void writeBlock1() {
-    CELL t1 = pop();
+    CELL_T t1 = pop();
     char *n1 = (char*)pop();
     TOS = writeBlock(TOS, (char*)n1, t1);
 }
 
 // fL - File readLine
-int fileReadLine(CELL fh, char *buf) {
+int fileReadLine(CELL_T fh, char *buf) {
 	int n = -1;
 	buf[0] = 0;
 	if (BTWI(fh, 1, NFILES) && (0 < files[fh].available())) {
@@ -142,10 +133,10 @@ int fileReadLine(CELL fh, char *buf) {
 }
 
 // bL - Block Load
-void blockLoad(CELL num) {
+void blockLoad(CELL_T num) {
 	char fn[32];
 	sprintf(fn, BLOCK_FN, num);
-	CELL fh = fileOpenI(fn, "r");
+	CELL_T fh = fileOpenI(fn, "r");
 	if (files[fh].available()) {
 		if (input_fp) {
 			fpush(input_fp);
@@ -157,4 +148,4 @@ void blockLoad(CELL num) {
 // bA - Block load Abort
 void loadAbort() {}
 
-#endif // __LITTLEFS__
+#endif // __TEENSY_FS__

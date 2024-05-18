@@ -15,13 +15,13 @@
     void printChar(char c) { }
 #endif
 
-CELL getSeed() { return millis(); }
-CELL doMicros() { return micros(); }
-CELL doMillis() { return millis(); }
-void doDelay(CELL ms) { return delay(ms); }
+CELL_T getSeed() { return millis(); }
+CELL_T doMicros() { return micros(); }
+CELL_T doMillis() { return millis(); }
+void doDelay(CELL_T ms) { return delay(ms); }
 
 addr doCustom(byte ir, addr pc) {
-    CELL pin;
+    CELL_T pin;
     switch (ir) {
     case 'P': ir = *(pc++);
         pin = pop();
@@ -33,7 +33,7 @@ addr doCustom(byte ir, addr pc) {
             if (ir == 'A') { push(analogRead(pin)); }
             if (ir == 'D') { push(digitalRead(pin)); }
         } else if (ir == 'W') {
-            CELL val = pop();
+            CELL_T val = pop();
             ir = *(pc++);
             if (ir == 'A') { analogWrite(pin, val); }
             if (ir == 'D') { digitalWrite(pin, val); }
@@ -60,7 +60,7 @@ void loadCode(const char* src) {
 // * HERE is where you load your default code *
 // ********************************************
 void loadBaseSystem() {
-    // loadCode(":CD 0U xIH[I C@ #, 59=(I P C@ 58=(N))];");
+    loadCode(":CD 0U xIH[I C@ #, 59=(I P C@ 58=(N))];");
     // loadCode(":S0 xIR\"%d registers, \" xIF\"%d functions, \";");
     // loadCode(":S1 xIU\"%d bytes code, \" xIV\"%d bytes user\";");
     // loadCode(":SI N\"r4 - \" cS0 cS1;");
@@ -132,7 +132,7 @@ void setup() {
 
 void autoRun() {
     pc = (addr)"AUTORUN";
-    CELL h = doHash(MAX_FUNC);
+    CELL_T h = doHash(MAX_FUNC);
     if (func[h]) { run(func[h]); }
 }
 
