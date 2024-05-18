@@ -34,11 +34,11 @@
   #define RSTK_SZ         64
   #define LSTACK_SZ       30
   #define NUM_LOCALS      50
-  #define CODE_SZ        ( 64*1024)
-  #define VARS_SZ        (128*1024)
+  #define CODE_SZ        ( 32*1024)
+  #define VARS_SZ        ( 64*1024)
   #define NUM_REGS        0x4000
-  #define NUM_FUNCS       0x4000
-  #define __LITTLEFS__
+  #define NUM_FUNCS       0x2000
+  // #define __LITTLEFS__
   #define __BOARD__      TEEENSY4
   #define __EDITOR__
   #define __SERIAL__      1
