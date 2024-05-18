@@ -147,17 +147,19 @@ This is very fast, but poses some limitations:
 
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| FF | (i--f)    | Convert TOS from integer to float
-| FI | (f--i)    | Convert TOS from float to integer
-| F+ | (a b--n)  | Float: add
-| F- | (a b--n)  | Float: subtract
-| F* | (a b--n)  | Float: multiply
-| F/ | (a b--n)  | Float: divide
-| F< | (a b--f)  | f: if (a < b) then 1 , else 0
-| F= | (a b--f)  | f: if (a = b) then 1 , else 0
-| F> | (a b--f)  | f: if (a > b) then 1 , else 0
-| F. | (n--)     | Float: print top of float stack
+| FF | (i--f)    | f: i converted to a float
+| FI | (f--i)    | i: f converted to an integer
+| F+ | (a b--n)  | n: a + b
+| F- | (a b--n)  | n: a - b
+| F* | (a b--n)  | n: a * b
+| F/ | (a b--n)  | n: a / b
+| F< | (a b--fl) | fl: if (a < b) then 1 , else 0
+| F= | (a b--fl) | fl: if (a = b) then 1 , else 0
+| F> | (a b--fl) | fl: if (a > b) then 1 , else 0
+| F. | (fl--)    | Float: print fl
 | F_ | (a--b)    | b: -a
+| FQ | (f--sq)   | sq: the SQRT of f
+| FT | (f--th)   | th: the TANH of f
 
 
 ### BIT MANIPULATION OPERATIONS
@@ -188,8 +190,8 @@ This is very fast, but poses some limitations:
 ### MEMORY OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| @  | (a--n)      | Fetch CELL n from address a
-| !  | (n a--)     | Store CELL n  to  address a
+| @  | (a--n)      | Fetch CELL_T n from address a
+| !  | (n a--)     | Store CELL_T n  to  address a
 | C@ | (a--n)      | Fetch BYTE n from address a
 | C! | (n a--)     | Store BYTE n  to  address a
 | U  | (n--a)      | a: address of byte n in the CODE area.
@@ -206,8 +208,8 @@ This is very fast, but poses some limitations:
 | &ABC | (N--)  | Define register rABC with initial value of N.
 |      |        | *** NOTE: If register rABC has a value <> 0, r4 prints "-redef-r[hash]-".
 |      |        |     This can be used to check if there is a hashing collision.
-| rABC | (--v)  | v: value of register ABC.
-| sABC | (v--)  | v: store v to register ABC.
+| rABC | (--N)  | N: value of register ABC.
+| sABC | (N--)  | N: value to store in register ABC.
 | iABC | (--)   | Increment register ABC.
 | dABC | (--)   | Decrement register ABC.
 
@@ -219,8 +221,8 @@ This is very fast, but poses some limitations:
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | T+ | (--)   | Allocate 10 temporary registers
-| rN | (--v)  | v: value of register #N.
-| sN | (v--)  | v: store v to register #N.
+| rN | (--V)  | V: value of register #N.
+| sN | (V--)  | V: value to store in register #N.
 | iN | (--)   | Increment register #N.
 | dN | (--)   | Decrement register #N.
 | T- | (--)   | Free the most recently allocated temporary registers
@@ -231,7 +233,7 @@ This is very fast, but poses some limitations:
 - A function name is of the form `[A-Z][A-Z0-9]*` (e.g. - TMP23).
 - The number of functions is controlled by the NUM_FUNCS #define in "config.h".
 - A function definition is limited to ONE line.
-- Returning while inside of a loop will eventually cause a problem.
+- Returning while inside of a loop will eventually cause a problem if not unwound.
   - Use '^' to unwind the loop stack first.
 
 | OP    |Stack   |Description|
@@ -254,7 +256,7 @@ This is very fast, but poses some limitations:
 | K?    | (--f)    | f: non-zero if char is ready to be read, else 0.
 | K@    | (--n)    | n: Key char, wait if no char is available.
 | 0-9   | (--N)    | Scan DECIMAL number N until non digit
-| N.N   | (--F)    | - Use NNN.NNN (eg - 3.14) to enter a floating point number F
+| N.N   | (--F)    | - Use NNN.NNN (eg - 3.1415) to enter a floating point number F
 |       |          | - to specify multiple values, separate them by space (4711 3333)
 |       |          | - to enter a negative number, use "negate" (eg - 490_)
 | hXXX  | (--N)    | Scan HEX number N until non hex-digit ([0-9,A-F] only ... NOT [a-f])
@@ -297,7 +299,7 @@ This is very fast, but poses some limitations:
 | I  | (--n)     | n: the index of the current FOR loop
 | J  | (--n)     | n: the index of the next outer FOR loop
 | p  | (n--)     | n: number to add to "I"
-| ^  | (--)      | UNLOOP, use with ';'. Example: `rS rK>(^;)`
+| ^  | (--)      | UNWIND, use with ';'. Example: `rS rK>(^;)`
 | ]  | (--)      | NEXT: increment index (I) and loop if (I < T)
 
 
@@ -305,7 +307,7 @@ This is very fast, but poses some limitations:
 | OP |Stack |Description|
 |:-- |:--   |:--|
 | {  | (f--f)      | BEGIN: if (f == 0) skip to ending '}'
-| ^  | (--)        | UNLOOP, used with ';'. Example: `rX ~(^;)`
+| ^  | (--)        | UNWIND, used with ';'. Example: `rX ~(^;)`
 | }  | (f--f?)     | WHILE: if (f != 0) jump to starting '{', else drop f and continue
 
 
@@ -314,7 +316,7 @@ This is very fast, but poses some limitations:
 |:-- |:--   |:--|
 | fO | (nm md--fh)  | FILE: Open, nm: name, md: mode, fh: fileHandle
 | fC | (fh--)       | FILE: Close, fh: fileHandle
-| fD | (nm--)       | FILE: Delete
+| fD | (nm--)       | FILE: Delete, nm: name
 | fR | (fh--c n)    | FILE: Read, fh: fileHandle, c: char, n: num
 | fW | (c fh--n)    | FILE: Write, fh: fileHandle, c: char, n: num
 | fL | (a fh--n)    | FILE: ReadLine, fh: fileHandle, a: address, n: num (-1 if EOF)
@@ -323,9 +325,11 @@ This is very fast, but poses some limitations:
 ### BLOCK OPERATIONS
 | OP |Stack |Description|
 |:-- |:--   |:--|
-| bL | (n--)        | BLOCK: Load code from block file (block-nnn.r4). This can be nested.
-| bA | (--)         | BLOCK: Load Abort - stop loading the current block (eg - if already loaded)
-| bE | (n--)        | BLOCK: Edit block N (file name is block-nnn.r4)
+| bL | (N--)        | BLOCK: Load block N (block-nnn.r4). This can be nested.
+| bA | (--)         | BLOCK: Load Abort - stop loading the current block (use wih `xh`)
+| bE | (N--)        | BLOCK: Edit block N (file name is block-nnn.r4)
+| bR | (N a sz--)   | BLOCK: Read block N; a: addr, sz: size of buffer
+| bW | (N a sz--)   | BLOCK: Write block N; a: addr, sz: size of buffer
 
 
 ### OTHER OPERATIONS
@@ -337,7 +341,7 @@ This is very fast, but poses some limitations:
 | xIAR  | (--a)     | INFO: Address where the registers begin
 | xIAU  | (--a)     | INFO: Address there the CODE area begins
 | xIAV  | (--a)     | INFO: Address there the VARS area begins
-| xIC   | (--n)     | INFO: CELL size
+| xIC   | (--n)     | INFO: CELL_T size
 | xIF   | (--n)     | INFO: Number of functions (NUM_FUNCS)
 | xIH   | (--a)     | INFO: Current HERE value
 | xIR   | (--n)     | INFO: Number of registers (NUM_REGS)
@@ -353,9 +357,10 @@ This is very fast, but poses some limitations:
 | xs    | (a--)     | PC: call "system(a)"
 | xSR   | (--)      | R4 System Reset
 | xT    | (--n)     | Time in milliseconds (Arduino: millis(), Windows: GetTickCount())
-| xh[S] | (--)      | Print hash, reg, and func value for [S] (eg - `xhALLOT` or `xhVH`)
+| xh[S] | (--n r f) | n: Hash, r: Reg, and f: Func value for [S] (eg - `xhALLOT`)
+| xH    | (n--)     | n: new value for screen height (for the editor). If n=0 default to 35.
 | xM    | (--n)     | Time in microseconds (Arduino: micros())
 | xW    | (n--)     | Wait (Arduino: delay(),  Windows: Sleep())
 | xR    | (n--r)    | r: a pseudo-random number between 0 and n (uses XOR-shift)
-|       |           |  *** NOTE: when n=0, r is the entire CELL-sized number
+|       |           |  *** NOTE: when n=0, r is the entire CELL_T-sized number
 | xQ    | (--)      | PC: Exit R4

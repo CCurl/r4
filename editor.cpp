@@ -8,9 +8,9 @@
 
 #ifndef __EDITOR__
 void doEditor() { printString("-noEdit-"); }
+int scrTop;
 #else
 
-#define MAX_LINES     150
 #define LLEN          100
 #define SCR_HEIGHT     25
 
@@ -32,7 +32,7 @@ int line, off, blkNum, edMode, scrTop;
 int isDirty, lineShow[MAX_LINES];
 char edBuf[BLOCK_SZ], tBuf[LLEN], mode[32], *msg = NULL;
 char yanked[LLEN];
-CELL edScrH = SCR_HEIGHT; // can be set from c3 using '50 (scr-h) !'
+CELL_T edScrH = SCR_HEIGHT; // can be set from c3 using '50 (scr-h) !'
 
 void GotoXY(int x, int y) { printStringF("\x1B[%d;%dH", y, x); }
 void CLS() { printString("\x1B[2J"); GotoXY(1, 1); }
@@ -121,7 +121,7 @@ void gotoEOL() {
     mv(0,0);
 }
 
-CELL toBlock() {
+CELL_T toBlock() {
     fill(theBlock, 0, BLOCK_SZ);
     for (int i=0; i<MAX_LINES; i++) {
         char *y = &EDCHAR(i,0);
@@ -151,7 +151,9 @@ void toBuf() {
             EDCHAR(l,o++) = (char)ch;
         }
     }
+    o = scrTop; scrTop = 0;
     for (int i = 0; i < MAX_LINES; i++) { addLF(i); }
+    scrTop = o;
 }
 
 void edRdBlk(int force) {
@@ -164,7 +166,7 @@ void edRdBlk(int force) {
 
 void edSvBlk(int force) {
     if (isDirty || force) {
-        CELL len = toBlock();
+        CELL_T len = toBlock();
         while (1<len) {
             if (theBlock[len-2] == 10) { theBlock[len-1]=0; --len; }
             else { break; }

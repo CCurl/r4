@@ -1,1 +1,3 @@
 0( block 002 - a sandbox )
+:STRLEN T+s1 0s2 r1 C@{\i1i2r1C@}r2 T-;
+:LG rVH`lazygit`\xs;

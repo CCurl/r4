@@ -6,24 +6,24 @@
 #ifdef __PC__
 
 #ifdef __WINDOWS__
-CELL doMillis() { return (CELL)GetTickCount(); }
-CELL doMicros() { return (CELL)doMillis()*1000; }
-void doDelay(CELL ms) { Sleep((DWORD)ms); }
+CELL_T doMillis() { return (CELL_T)GetTickCount(); }
+CELL_T doMicros() { return (CELL_T)doMillis()*1000; }
+void doDelay(CELL_T ms) { Sleep((DWORD)ms); }
 int qkey() { return _kbhit(); }
 int key() { return _getch(); }
 #else
 // Support for Linux
-CELL doMillis() {
+CELL_T doMillis() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (CELL)((ts.tv_sec * 1000) + (ts.tv_nsec / 1000000));
+    return (CELL_T)((ts.tv_sec * 1000) + (ts.tv_nsec / 1000000));
 }
-CELL doMicros() {
+CELL_T doMicros() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (CELL)(ts.tv_nsec);
+    return (CELL_T)(ts.tv_nsec);
 }
-void doDelay(CELL ms) { 
+void doDelay(CELL_T ms) { 
     struct timespec ts;
     ts.tv_sec = ms / 1000;
     ts.tv_nsec = (ms % 1000) * 1000000;
@@ -68,11 +68,11 @@ int key() {
 #endif
 
 static char buf[256];
-static CELL t1, t2;
+static CELL_T t1, t2;
 
 void printChar(const char c) { printf("%c", c); }
 void printString(const char* str) { printf("%s", str); }
-CELL getSeed() { return doMillis(); }
+CELL_T getSeed() { return doMillis(); }
 
 addr doCustom(byte ir, addr pc) {
     switch (ir) {
@@ -129,7 +129,7 @@ void loop() {
         }
     } else {
         ok();
-        fileReadLine((CELL)stdin, buf);
+        fileReadLine((CELL_T)stdin, buf);
         doHistory(buf);
         rtrim(buf);
     }   
@@ -139,7 +139,7 @@ void loop() {
 
 int main(int argc, char** argv) {
     vmInit();
-    if (1 < argc) { input_fp = (CELL)fopen(argv[1], "rt"); }
+    if (1 < argc) { input_fp = (CELL_T)fopen(argv[1], "rt"); }
     if (!input_fp) {
         loadCode(":CD 0UxIH[IC@#,';=(IPC@':=(N))];");
         loadCode("0bL");

@@ -19,6 +19,8 @@
 ; YL: loop for Y axis
 ; MB: main, loop for Y axis
 
+xhMC $\$\ (bA)
+
 1 bL
 :HD N"The Mandelbrot Set";
 :MC iTiJ rA#*rS/sC rB#*rS/sD rCrD+rK>(rSp;)rArB*100/rY+sB rCrD-rX+sA;
