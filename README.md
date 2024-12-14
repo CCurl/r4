@@ -69,8 +69,8 @@ The Arduino "blink" program is a one-liner, except this version stops when a key
   | 1000 sDELAY    | Set register DELAY to 1000
   | 13 sLED        | Set register LED to 13, the typical port number of the built-in LED
   | rLED xPO       | Push register LED (13) on the stack and open that port
-  | 1{             | Begin a WHILE loop; DROP control value
-  | \\ 0 2 [       | Begin a FOR loop from 0 to 2
+  | 1{             | Begin a WHILE loop
+  | \\ 0 2 [       | DROP control value, begin a FOR loop from 0 to 2
   | I rLED xPWD    | Write the loop index (I 0 or 1) to port LED (13)
   | rDELAY xW]     | Wait for DELAY (1000) milliseconds; end FOR loop
   | K? ~}          | Check if a key was pressed; if not then continue, else exit loop
