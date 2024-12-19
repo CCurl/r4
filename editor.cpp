@@ -278,6 +278,7 @@ void edCommand() {
     if (strEq(buf,"w")) { edSvBlk(0); }
     else if (strEq(buf,"w!")) { edSvBlk(1); }
     else if (strEq(buf,"wq")) { edSvBlk(0); edMode=QUIT; }
+    else if (strEq(buf,"rl")) { edRdBlk(0); }
     else if (strEq(buf,"q!")) { edMode=QUIT; }
     else if (strEq(buf,"q")) {
         if (isDirty) { printString("(use 'q!' to quit without saving)"); }
